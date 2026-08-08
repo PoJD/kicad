@@ -3,9 +3,14 @@
 A container for boards. Successor to the older `eagle` repo; each board gets
 its own subdirectory and its own `fab/`.
 
-KiCad 8. Text formats mean readable diffs, and `kicad-cli` can run ERC and DRC
+KiCad 10. Text formats mean readable diffs, and `kicad-cli` can run ERC and DRC
 in CI without a GUI — a design error fails in the pull request, not on a
 finished board.
+
+The CI container image must track the local major version. KiCad refuses to
+open files written by a newer major version, so `kicad/kicad:10.0` in
+`.github/workflows/kicad.yml` is not incidental — bump it together with the
+installed KiCad, never separately.
 
 There is currently one board: `canfuel/`.
 
@@ -13,42 +18,35 @@ There is currently one board: `canfuel/`.
 
 ## Current state — read this first
 
-**Nothing has been designed yet.** The repo holds requirements and supporting
-documents only. `canfuel/` contains `docs/` and an empty `fab/gerbers/`; there
-is no `.kicad_pro`, no `.kicad_sch` and no `.kicad_pcb`. `lib/` is empty.
+**The project skeleton exists; nothing is drawn yet.** `canfuel/` holds
+`canfuel.kicad_pro`, `canfuel.kicad_sch` (empty) and `canfuel.kicad_pcb` (board
+outline only), plus `docs/` and an empty `fab/gerbers/`. `lib/` is empty.
 
-The CI workflow is a working skeleton: it loops over `**/*.kicad_sch` and
-`**/*.kicad_pcb`, finds nothing, and passes. The moment the first schematic
-lands it starts running ERC and DRC for real, so expect CI to begin failing
-usefully rather than staying green.
+CI is live and no longer a no-op: it finds both files and runs ERC and DRC on
+them for real. Both pass. From here on a red CI run means something.
 
-**KiCad 8 is being installed.** It was not present as of 2026-08-08; the
-maintainer is installing it. Note that the Windows installer ships
-`kicad-cli.exe` but does not put it on PATH — `C:\Program Files\KiCad\8.0\bin`
-has to be added by hand.
+**KiCad 10.0.5 is installed** at `C:\Program Files\KiCad\10.0`, and
+`C:\Program Files\KiCad\10.0\bin\` is on the user PATH. A shell started before
+that PATH edit will not see `kicad-cli`; call it by full path rather than
+concluding it is missing.
 
 ### Resume here — next session
 
-When asked to carry on with the schematic, do this, in order. Everything needed
-is already written down; nothing has to be re-derived.
+When asked to carry on, do this, in order. Everything needed is already written
+down; nothing has to be re-derived.
 
 1. **Read `canfuel/docs/implementation-plan.md` first.** It is the working
    document: reference designators, the full 28-pin PIC pinout, net names, net
    classes, placement plan and the order of commits. This file only summarises
    it.
 2. **Check the prerequisites actually hold** before touching anything:
-   - `kicad-cli version` prints `8.x` in a plain shell
-   - `canfuel/canfuel.kicad_pro`, `.kicad_sch` and `.kicad_pcb` exist — the
-     maintainer creates these through the GUI (`File → New Project`) so the
-     schema versions are right; do not hand-write them
-   If either is missing, say so and stop rather than working around it.
-3. **Apply the Board Setup values** from section 1 of the plan, then commit the
-   skeleton on its own. That commit is where CI stops being a no-op and starts
-   running ERC and DRC for real.
-4. **Draw the schematic** per sections 3 and 4 of the plan. Section 3 is five
+   `kicad-cli version` prints `10.x`, and the three `canfuel/canfuel.*` files
+   are present.
+3. **Draw the schematic** per sections 3 and 4 of the plan. Section 3 is five
    failure modes, each of which has killed a board of this kind before — work
    through them deliberately rather than trusting recall.
-5. **`kicad-cli sch erc` until clean**, then commit.
+4. **`kicad-cli sch erc` until clean**, then commit.
+5. Then layout, DRC, `fab/`, purchase list — plan sections 5 to 7.
 
 The PIC datasheet is committed at `canfuel/docs/pic18f25k80-datasheet.pdf`
 (DS39977C, PIC18F66K80 family — the 28-pin diagram is on page 6). It is text
@@ -61,9 +59,9 @@ answering from memory.
 The detailed version — reference designators, pin numbers, net classes and the
 order of commits — is in `canfuel/docs/implementation-plan.md`. The outline:
 
-1. Install KiCad 8, confirm `kicad-cli version` runs.
-2. Create the project: `canfuel/canfuel.kicad_pro` plus an empty schematic and
-   board. Commit that skeleton on its own so CI going live is a visible step.
+1. ~~Install KiCad, confirm `kicad-cli version` runs.~~ Done — 10.0.5.
+2. ~~Create the project: `canfuel/canfuel.kicad_pro` plus an empty schematic and
+   board, committed on its own so CI going live is a visible step.~~ Done.
 3. Draw the schematic against the requirements below. The five things most
    worth double-checking, because they are the ones that quietly kill a board:
    MCP2562 VIO and STBY, no 120 Ω termination fitted, 33 pF crystal loading,

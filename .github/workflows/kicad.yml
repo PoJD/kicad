@@ -10,7 +10,10 @@ jobs:
     name: ERC and DRC
     runs-on: ubuntu-latest
     container:
-      image: kicad/kicad:8.0
+      # Must match the KiCad the design files were written by — KiCad cannot
+      # open a file from a newer major version, so a mismatch here fails the
+      # job on the very first ERC.
+      image: kicad/kicad:10.0
       # The image defaults to the unprivileged "kicad" user, but the runner
       # creates /__w and its file-command files as root. Without this the job
       # dies in "Post Run actions/checkout" with EACCES on _runner_file_commands.

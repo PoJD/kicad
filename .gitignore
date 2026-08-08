@@ -1,6 +1,9 @@
 # local project state, not design
 *.kicad_prl
 
+# ERC and DRC reports — kicad-cli drops these next to the design files
+*.rpt
+
 # backups and autosave
 *-backups/
 _autosave-*

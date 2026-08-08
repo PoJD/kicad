@@ -9,64 +9,58 @@ Read the four killer checks in section 3 before drawing anything.
 
 ---
 
-## 0. Prerequisites
+## 0. Prerequisites — done
 
-KiCad is not installed on the development machine yet. Nothing below can be
-done without it.
+- [x] **KiCad 10.0.5** installed to `C:\Program Files\KiCad\10.0`. The GUI,
+      `kicad-cli.exe` and the standard symbol/footprint libraries all come from
+      the one installer; there is no separate CLI download.
+- [x] **`C:\Program Files\KiCad\10.0\bin\` added to the user PATH by hand.**
+      The Windows installer does not do it (KiCad issue #19639), so without
+      this `kicad-cli` only works inside the "KiCad Command Prompt" shortcut —
+      fine interactively, useless for a script or a git hook. A shell that was
+      already open when the PATH was edited still will not see it.
+- [x] `kicad-cli version` prints `10.0.5`; `sch erc` and `pcb drc` both accept
+      `--exit-code-violations`, which is what CI relies on.
 
-- [ ] Install **KiCad 8** from <https://www.kicad.org/download/windows/> — the
-      single `kicad-8.0.x-x86_64.exe` installer. Match the major version to the
-      CI image `kicad/kicad:8.0`. Accept the default component selection; the
-      GUI, `kicad-cli.exe` and the standard symbol/footprint libraries all come
-      from the same installer. There is no separate CLI download.
-- [ ] **Add the bin directory to PATH by hand.** The Windows installer does not
-      do it (KiCad issue #19639), so `kicad-cli` is not on PATH after a default
-      install even though the binary is there:
-
-      C:\Program Files\KiCad\8.0\bin
-
-      Without this, `kicad-cli` only works inside the "KiCad Command Prompt"
-      shortcut from the Start menu — which is fine interactively but useless
-      for a script or a git hook.
-- [ ] Confirm in a *fresh* shell: `kicad-cli version` prints `8.x`, and
-      `kicad-cli sch erc --help` and `kicad-cli pcb drc --help` both run. Those
-      are the two commands CI runs.
-
-**Definition of done:** `kicad-cli version` prints an `8.x` version in a plain
-PowerShell window that was opened after the PATH change.
+**The major version is load-bearing.** KiCad cannot open files written by a
+newer major version, so the CI image in `.github/workflows/kicad.yml` is pinned
+to `kicad/kicad:10.0` to match. Upgrading one without the other breaks CI.
 
 ---
 
-## 1. Project skeleton — its own commit
+## 1. Project skeleton — done, its own commit
 
-Create the project with the KiCad GUI (`File → New Project`) so the generated
-files carry the correct schema versions; do not hand-write them.
+The project was created with the KiCad GUI (`File → New Project`) so the
+generated files carry the correct schema versions; they are not hand-written.
 
 ```
 canfuel/
   canfuel.kicad_pro
   canfuel.kicad_sch      empty
-  canfuel.kicad_pcb      empty
+  canfuel.kicad_pcb      outline only
 ```
 
-Set in `Board Setup` straight away, before any drawing:
+Board Setup, applied before any drawing:
 
-| Setting              | Value                                   |
-| -------------------- | --------------------------------------- |
-| Layers               | 2 (F.Cu, B.Cu)                          |
-| Copper thickness     | 1 oz / 35 µm                            |
-| Board thickness      | 1.6 mm                                  |
-| Minimum track width  | 0.20 mm                                 |
-| Minimum clearance    | 0.20 mm                                 |
-| Minimum via          | 0.6 mm pad / 0.3 mm drill               |
-| Minimum hole/annulus | 0.30 mm / 0.15 mm                       |
+| Setting              | Value                     | Where it lives                     |
+| -------------------- | ------------------------- | ---------------------------------- |
+| Layers               | 2 (F.Cu, B.Cu)            | `.kicad_pcb` `(layers)`            |
+| Copper thickness     | 1 oz / 35 µm              | `.kicad_pcb` `(setup (stackup))`   |
+| Board thickness      | 1.6 mm                    | `.kicad_pcb` `(general (thickness))` |
+| Minimum track width  | 0.20 mm                   | `.kicad_pro` `design_settings.rules` |
+| Minimum clearance    | 0.20 mm                   | same                               |
+| Minimum via          | 0.6 mm pad / 0.3 mm drill | same                               |
+| Minimum hole/annulus | 0.30 mm / 0.15 mm         | same                               |
 
-Commit this on its own. It is the moment CI stops being a skeleton and starts
-running ERC and DRC for real — worth being able to point at a single commit
-when it does.
+**The board outline is in this commit too**, ahead of section 5.1. It has to
+be: DRC reports `invalid_outline` as an error on a board with no Edge.Cuts
+edges, so without it the skeleton commit could not be CI-green. It is the
+settled 55 × 45 mm with R2 corners, origin at (50, 50) on the sheet. The four
+M3 mounting holes are *not* in it — their positions depend on the enclosure
+measurement, which is still open (section 9).
 
-**Definition of done:** CI is green on a repository that contains an empty
-schematic and an empty board.
+**Definition of done:** CI green on a repository that contains an empty
+schematic and a board that is an outline and nothing else. ✔
 
 ---
 
@@ -302,8 +296,9 @@ the pin to J4 or by placing an explicit no-connect flag.
 
 ### 5.1 Outline and constraints
 
-- Board **55 × 45 mm**, 2 layers, corners rounded R2, four M3 mounting holes
-  inset 4 mm from the corners.
+- Board **55 × 45 mm**, 2 layers, corners rounded R2 — already drawn in the
+  skeleton commit (section 1). Four M3 mounting holes inset 4 mm from the
+  corners still to add, and see section 9 before trusting those positions.
 - Enclosure is 65 × 55 mm with max ~30 mm depth, so the tallest part
   (C6 electrolytic, or J4 with a cable on it) sets the height budget. Keep
   everything under ~20 mm to leave room for the lid and the harness bend.
