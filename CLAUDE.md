@@ -11,6 +11,52 @@ There is currently one board: `canfuel/`.
 
 ---
 
+## Current state — read this first
+
+**Nothing has been designed yet.** The repo holds requirements and supporting
+documents only. `canfuel/` contains `docs/` and an empty `fab/gerbers/`; there
+is no `.kicad_pro`, no `.kicad_sch` and no `.kicad_pcb`. `lib/` is empty.
+
+The CI workflow is a working skeleton: it loops over `**/*.kicad_sch` and
+`**/*.kicad_pcb`, finds nothing, and passes. The moment the first schematic
+lands it starts running ERC and DRC for real, so expect CI to begin failing
+usefully rather than staying green.
+
+**KiCad is not installed on this machine** (checked for `kicad-cli.exe` under
+Program Files). Installing KiCad 8 is the first prerequisite — `kicad-cli`
+also needs to be on PATH to reproduce what CI does.
+
+### Suggested order of work
+
+1. Install KiCad 8, confirm `kicad-cli version` runs.
+2. Create the project: `canfuel/canfuel.kicad_pro` plus an empty schematic and
+   board. Commit that skeleton on its own so CI going live is a visible step.
+3. Draw the schematic against the requirements below. The four things most
+   worth double-checking, because they are the ones that quietly kill a board:
+   MCP2562 VIO and STBY, no 120 Ω termination fitted, 33 pF crystal loading,
+   and both Micro-Fit headers wired in parallel.
+4. `kicad-cli sch erc` until clean.
+5. Lay out the PCB inside ~55 × 45 mm, two layers, mostly through-hole.
+6. `kicad-cli pcb drc` until clean.
+7. Generate `fab/` (gerbers, BOM, CPL) and commit it.
+8. Only then assemble the GME purchase list — the BOM falls out of the
+   schematic, so buying earlier means buying twice.
+
+### Decisions already made
+
+Everything in the requirements section below is settled and measured, not
+provisional. In particular the power supply (5 V from display connector C6/C12)
+was verified with a multimeter, and the CAN pinout (C7/C8) is confirmed.
+
+### Still open
+
+- Exact 4-pin connector choice at GME for the car side of the harness.
+- Mechanical drawing of the enclosure and how the board mounts in the air vent.
+  `canfuel/docs/` has no `mechanical.md` yet.
+- Whether the unused-pin escape header ends up worth the board area.
+
+---
+
 ## Language
 
 **Everything in this repository is written in English** — documentation,
