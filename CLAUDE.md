@@ -23,8 +23,17 @@ else.** `canfuel/` holds `canfuel.kicad_pro`, `canfuel.kicad_sch` (complete,
 one A3 sheet) and `canfuel.kicad_pcb` (55 × 45 mm outline, no footprints
 placed), plus `docs/` and an empty `fab/gerbers/`. `lib/` is empty.
 
-CI is live and no longer a no-op: it finds both files and runs ERC and DRC on
-them for real. Both pass. From here on a red CI run means something.
+CI is live and green: it finds both files and runs ERC and DRC on them for
+real. From here on a red run means something.
+
+Note that this repository's CI had **never** actually passed before
+2026-08-08. The two check steps opened with `shopt -s globstar nullglob`, a
+bash builtin the container's shell does not have, so both failed on every run
+since they were written — including runs where the repo held no design files
+and the loops had nothing to do. A step that fails with zero input files is
+failing before it reads any; that is what gave it away. Both steps are plain
+POSIX shell now. Do not reintroduce bash-isms into them, and do not trust a
+description of CI that has not been checked against an actual run.
 
 Beyond ERC, the schematic was checked connection by connection against the
 tables in `canfuel/docs/implementation-plan.md` by exporting the netlist — 97
