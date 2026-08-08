@@ -18,12 +18,19 @@ There is currently one board: `canfuel/`.
 
 ## Current state — read this first
 
-**The project skeleton exists; nothing is drawn yet.** `canfuel/` holds
-`canfuel.kicad_pro`, `canfuel.kicad_sch` (empty) and `canfuel.kicad_pcb` (board
-outline only), plus `docs/` and an empty `fab/gerbers/`. `lib/` is empty.
+**The schematic is drawn and ERC clean. The PCB is an outline and nothing
+else.** `canfuel/` holds `canfuel.kicad_pro`, `canfuel.kicad_sch` (complete,
+one A3 sheet) and `canfuel.kicad_pcb` (55 × 45 mm outline, no footprints
+placed), plus `docs/` and an empty `fab/gerbers/`. `lib/` is empty.
 
 CI is live and no longer a no-op: it finds both files and runs ERC and DRC on
 them for real. Both pass. From here on a red CI run means something.
+
+Beyond ERC, the schematic was checked connection by connection against the
+tables in `canfuel/docs/implementation-plan.md` by exporting the netlist — 97
+connections, 31 nets, all matching. ERC cannot tell RB2 from RB3; that check
+can. Section 4.6 of the plan says how to repeat it, and it is worth repeating
+after any edit to the sheet.
 
 **KiCad 10.0.5 is installed** at `C:\Program Files\KiCad\10.0`, and
 `C:\Program Files\KiCad\10.0\bin\` is on the user PATH. A shell started before
@@ -42,11 +49,14 @@ down; nothing has to be re-derived.
 2. **Check the prerequisites actually hold** before touching anything:
    `kicad-cli version` prints `10.x`, and the three `canfuel/canfuel.*` files
    are present.
-3. **Draw the schematic** per sections 3 and 4 of the plan. Section 3 is five
-   failure modes, each of which has killed a board of this kind before — work
-   through them deliberately rather than trusting recall.
-4. **`kicad-cli sch erc` until clean**, then commit.
-5. Then layout, DRC, `fab/`, purchase list — plan sections 5 to 7.
+3. **Lay out the PCB** per section 5 of the plan: net classes, then placement,
+   then routing. C7 against U1 pin 6 goes down before anything else is routed —
+   it is the one part with a numeric placement constraint.
+4. **`kicad-cli pcb drc` until clean**, then commit.
+5. Then `fab/` and the purchase list — plan sections 6 and 7.
+
+Before the layout can be finished, the enclosure has to be measured. The four
+M3 mounting holes are deliberately not in the board yet; see "Still open".
 
 The PIC datasheet is committed at `canfuel/docs/pic18f25k80-datasheet.pdf`
 (DS39977C, PIC18F66K80 family — the 28-pin diagram is on page 6). It is text
@@ -62,11 +72,12 @@ order of commits — is in `canfuel/docs/implementation-plan.md`. The outline:
 1. ~~Install KiCad, confirm `kicad-cli version` runs.~~ Done — 10.0.5.
 2. ~~Create the project: `canfuel/canfuel.kicad_pro` plus an empty schematic and
    board, committed on its own so CI going live is a visible step.~~ Done.
-3. Draw the schematic against the requirements below. The five things most
+3. ~~Draw the schematic against the requirements below. The five things most
    worth double-checking, because they are the ones that quietly kill a board:
    MCP2562 VIO and STBY, no 120 Ω termination fitted, 33 pF crystal loading,
-   both Micro-Fit headers wired in parallel, and 10 µF on VDDCORE/VCAP.
-4. `kicad-cli sch erc` until clean.
+   both Micro-Fit headers wired in parallel, and 10 µF on VDDCORE/VCAP.~~
+   Done — all five are on the sheet and repeated in its notes panel.
+4. ~~`kicad-cli sch erc` until clean.~~ Done, zero violations.
 5. Lay out the PCB inside ~55 × 45 mm, two layers, mostly through-hole.
 6. `kicad-cli pcb drc` until clean.
 7. Generate `fab/` (gerbers, BOM, CPL) and commit it.

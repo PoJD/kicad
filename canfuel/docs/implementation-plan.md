@@ -98,7 +98,9 @@ schematic and a board that is an outline and nothing else. ✔
 
 ## 3. The four things that quietly kill this board
 
-Check each one twice while drawing, and again during the ERC pass.
+Check each one twice while drawing, and again during the ERC pass. All four
+are now on the sheet as drawn, and all four are repeated as numbered notes in
+the schematic's own notes panel so they survive without this file.
 
 ### 3.1 MCP2562 VIO and STBY
 
@@ -188,22 +190,62 @@ debug jumper. Port A is tight; do not plan on more.
 
 ---
 
-## 4. Schematic
+## 4. Schematic — done
 
-One sheet is enough. Draw it in this order — power first means every later
-symbol lands on nets that already exist.
+One A3 sheet. A4 was tried first and everything collided; the parts count is
+low but the label count is not.
 
 ### 4.1 Nets
 
 ```
-+5V     SGND    CANH    CANL
-CAN_TX  CAN_RX  OSC1    OSC2
-~MCLR   PGC     PGD
-LED_PWR LED_CAN DBG_EN
++5V      SGND      CANH      CANL
+CAN_TX   CAN_RX    OSC1      OSC2
+~MCLR    PGC       PGD       VCAP
+LED_PWR  LED_CAN   DBG_EN
+LED_PWR_A          LED_CAN_A            (resistor to LED anode)
+CANTX2   CANRX2                         (RC6/RC7, the ECAN alternates)
+ESC_RA3  ESC_RA5   ESC_RC0 … ESC_RC5
+ESC_RB0  ESC_RB1   ESC_RB4   ESC_RB5
 ```
 
-Use `SGND` as the ground net name throughout, not `GND` — it is the display's
-sensor ground and the harness documentation calls it that.
+31 nets in total. `SGND` is the ground net name throughout, not `GND` — it is
+the display's sensor ground and the harness documentation calls it that.
+
+**The labels are global, not local.** On a single-sheet design either works
+electrically, but a local label comes out of the netlist as `/CANH` while the
+net classes in section 5.3 are written as `CANH`. A netclass pattern that
+silently matches nothing is a bad way to find out that CAN was routed at the
+default track width.
+
+### 4.1a Symbol and footprint choices
+
+| Ref     | Symbol                                | Footprint                                                    |
+| ------- | ------------------------------------- | ------------------------------------------------------------ |
+| U1      | `MCU_Microchip_PIC18:PIC18F25K80_ISS` | `Package_DIP:DIP-28_W7.62mm_Socket`                            |
+| U2      | `Interface_CAN_LIN:MCP2562-E-P`       | `Package_DIP:DIP-8_W7.62mm_Socket`                             |
+| Y1      | `Device:Crystal`                      | `Crystal:Crystal_HC49-U_Vertical`                              |
+| C1–C5   | `Device:C`                            | `Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P5.00mm`                   |
+| C6      | `Device:C_Polarized`                  | `Capacitor_THT:CP_Radial_D5.0mm_P2.50mm`                       |
+| C7      | `Device:C`                            | `Capacitor_THT:C_Disc_D7.5mm_W5.0mm_P5.00mm`                   |
+| R1–R5   | `Device:R`                            | `Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal` |
+| D1, D2  | `Device:LED`                          | `LED_THT:LED_D3.0mm`                                           |
+| J1, J2  | `Connector_Generic:Conn_02x02_Odd_Even` | `Connector_Molex:Molex_Micro-Fit_3.0_43045-0400_2x02_P3.00mm_Horizontal` |
+| J3      | `Connector_Generic:Conn_01x05`        | `Connector_PinHeader_2.54mm:PinHeader_1x05_P2.54mm_Vertical`   |
+| J4      | `Connector_Generic:Conn_02x08_Odd_Even` | `Connector_PinHeader_2.54mm:PinHeader_2x08_P2.54mm_Vertical`  |
+| JP1     | `Connector_Generic:Conn_01x02`        | `Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical`   |
+
+Two of those deserve a sentence, because both look wrong at a glance:
+
+- **U1 uses the `_ISS` (SSOP-28) symbol with a PDIP-28 footprint.** KiCad ships
+  only `_ISS` and `_IML` for this part; there is no SPDIP variant. All three
+  28-pin packages share one pinout, and the symbol's pins were checked
+  one by one against DS39977C page 6 — including that pin 6 is `Vcap` and that
+  there is no RA4. Nothing else in the library needed changing.
+- **J1/J2 are `Conn_02x02`, not `Conn_01x04`.** The Micro-Fit 43045-0400 is
+  physically two rows of two. Its pads are numbered 1, 2 across the first row
+  and 3, 4 across the second, so the plan's pin numbering in 3.4 carries over
+  unchanged — but the symbol has to be the two-row one or the pin numbers do
+  not line up with the footprint.
 
 ### 4.2 U1 — PIC18F25K80, PDIP-28
 
@@ -280,15 +322,31 @@ against the display's 0.5 A limit, so there is no thermal question to answer.
 ### 4.5 ERC
 
 ```
-kicad-cli sch erc --exit-code-violations canfuel/canfuel.kicad_sch
+kicad-cli sch erc --severity-all --exit-code-violations canfuel/canfuel.kicad_sch
 ```
 
-Iterate until it exits 0. Expect to have to place power flags on +5V and SGND,
-since neither is driven by a regulator output symbol on this board. Do not
-silence real warnings about unconnected pins — resolve them either by wiring
-the pin to J4 or by placing an explicit no-connect flag.
+Clean, zero violations at `--severity-all`. Three `PWR_FLAG`s were needed and
+are on the sheet: `+5V` and `SGND` are fed by connector pins rather than a
+regulator output, and `VCAP` is driven by the regulator inside U1, so ERC has
+no power-output pin to find on any of the three. No ERC severity was lowered
+and no check was disabled to get there.
 
-**Definition of done:** ERC clean, committed, CI green.
+### 4.6 Checking the schematic against this document
+
+ERC proves the sheet is electrically well formed. It cannot prove RB2 went to
+TXD rather than RB3. That was checked separately, by exporting the netlist
+
+```
+kicad-cli sch export netlist --format kicadsexpr -o canfuel.net canfuel/canfuel.kicad_sch
+```
+
+and comparing every `ref.pin -> net` against the tables in sections 3 and 4
+above: 97 connections, 31 nets, 22 components, no pin in the netlist that this
+document does not account for and none missing. Worth redoing after any edit
+to the sheet — it is the only check that tests intent rather than form.
+
+**Definition of done:** ERC clean, netlist matches this document, committed,
+CI green. ✔
 
 ---
 
