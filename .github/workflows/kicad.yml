@@ -33,29 +33,40 @@ jobs:
       - name: kicad-cli version
         run: kicad-cli version
 
-      # Skeleton: while the repo holds no schematic this passes doing nothing.
-      # As soon as the first .kicad_sch lands, it starts checking on its own.
+      # These two steps are plain POSIX shell on purpose. They used to open
+      # with "shopt -s globstar nullglob", which only exists in bash, and they
+      # failed on every run - including runs where the repo held no schematic
+      # at all, which is what gave the game away. Nothing here needs bash:
+      # `find` walks the tree and a `while read` loop consumes it.
+      #
+      # Every file is checked before the step gives up, rather than stopping
+      # at the first bad one, so a red run tells you everything that is wrong
+      # in one go.
       - name: ERC on every schematic
         run: |
-          shopt -s globstar nullglob
-          found=0
-          for sch in **/*.kicad_sch; do
-            found=1
+          find . -path ./.git -prune -o -name '*.kicad_sch' -print | sort > /tmp/sch.list
+          status=0
+          count=0
+          while IFS= read -r sch; do
+            count=$((count + 1))
             echo "--- ERC $sch"
-            kicad-cli sch erc --exit-code-violations "$sch"
-          done
-          [ "$found" = 1 ] || echo "no schematic in the repo, skipping"
+            kicad-cli sch erc --exit-code-violations "$sch" || status=1
+          done < /tmp/sch.list
+          [ "$count" -gt 0 ] || echo "no schematic in the repo, skipping"
+          exit $status
 
       - name: DRC on every board
         run: |
-          shopt -s globstar nullglob
-          found=0
-          for pcb in **/*.kicad_pcb; do
-            found=1
+          find . -path ./.git -prune -o -name '*.kicad_pcb' -print | sort > /tmp/pcb.list
+          status=0
+          count=0
+          while IFS= read -r pcb; do
+            count=$((count + 1))
             echo "--- DRC $pcb"
-            kicad-cli pcb drc --exit-code-violations "$pcb"
-          done
-          [ "$found" = 1 ] || echo "no board in the repo, skipping"
+            kicad-cli pcb drc --exit-code-violations "$pcb" || status=1
+          done < /tmp/pcb.list
+          [ "$count" -gt 0 ] || echo "no board in the repo, skipping"
+          exit $status
 
   hygiene:
     name: repository hygiene
