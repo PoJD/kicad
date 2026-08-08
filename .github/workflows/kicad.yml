@@ -19,6 +19,14 @@ jobs:
       # dies in "Post Run actions/checkout" with EACCES on _runner_file_commands.
       options: --user root
 
+    # ...but running as root also moves HOME to /root, where KiCad finds no
+    # symbol or footprint library table. It then reports every symbol on the
+    # sheet as lib_symbol_issues / footprint_link_issues - 64 warnings here -
+    # and --exit-code-violations turns those into a failed job. Point HOME at
+    # the image's own KiCad user so the standard libraries resolve.
+    env:
+      HOME: /home/kicad
+
     steps:
       - uses: actions/checkout@v4
 
