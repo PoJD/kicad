@@ -11,6 +11,10 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: kicad/kicad:8.0
+      # The image defaults to the unprivileged "kicad" user, but the runner
+      # creates /__w and its file-command files as root. Without this the job
+      # dies in "Post Run actions/checkout" with EACCES on _runner_file_commands.
+      options: --user root
 
     steps:
       - uses: actions/checkout@v4

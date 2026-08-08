@@ -28,6 +28,9 @@ also needs to be on PATH to reproduce what CI does.
 
 ### Suggested order of work
 
+The detailed version — reference designators, pin numbers, net classes and the
+order of commits — is in `canfuel/docs/implementation-plan.md`. The outline:
+
 1. Install KiCad 8, confirm `kicad-cli version` runs.
 2. Create the project: `canfuel/canfuel.kicad_pro` plus an empty schematic and
    board. Commit that skeleton on its own so CI going live is a visible step.
@@ -53,7 +56,12 @@ was verified with a multimeter, and the CAN pinout (C7/C8) is confirmed.
 - Exact 4-pin connector choice at GME for the car side of the harness.
 - Mechanical drawing of the enclosure and how the board mounts in the air vent.
   `canfuel/docs/` has no `mechanical.md` yet.
-- Whether the unused-pin escape header ends up worth the board area.
+- Whether the PIC18F25K80 in PDIP-28 exposes ENVREG/VDDCORE. If it does, the
+  internal regulator needs a 10 µF low-ESR cap that is not in the parts list
+  yet. Settle this from the datasheet before drawing the MCU.
+
+The escape header is no longer open — a 2×9 header costs about 2 % of the board
+area, so it goes on.
 
 ---
 
