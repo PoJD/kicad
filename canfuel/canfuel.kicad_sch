@@ -7041,7 +7041,7 @@
 		)
 		(property
 			"Footprint"
-			"Capacitor_THT:C_Disc_D7.5mm_W5.0mm_P5.00mm"
+			"Capacitor_SMD:C_1210_3225Metric_Pad1.33x2.70mm_HandSolder"
 			(at 99.06 76.2 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -8370,7 +8370,7 @@
 		)
 		(property
 			"Footprint"
-			"Capacitor_THT:CP_Radial_D5.0mm_P2.50mm"
+			"Capacitor_THT:CP_Radial_D5.0mm_P2.00mm"
 			(at 91.44 215.9 0)
 			(show_name no)
 			(do_not_autoplace no)

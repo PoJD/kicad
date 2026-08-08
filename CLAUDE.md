@@ -345,11 +345,29 @@ socketed and the firmware core is tested on the host against real logs (repo
 The complete BOM only falls out of the schematic, so **put the list together
 after the design**, not before. Buying twice is worse than buying later.
 
-- **From the drawer:** PIC18F25K80. Semiconductors do not degrade when kept dry.
-- **New:** crystal, all capacitors, resistors, connectors, sockets, LEDs.
-  Electrolytics age even without voltage. For the crystal the main argument is
-  that an unmarked part has an unknown load capacitance.
-- **New purchase:** MCP2562.
+- **From the drawer:** PIC18F25K80, the resistors and the LEDs. None of the
+  three degrades in dry storage. Meter the resistors before fitting and the
+  question is closed — R1 and R6 are current-limiting, not precision, so a few
+  percent of drift would not matter even if it existed.
+- **New:** crystal, all capacitors, connectors, sockets. The electrolytic ages
+  unpowered because its oxide layer does; the crystal because an unmarked part
+  has an unknown load capacitance, and that value sets C1/C2 (§3.2 of the plan).
+  Those two reasons do not generalise to passives that have neither an
+  electrolyte nor a hidden parameter.
+- **New purchase:** MCP2562-E/P, and **C7 = Murata GRM32DR71C106KA01L**,
+  10 µF X7R 16 V in 1210. That is one of the four parts Microchip lists in
+  DS39977C Table 2-1, so nothing about it needs arguing. It is the only SMD
+  component on the board and goes on the bottom layer under pin 6. The
+  aluminium electrolytic bought for C6 is **not** a substitute — §2.4 allows
+  ceramic or tantalum and nothing else — and a dipped tantalum was rejected
+  because its datasheet specifies no high-frequency ESR (plan §3.5).
+
+**LED colour is free, within reason.** D1/D2 run off port C through 1 kΩ, so
+at Vf ≈ 2 V they draw about 2.3 mA and at Vf ≈ 3.2 V (blue, white, true green)
+about 1.1 mA. Both sit far under the 25 mA limit, so any colour is electrically
+fine and only brightness changes. Whatever gets fitted, put it in the symbol's
+Value field — the BOM is generated from the schematic, so a wrong colour there
+becomes a wrong colour in `fab/`.
 
 Supporting documents in `canfuel/docs/`:
 

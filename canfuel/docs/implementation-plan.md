@@ -92,7 +92,7 @@ schematic and a board that is an outline and nothing else. ✔
 | C4        | 100 nF X7R                  | 2.54 mm THT                             | U2 VDD (pin 3)                         |
 | C5        | 100 nF X7R                  | 2.54 mm THT                             | U2 VIO (pin 5)                         |
 | C6        | 10 µF electrolytic, 16 V    | 5 mm THT radial                         | supply input; new part, they age       |
-| C7        | 10 µF low-ESR ceramic, 16 V | 2.54 mm THT                             | **mandatory** — U1 VDDCORE/VCAP, see 3.5 |
+| C7        | 10 µF X7R, 16 V, **Murata GRM32DR71C106KA01L** | 1210 SMD                 | **mandatory** — U1 VDDCORE/VCAP, see 3.5 |
 | C8        | 100 nF X7R                  | 2.54 mm THT                             | MCLR reset hold, behind JP2 — see 4.3a |
 | R1        | 10 kΩ                       | 1/4 W THT                               | MCLR pull-up                           |
 | R2        | 10 kΩ                       | 1/4 W THT                               | RA0 pull-down (debug jumper)           |
@@ -240,8 +240,24 @@ disable it. VDD stays at 5 V and the I/O is 5 V; only the core runs at 3.3 V.
 needs C7:
 
 - **10 µF, low-ESR (< 5 Ω)**, ceramic or tantalum, from pin 6 to SGND.
-  Table 31-4 gives CEFC as min 4.7 µF, typ 10 µF. The datasheet's own example
-  part is a TDK C3216X7R1C106K (10 µF X7R 16 V).
+  Table 31-4 gives CEFC as min 4.7 µF, typ 10 µF.
+
+  **The fitted part is a Murata GRM32DR71C106KA01L**, 10 µF X7R 16 V in 1210 —
+  one of the four Microchip names in Table 2-1, so no equivalence argument has
+  to be made at all. Its ESR is tens of milliohms against a 5 Ω limit, and X7R
+  in a 1210 case loses little enough to DC bias at 3.3 V to stay well clear of
+  the 4.7 µF minimum.
+
+  It is the only SMD part on the board, which is a deliberate trade. A dipped
+  tantalum was the obvious through-hole alternative and was rejected: the CA42
+  datasheet gives DF = 6 % at 100 Hz for the 10–68 µF range, which works out at
+  9.6 Ω there and **specifies no high-frequency ESR at all**. The real figure
+  is probably 2–3 Ω and `PoJD/can-pcb` has run one for years, but "probably"
+  is not a specification, and this is the component whose failure mode the rest
+  of this section describes as intermittent and nasty to debug. A tantalum
+  would also have to become `C_Polarized` with polarity on the silkscreen —
+  `can-pcb` drew its as a non-polarised `C-EU`, which worked only because the
+  builder knew which way round it went.
 - ⚠ **Pin 6 must never be connected to VDD.** That is the regulator's output,
   not an input. Tying it to 5 V destroys the part.
 - Keep the trace to the capacitor **under 6 mm** (datasheet: 0.25 inch).
@@ -329,8 +345,8 @@ default track width.
 | U2      | `Interface_CAN_LIN:MCP2562-E-P`       | `Package_DIP:DIP-8_W7.62mm_Socket`                             |
 | Y1      | `Device:Crystal`                      | `Crystal:Crystal_HC49-U_Vertical`                              |
 | C1–C5   | `Device:C`                            | `Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P5.00mm`                   |
-| C6      | `Device:C_Polarized`                  | `Capacitor_THT:CP_Radial_D5.0mm_P2.50mm`                       |
-| C7      | `Device:C`                            | `Capacitor_THT:C_Disc_D7.5mm_W5.0mm_P5.00mm`                   |
+| C6      | `Device:C_Polarized`                  | `Capacitor_THT:CP_Radial_D5.0mm_P2.00mm`                       |
+| C7      | `Device:C`                            | `Capacitor_SMD:C_1210_3225Metric_Pad1.33x2.70mm_HandSolder`    |
 | R1–R5   | `Device:R`                            | `Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal` |
 | D1, D2  | `Device:LED`                          | `LED_THT:LED_D3.0mm`                                           |
 | J1, J2  | `Connector_Generic:Conn_02x02_Odd_Even` | `Connector_Molex:Molex_Micro-Fit_3.0_43045-0400_2x02_P3.00mm_Horizontal` |
@@ -577,7 +593,10 @@ now four of them rather than one — do the placement against this list, not
 against the sketch:
 
 - **C7 hard against U1 pin 6, track under 6 mm** — DS39977C 2.4. Place it
-  before routing anything else.
+  before routing anything else. Being 1210 SMD it goes on **B.Cu directly
+  underneath pin 6**, which takes the track from "under 6 mm" to about zero and
+  costs no top-side area next to the socket. It is the only part on the bottom
+  layer; keep the ground pour clear of it there.
 - **C3 within 6 mm of U1 pin 20, C4 within 6 mm of U2 pin 3, C5 within 6 mm of
   U2 pin 5**, each on the same side of the board as its pin — 2.2.1. If a via
   is unavoidable the 6 mm still counts from pin to capacitor.
@@ -740,7 +759,7 @@ list, as of the re-review on 2026-08-08.
 | 2.2.1          | 100 nF ceramic low-ESR on every supply pin pair, within 6 mm, same side of the board |
 | 2.2.2          | Tank capacitor 4.7–47 µF where power traces exceed six inches — C6 |
 | 2.3, Fig 2-2   | The MCLR network of 4.3a: R1 ≤ 10 kΩ, R2 ≤ 470 Ω, C1 on a jumper, all within 6 mm of the pin |
-| 2.4, Table 2-1 | VCAP: 10 µF low-ESR (< 5 Ω), ceramic or tantalum, never to VDD, track under 6 mm; the 0.1 µF figure belongs to the LF part |
+| 2.4, Table 2-1 | VCAP: 10 µF low-ESR (< 5 Ω), ceramic or tantalum, never to VDD, track under 6 mm; the 0.1 µF figure belongs to the LF part; Table 2-1 names the fitted GRM32DR71C106KA01L |
 | 2.5            | No pull-ups, series diodes or capacitors on PGC/PGD; optional ≤ 100 Ω series resistor for ESD |
 | 2.6            | Oscillator placement: 12 mm, load caps at the crystal, grounded pour with nothing routed inside it, nothing on the far side under the crystal |
 | 2.7            | Unused I/O driven low as outputs, or 1–10 kΩ to VSS |
