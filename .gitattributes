@@ -1,0 +1,14 @@
+# Normalise line endings so Windows checkouts stop warning about CRLF.
+# KiCad 8 files are text, which is what makes their diffs readable.
+* text=auto eol=lf
+
+# Fabrication output is generated and must match what went to the fab
+# byte for byte.
+fab/** -text
+*.gbr -text
+*.drl -text
+
+# Binary, never touch.
+*.pdf binary
+*.step binary
+*.stp binary

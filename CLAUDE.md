@@ -160,5 +160,16 @@ Supporting documents: `canfuel/docs/bom-purchase.pdf`,
 
 ## Related repositories
 
-- `canfuel` — firmware
-- `mfd15` — display and TRI file
+Two siblings sit next to this one, with separate toolchains and separate GitHub
+remotes under `PoJD/`. The directory above them is deliberately not a git repo,
+so always run git inside one of the three.
+
+- `canfuel` — the firmware that runs on this board
+- `mfd15` — display configuration; its TRI file is final and verified on
+  hardware
+
+Neither of them constrains this board's design. The coupling in this project is
+between `canfuel` and `mfd15` (the layout of CAN frames 0x600–0x602), not here.
+What this repo owes them is only that the pinout in the requirements above —
+C6/C12 for power, C7/C8 for CAN — matches the harness described in
+`canfuel/docs/harness.md`.
