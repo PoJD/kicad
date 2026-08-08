@@ -35,11 +35,23 @@ failing before it reads any; that is what gave it away. Both steps are plain
 POSIX shell now. Do not reintroduce bash-isms into them, and do not trust a
 description of CI that has not been checked against an actual run.
 
-Beyond ERC, the schematic was checked connection by connection against the
-tables in `canfuel/docs/implementation-plan.md` by exporting the netlist — 97
-connections, 31 nets, all matching. ERC cannot tell RB2 from RB3; that check
-can. Section 4.6 of the plan says how to repeat it, and it is worth repeating
-after any edit to the sheet.
+**ERC is not enough on its own, so there is a second check.** Run it after any
+edit to the schematic:
+
+```
+python tools/check-netlist.py
+```
+
+It exports the netlist and compares all 97 connections against the tables in
+`canfuel/docs/implementation-plan.md`, which are transcribed into the script.
+Not a formality: swapping the labels on U1 pins 23 and 24 — CANTX and CANRX
+crossed at the MCU, a board that would never transmit — passes ERC with
+**zero** violations, because both are bidirectional pins and nothing about the
+sheet is malformed. `check-netlist.py` catches it. That case was tried, not
+assumed.
+
+When the design changes on purpose, update `EXPECT` in the script in the same
+commit. That is what the file is for.
 
 **KiCad 10.0.5 is installed** at `C:\Program Files\KiCad\10.0`, and
 `C:\Program Files\KiCad\10.0\bin\` is on the user PATH. A shell started before
@@ -48,30 +60,54 @@ concluding it is missing.
 
 ### Resume here — next session
 
-When asked to carry on, do this, in order. Everything needed is already written
-down; nothing has to be re-derived.
+Next up is the PCB layout, section 5 of the plan.
+
+**Say this before starting: the layout cannot be finished until the enclosure
+is measured.** The four M3 mounting holes are deliberately not in the board,
+because their positions are a guess until then, and they are the one thing
+that can force a respin. Placement and routing can all be done first — just do
+not generate `fab/` or order anything off a board whose holes are invented.
+
+Then, in order:
 
 1. **Read `canfuel/docs/implementation-plan.md` first.** It is the working
    document: reference designators, the full 28-pin PIC pinout, net names, net
    classes, placement plan and the order of commits. This file only summarises
    it.
-2. **Check the prerequisites actually hold** before touching anything:
-   `kicad-cli version` prints `10.x`, and the three `canfuel/canfuel.*` files
-   are present.
-3. **Lay out the PCB** per section 5 of the plan: net classes, then placement,
-   then routing. C7 against U1 pin 6 goes down before anything else is routed —
-   it is the one part with a numeric placement constraint.
+2. **Check the prerequisites hold**: `kicad-cli version` prints `10.x`, the
+   three `canfuel/canfuel.*` files are present, `python tools/check-netlist.py`
+   is clean.
+3. **Net classes first** (plan 5.3), then **placement** (5.2), then routing.
+   C7 goes against U1 pin 6 before anything else is routed — the datasheet caps
+   that track at 6 mm and it is the only part with a numeric constraint.
 4. **`kicad-cli pcb drc` until clean**, then commit.
 5. Then `fab/` and the purchase list — plan sections 6 and 7.
 
-Before the layout can be finished, the enclosure has to be measured. The four
-M3 mounting holes are deliberately not in the board yet; see "Still open".
+### Working with the tools here
 
-The PIC datasheet is committed at `canfuel/docs/pic18f25k80-datasheet.pdf`
-(DS39977C, PIC18F66K80 family — the 28-pin diagram is on page 6). It is text
-based, so `pdftotext -layout` works on it; that is how the pinout in the plan
-was verified, and it is the way to settle any further pin question rather than
-answering from memory.
+Things that cost time to work out the first time:
+
+- **`kicad-cli` is at `C:\Program Files\KiCad\10.0\bin\kicad-cli.exe`.** That
+  directory is on the user PATH, but a shell started before the PATH was edited
+  will not see it. Call it by full path rather than concluding it is missing.
+- **Its console output is localised** — on this machine it reports in Czech
+  ("Nalezeno 0 porušení"). Do not parse it; use the exit code, which
+  `--exit-code-violations` makes meaningful, or `--format json`.
+- **It drops `*-erc.rpt` / `*-drc.rpt` next to the working directory** unless
+  `-o` points elsewhere. Gitignored, but pass `-o` to a temp path anyway.
+- **The schematic is edited in the KiCad GUI from here on.** It was originally
+  emitted by a throwaway generator script, which is deliberately *not* in the
+  repo: re-running it would silently overwrite hand edits. `canfuel.kicad_sch`
+  is the source of truth.
+- **To look at a sheet or board without the GUI**, export SVG and render it:
+  `kicad-cli sch export svg`, then headless Chrome with `--screenshot` on a
+  one-line HTML wrapper around the SVG. Worth doing — the first A4 draft was
+  ERC-clean and visually unreadable, with note text straight through the parts.
+- **The PIC datasheet** is at `canfuel/docs/pic18f25k80-datasheet.pdf`
+  (DS39977C; the 28-pin diagram is on page 6). It is text based, so
+  `pdftotext -layout` works. Settle any pin question there, not from memory —
+  though note the KiCad symbol's pinout has now been checked against it and
+  agrees, including pin 6 being `Vcap` and there being no RA4.
 
 ### Suggested order of work
 
@@ -101,11 +137,13 @@ was verified with a multimeter, and the CAN pinout (C7/C8) is confirmed.
 
 ### Still open
 
-- Exact 4-pin connector choice at GME for the car side of the harness.
-- Mechanical drawing of the enclosure and how the board mounts in the air vent.
-  `canfuel/docs/` has no `mechanical.md` yet. This is the only open question
-  that can force a respin — the mounting hole positions are a guess until the
-  enclosure is measured.
+- **Blocking the layout: the enclosure.** No mechanical drawing, no
+  `canfuel/docs/mechanical.md`, no measurements of how the board mounts in the
+  air vent. The four M3 mounting holes are therefore not in the board yet. This
+  is the only open question that can force a respin, and it now sits directly
+  in front of the next piece of work — measure before ordering, not after.
+- Exact 4-pin connector choice at GME for the car side of the harness. Affects
+  the loom only, not this board.
 
 The escape header is no longer open — a 2×8 header costs about 4 % of the board
 area, so it goes on.

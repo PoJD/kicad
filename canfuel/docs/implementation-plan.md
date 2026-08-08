@@ -333,17 +333,26 @@ and no check was disabled to get there.
 
 ### 4.6 Checking the schematic against this document
 
-ERC proves the sheet is electrically well formed. It cannot prove RB2 went to
-TXD rather than RB3. That was checked separately, by exporting the netlist
+ERC proves the sheet is electrically well formed. It does not prove RB2 went
+to TXD rather than RB3 — that was demonstrated, not assumed: swapping the two
+labels produces a board that could never transmit, and ERC reports **zero**
+violations on it, because both pins are bidirectional and nothing is
+malformed.
+
+So there is a second check, and it is in the repository:
 
 ```
-kicad-cli sch export netlist --format kicadsexpr -o canfuel.net canfuel/canfuel.kicad_sch
+python tools/check-netlist.py
 ```
 
-and comparing every `ref.pin -> net` against the tables in sections 3 and 4
-above: 97 connections, 31 nets, 22 components, no pin in the netlist that this
-document does not account for and none missing. Worth redoing after any edit
-to the sheet — it is the only check that tests intent rather than form.
+It exports the netlist and compares every `ref.pin -> net` against the tables
+in sections 3 and 4 above — 97 connections, 31 nets, 22 components, no pin in
+the netlist unaccounted for and none missing. It catches the RB2/RB3 swap
+above. Needs `kicad-cli` on PATH; exits nonzero on any mismatch.
+
+Run it after any edit to the sheet. When the design changes on purpose, update
+`EXPECT` in the script in the same commit — keeping the two in step is the
+point of the file, not a chore it imposes.
 
 **Definition of done:** ERC clean, netlist matches this document, committed,
 CI green. ✔
