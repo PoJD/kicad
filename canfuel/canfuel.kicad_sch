@@ -4129,7 +4129,7 @@
 		(uuid "a757ac91-f230-58b5-b619-eada6affcb2f")
 	)
 	(global_label
-		"LED_PWR"
+		"ESC_RA1"
 		(shape bidirectional)
 		(at 193.04 109.22 180)
 		(effects
@@ -4165,7 +4165,7 @@
 		(uuid "9b4abd2f-b0bf-56ad-9999-c967a6e23213")
 	)
 	(global_label
-		"LED_CAN"
+		"ESC_RA2"
 		(shape bidirectional)
 		(at 193.04 111.76 180)
 		(effects
@@ -4417,7 +4417,7 @@
 		(uuid "7383ac5a-0d62-5ad4-a1e6-56963d87c88a")
 	)
 	(global_label
-		"ESC_RC0"
+		"LED_PWR"
 		(shape bidirectional)
 		(at 238.76 129.54 0)
 		(effects
@@ -4453,7 +4453,7 @@
 		(uuid "9e6c6015-24f4-51f8-a33b-0d1e2bcbccda")
 	)
 	(global_label
-		"ESC_RC1"
+		"LED_CAN"
 		(shape bidirectional)
 		(at 238.76 132.08 0)
 		(effects
@@ -7434,7 +7434,7 @@
 		(uuid "424755d5-e3cd-5d95-ae97-88e27ad35fba")
 	)
 	(global_label
-		"~{MCLR}"
+		"MCLR_RC"
 		(shape bidirectional)
 		(at 127 133.35 270)
 		(effects
@@ -10029,7 +10029,7 @@
 		(uuid "f29e2602-5a51-573b-ba15-160288d3aea2")
 	)
 	(global_label
-		"ESC_RA3"
+		"ESC_RA1"
 		(shape bidirectional)
 		(at 363.22 157.48 180)
 		(effects
@@ -10101,7 +10101,7 @@
 		(uuid "5a0e5983-ca48-500f-bfaa-244b80560e45")
 	)
 	(global_label
-		"ESC_RA5"
+		"ESC_RA2"
 		(shape bidirectional)
 		(at 363.22 160.02 180)
 		(effects
@@ -10173,7 +10173,7 @@
 		(uuid "781c7934-b55e-5468-8835-132f79c1d18b")
 	)
 	(global_label
-		"ESC_RC0"
+		"ESC_RA3"
 		(shape bidirectional)
 		(at 363.22 162.56 180)
 		(effects
@@ -10245,7 +10245,7 @@
 		(uuid "6145e294-c6cc-5f71-be4f-55d520977883")
 	)
 	(global_label
-		"ESC_RC1"
+		"ESC_RA5"
 		(shape bidirectional)
 		(at 363.22 165.1 180)
 		(effects
@@ -11022,7 +11022,7 @@
 		)
 	)
 	(text
-		"NOTES\n1  U2 VIO (pin 5) to +5V and STBY (pin 8) to SGND are both\n   mandatory. Left off, the transceiver sits in standby and\n   sends nothing while every other measurement looks correct.\n2  C7 is 10 uF low-ESR on VDDCORE/VCAP (U1 pin 6) and is not\n   optional - the core regulator is unstable without it.\n   Pin 6 is not a port pin and must NEVER go to +5V. Keep the\n   PCB track to C7 under 6 mm. DS39977C 2.4 and table 31-4.\n3  R5 = 120R, DO NOT FIT. The car's bus is already terminated\n   at both ends and a third resistor overloads it. Footprint\n   and a \"120R DNF\" silkscreen legend only.\n4  C1 = C2 = 33 pF C0G for a 32 pF crystal - not 22 pF."
+		"NOTES\n1  U2 VIO (pin 5) to +5V and STBY (pin 8) to SGND are both\n   mandatory. Left off, the transceiver sits in standby and\n   sends nothing while every other measurement looks correct.\n2  C7 is 10 uF low-ESR on VDDCORE/VCAP (U1 pin 6) and is not\n   optional - the core regulator is unstable without it.\n   Pin 6 is not a port pin and must NEVER go to +5V. Keep the\n   PCB track to C7 under 6 mm. DS39977C 2.4 and table 31-4.\n3  R5 = 120R, DO NOT FIT. The car's bus is already terminated\n   at both ends and a third resistor overloads it. Footprint\n   and a \"120R DNF\" silkscreen legend only.\n4  C1 = C2 = 33 pF C0G, not 22 pF. Y1 is CL = 20 pF (crystal\n   datasheet: 20 pF std), and C = 2 x (CL - Cstray) with\n   Cstray about 5 pF gives 30 pF, so 33 pF from the E12 row."
 		(exclude_from_sim no)
 		(at 25.4 247.65 0)
 		(effects
@@ -11036,7 +11036,7 @@
 	(text
 		"\n5  J1 and J2 are wired in parallel on the same four nets, so\n   the cables are interchangeable and the board passes CAN\n   through even with U1 out of its socket. Micro-Fit pin\n   1 = +5V, 2 = SGND, 3 = CANH, 4 = CANL, fixed by the harness.\n6  Decoupling: C3 at U1 pin 20, C4 at U2 pin 3, C5 at U2 pin 5.\n7  No pull-ups, series diodes or capacitors on PGC/PGD - they\n   interfere with the programmer. DS39977C 2.5.\n8  J4 brings out every unused I/O pin plus power so a design\n   error can be patched with a wire. CANTX2/CANRX2 are the\n   ECAN alternates on RC6/RC7.\n9  Connections on this sheet are made by net label, not wire."
 		(exclude_from_sim no)
-		(at 177.8 247.65 0)
+		(at 137.16 247.65 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -11044,6 +11044,507 @@
 			(justify left top)
 		)
 		(uuid "a22d417f-d46e-5c84-800a-8f2e3d67ab2d")
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 127 172.72 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "9eaece09-1226-520d-b23a-867c2d545e9b")
+		(property
+			"Reference"
+			"R6"
+			(at 129.03 172.72 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Value"
+			"470R"
+			(at 127 172.72 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Footprint"
+			"Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal"
+			(at 127 172.72 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Datasheet"
+			"~"
+			(at 127 172.72 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Description"
+			""
+			(at 127 172.72 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin
+			"1"
+			(uuid "a5ff0d49-0192-52fc-9e83-fed95ca74062")
+		)
+		(pin
+			"2"
+			(uuid "36541584-6732-5ca0-8ec6-5065b7ff227a")
+		)
+		(instances
+			(project
+				"canfuel"
+				(path
+					"/ecdf7c05-c097-413b-a955-f367e2f20cdf"
+					(reference "R6")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 127 168.91)
+			(xy 127 166.37)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "300e79cf-17b3-5c1d-b5ca-a2bf94998080")
+	)
+	(global_label
+		"MCLR_RC"
+		(shape bidirectional)
+		(at 127 166.37 90)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "c5354149-5841-50c8-8e5a-dc0334756c69")
+		(property
+			"Intersheetrefs"
+			"${INTERSHEET_REFS}"
+			(at 127 166.37 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 127 176.53)
+			(xy 127 179.07)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "eb2f08b5-a177-5057-b962-e65ac9f65993")
+	)
+	(global_label
+		"~{MCLR}"
+		(shape bidirectional)
+		(at 127 179.07 270)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "ffc95fa9-d9b4-5beb-8b2a-fef7a6733a91")
+		(property
+			"Intersheetrefs"
+			"${INTERSHEET_REFS}"
+			(at 127 179.07 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Connector_Generic:Conn_01x02")
+		(at 152.4 172.72 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "39b5b946-abec-517d-936f-8824c4a59993")
+		(property
+			"Reference"
+			"JP2"
+			(at 152.4 170.18 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Value"
+			"MCLR"
+			(at 152.4 177.8 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Footprint"
+			"Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical"
+			(at 152.4 172.72 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Datasheet"
+			"~"
+			(at 152.4 172.72 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Description"
+			""
+			(at 152.4 172.72 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin
+			"1"
+			(uuid "838a1996-1ea1-550d-9315-377fe355e17f")
+		)
+		(pin
+			"2"
+			(uuid "68f06ebc-9e94-5928-b281-d88e88951cf1")
+		)
+		(instances
+			(project
+				"canfuel"
+				(path
+					"/ecdf7c05-c097-413b-a955-f367e2f20cdf"
+					(reference "JP2")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 147.32 172.72)
+			(xy 144.78 172.72)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "2b6a9a63-719e-58dc-9d2b-b82e263a6783")
+	)
+	(global_label
+		"MCLR_RC"
+		(shape bidirectional)
+		(at 144.78 172.72 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "2495136d-71c8-5b68-b69d-d2922cee9f05")
+		(property
+			"Intersheetrefs"
+			"${INTERSHEET_REFS}"
+			(at 144.78 172.72 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 147.32 175.26)
+			(xy 144.78 175.26)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "49f611a5-b69d-55d6-a686-a1726d6b5634")
+	)
+	(global_label
+		"MCLR_C"
+		(shape bidirectional)
+		(at 144.78 175.26 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "ef15f4b3-2e83-5e95-b053-19a61a342055")
+		(property
+			"Intersheetrefs"
+			"${INTERSHEET_REFS}"
+			(at 144.78 175.26 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C")
+		(at 172.72 172.72 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "62193f8d-a80c-5cf2-8597-bb8322f12d2d")
+		(property
+			"Reference"
+			"C8"
+			(at 173.36 170.18 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Value"
+			"100n"
+			(at 173.36 175.26 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Footprint"
+			"Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P5.00mm"
+			(at 172.72 172.72 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Datasheet"
+			"~"
+			(at 172.72 172.72 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property
+			"Description"
+			""
+			(at 172.72 172.72 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin
+			"1"
+			(uuid "0eff48ef-22d7-59b9-bab4-070ab74dcc66")
+		)
+		(pin
+			"2"
+			(uuid "9362f084-5a4f-57b7-864a-af0fcdf5f40f")
+		)
+		(instances
+			(project
+				"canfuel"
+				(path
+					"/ecdf7c05-c097-413b-a955-f367e2f20cdf"
+					(reference "C8")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 172.72 168.91)
+			(xy 172.72 166.37)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "0843cdd0-0678-52e3-8bf8-33614ac78268")
+	)
+	(global_label
+		"MCLR_C"
+		(shape bidirectional)
+		(at 172.72 166.37 90)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "3a475666-f819-5b70-b22b-431a98a7ce78")
+		(property
+			"Intersheetrefs"
+			"${INTERSHEET_REFS}"
+			(at 172.72 166.37 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 172.72 176.53)
+			(xy 172.72 179.07)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "a7f0274b-43a7-58d5-ad70-434b14bd8c2f")
+	)
+	(global_label
+		"SGND"
+		(shape bidirectional)
+		(at 172.72 179.07 270)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "a491ac35-0e34-550a-b16b-037e94b0ecc6")
+		(property
+			"Intersheetrefs"
+			"${INTERSHEET_REFS}"
+			(at 172.72 179.07 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(text
+		"10 D1 and D2 sit on RC0 and RC1, not on port A.\n   DS39977C page 541 allows PORTA<5:0> only 2 mA\n   sourced or sunk, against 25 mA on PORTB and\n   PORTC. RA1 and RA2 went to J4 instead.\n11 MCLR carries the full network of DS39977C\n   figure 2-2: R1 10k to +5V, R6 470R in series\n   into pin 1, C8 100n to SGND behind JP2. Pull\n   the JP2 jumper before programming - note 7."
+		(exclude_from_sim no)
+		(at 215.9 247.65 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left top)
+		)
+		(uuid "fa0ab827-a543-57f6-91c5-21c6721797ce")
 	)
 	(sheet_instances
 		(path

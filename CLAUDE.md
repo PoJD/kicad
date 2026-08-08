@@ -12,7 +12,47 @@ open files written by a newer major version, so `kicad/kicad:10.0` in
 `.github/workflows/kicad.yml` is not incidental — bump it together with the
 installed KiCad, never separately.
 
-There is currently one board: `canfuel/`.
+There is currently one board: `canfuel/`. Before changing anything electrical,
+read **Sourcing hardware facts** below — it governs where every number in this
+repository is allowed to come from.
+
+---
+
+## Sourcing hardware facts — manufacturer datasheets only
+
+**Every hardware fact in this repository comes from the manufacturer's
+datasheet for the exact part, and from nothing else.** Not forum posts, not
+application notes summarised from memory, not "this is what everyone fits", not
+a value that worked on a previous project, and not the recollection of whoever
+is at the keyboard — including the model's.
+
+When the datasheet does not settle a question, **ask the maintainer**. Do not
+fill the gap with a plausible number and move on. A guess that looks like a
+specification is worse than an open question, because the next person cannot
+tell the two apart.
+
+In practice this means:
+
+- **Quote the source.** Every constraint written into the plan or the schematic
+  notes names its document and section — `DS39977C §2.4`, `DS20005167C §1.7.9`.
+  A number without a citation is a number nobody can re-check.
+- **Keep the datasheet in the repository.** `canfuel/docs/` holds a PDF for
+  every active part. If a part has no datasheet on disk, that is the first
+  thing to fix, not a detail to note.
+- **A conclusion and its justification are checked separately.** A right value
+  can rest on a wrong reason, and then it stops being right the moment anything
+  around it changes. The 33 pF crystal capacitors were exactly this case: the
+  value survived re-derivation, the stated load capacitance did not.
+- **Absolute Maximum Ratings outrank the DC characteristics tables**, and both
+  outrank what a part is observed to tolerate. A design that works on the bench
+  outside absolute maximums is still a broken design.
+- **Where the datasheet is deliberately not followed**, say so and say why, in
+  the plan, next to the citation. An unexplained deviation is indistinguishable
+  from an oversight six months later.
+
+Facts about the *car* — the display's connector pinout, that the bus is already
+terminated — are not datasheet questions and are settled by measurement instead.
+Those are marked as measured where they appear. The rule above is about parts.
 
 ---
 
@@ -25,6 +65,22 @@ placed), plus `docs/` and an empty `fab/gerbers/`. `lib/` is empty.
 
 CI is live and green: it finds both files and runs ERC and DRC on them for
 real. From here on a red run means something.
+
+**The schematic was re-reviewed against the datasheets on 2026-08-08** and
+three things changed. Do not undo them without reading plan §3.6, §3.2 and
+§4.3a first:
+
+- **The LEDs moved from RA1/RA2 to RC0/RC1.** RA1 and RA2 are inside
+  PORTA<5:0>, whose absolute maximum is 2 mA sourced or sunk; 1 kΩ from a 5 V
+  rail is about 2.2 mA. RA1/RA2 took the escape-header slots RC0/RC1 vacated.
+- **MCLR gained R6 470 Ω, C8 100 nF and jumper JP2** — the full Figure 2-2
+  network. The old note "no capacitor on this pin" was §2.5 (which is about
+  PGC and PGD) misapplied to MCLR.
+- **The crystal's load capacitance is 20 pF, not 32 pF.** The 33 pF capacitors
+  were right; the reason recorded for them was not, and 32 pF would have
+  called for 56 pF.
+
+The MCP2562 had no datasheet in the repository at all until then. It does now.
 
 Note that this repository's CI had **never** actually passed before
 2026-08-08. The two check steps opened with `shopt -s globstar nullglob`, a
@@ -42,13 +98,18 @@ edit to the schematic:
 python tools/check-netlist.py
 ```
 
-It exports the netlist and compares all 97 connections against the tables in
+It exports the netlist and compares all 103 connections against the tables in
 `canfuel/docs/implementation-plan.md`, which are transcribed into the script.
 Not a formality: swapping the labels on U1 pins 23 and 24 — CANTX and CANRX
 crossed at the MCU, a board that would never transmit — passes ERC with
 **zero** violations, because both are bidirectional pins and nothing about the
 sheet is malformed. `check-netlist.py` catches it. That case was tried, not
 assumed.
+
+It carries a second load too. This sheet connects everything by global label
+and has ERC's *Global label only appears once in the schematic* check switched
+off, so a mistyped label would quietly split a net in two without a violation.
+`check-netlist.py` is what would catch that.
 
 When the design changes on purpose, update `EXPECT` in the script in the same
 commit. That is what the file is for.
@@ -85,6 +146,13 @@ Then, in order:
 
 ### Working with the tools here
 
+**Run the checks without asking.** `.claude/settings.local.json` pre-approves
+`python`, `kicad-cli` (both on PATH and by full path), `pdftotext`, headless
+Chrome for rendering, `curl`, and the ordinary read-only shell tools. ERC, DRC,
+`check-netlist.py` and an SVG render are meant to be run freely and often —
+stopping to ask permission for a verification step is how verification stops
+happening. The file is gitignored, so it is per-machine.
+
 Things that cost time to work out the first time:
 
 - **`kicad-cli` is at `C:\Program Files\KiCad\10.0\bin\kicad-cli.exe`.** That
@@ -117,11 +185,12 @@ order of commits — is in `canfuel/docs/implementation-plan.md`. The outline:
 1. ~~Install KiCad, confirm `kicad-cli version` runs.~~ Done — 10.0.5.
 2. ~~Create the project: `canfuel/canfuel.kicad_pro` plus an empty schematic and
    board, committed on its own so CI going live is a visible step.~~ Done.
-3. ~~Draw the schematic against the requirements below. The five things most
-   worth double-checking, because they are the ones that quietly kill a board:
+3. ~~Draw the schematic against the requirements below. The things most worth
+   double-checking, because they are the ones that quietly kill a board:
    MCP2562 VIO and STBY, no 120 Ω termination fitted, 33 pF crystal loading,
-   both Micro-Fit headers wired in parallel, and 10 µF on VDDCORE/VCAP.~~
-   Done — all five are on the sheet and repeated in its notes panel.
+   both Micro-Fit headers wired in parallel, 10 µF on VDDCORE/VCAP, and the
+   LEDs off port A.~~ Done — all of them are on the sheet and repeated in its
+   notes panel.
 4. ~~`kicad-cli sch erc` until clean.~~ Done, zero violations.
 5. Lay out the PCB inside ~55 × 45 mm, two layers, mostly through-hole.
 6. `kicad-cli pcb drc` until clean.
@@ -170,18 +239,33 @@ behind the MFD15 display, powered by 5 V taken straight from the display.
 ### MCU
 
 - **PIC18F25K80** in PDIP-28, in a **narrow socket (7.62 mm)**.
-- 16 MHz crystal, load capacitance 32 pF → fit **33 pF** (verified on a
-  previous project, not 22 pF).
+- 16 MHz crystal, load capacitance **20 pF** (crystal datasheet: 20 pF standard,
+  8–33 pF available) → fit **33 pF**, not 22 pF. `C = 2·(CL − Cstray)` with
+  about 5 pF of stray gives 30 pF, and 33 pF is the nearest E12 value. No
+  series resistor on OSC2. Plan §3.2 has the working.
 - ⚠ **Pin 6 is VDDCORE/VCAP, not a port pin** — the 28-pin K80 has no RA4 and
   no ENVREG. The core regulator is permanently enabled on the F (not LF) part
   and needs **10 µF low-ESR to ground within 6 mm of pin 6**. Never tie pin 6
   to VDD. Datasheet DS39977C §2.4 and Table 31-4.
+- ⚠ **RA0–RA3 and RA5 can only take 2 mA**, sourced or sunk — DS39977C page
+  541, against 25 mA for port B and port C. Nothing that draws current goes on
+  those pins. It is why the LEDs are on RC0/RC1 and why the escape header
+  labels the port A pins as weak. The DC characteristics table looks like it
+  permits 3 mA; absolute maximums win.
+- **MCLR** carries the full network of DS39977C Figure 2-2: R1 10 kΩ to +5V,
+  R6 470 Ω in series into pin 1, C8 100 nF to ground behind jumper **JP2**.
+  JP2 comes off before programming and goes back after — the datasheet asks
+  for the capacitor in §2.3 and for the jumper in the same paragraph.
 
 ### Transceiver
 
 - **MCP2562-E/P** in a DIP-8 socket.
 - ⚠ **Pin VIO to VDD, pin STBY to ground.** Otherwise it stays in standby and
   transmits nothing. This is the easiest mistake to make in the whole design.
+  STBY is not neutral when floating: DS20005167C §1.7.9 gives it an internal
+  pull-up to VIO, typically 660 kΩ at 5 V, so an unconnected pin 8 reads high
+  and §1.1.2 puts the transmitter to sleep. Tie it hard — no pull-down
+  resistor that assembly could omit.
 
 ### Power
 
@@ -210,11 +294,14 @@ intentional, not an oversight.
 
 ### Everything else
 
-- **LEDs:** two (power, CAN status), active only when the debug jumper on RA0
-  is fitted. Nothing lights up in the car.
+- **LEDs:** two (power, CAN status) on **RC0 and RC1** through 1 kΩ, active only
+  when the debug jumper on RA0 is fitted. Nothing lights up in the car. They
+  are on port C rather than port A because of the 2 mA limit above — do not
+  move them back.
 - **ICSP:** 5-pin 2.54 mm header for a PICkit.
 - **Escape hatch:** bring the PIC's unused pins out to a 2.54 mm header so a
-  design error can be patched with a wire.
+  design error can be patched with a wire. RA1, RA2, RA3 and RA5 are on it and
+  are the weak 2 mA pins; the silkscreen has to say so.
 - **Dimensions:** ~55 × 45 mm, two layers, mostly through-hole. Enclosure for
   the air vent 6.5 × 5.5 cm, depth max ~3 cm.
 
@@ -255,7 +342,9 @@ Supporting documents in `canfuel/docs/`:
 - `implementation-plan.md` — the working document for the design
 - `harness.md` — building and testing the loom
 - `pic18f25k80-datasheet.pdf` — Microchip DS39977C, PIC18F66K80 family
-- `crystal-datasheet.pdf`, `bom-purchase.pdf` — supplied PDFs
+- `mcp2562-datasheet.pdf` — Microchip DS20005167C, MCP2561/2
+- `crystal-datasheet.pdf` — HC-49U/S DIP quartz crystal resonator, supplied
+- `bom-purchase.pdf` — supplied PDF
 
 ---
 
