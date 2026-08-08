@@ -56,11 +56,7 @@ was verified with a multimeter, and the CAN pinout (C7/C8) is confirmed.
 - Exact 4-pin connector choice at GME for the car side of the harness.
 - Mechanical drawing of the enclosure and how the board mounts in the air vent.
   `canfuel/docs/` has no `mechanical.md` yet.
-- Whether the PIC18F25K80 in PDIP-28 exposes ENVREG/VDDCORE. If it does, the
-  internal regulator needs a 10 µF low-ESR cap that is not in the parts list
-  yet. Settle this from the datasheet before drawing the MCU.
-
-The escape header is no longer open — a 2×9 header costs about 2 % of the board
+The escape header is no longer open — a 2×8 header costs about 4 % of the board
 area, so it goes on.
 
 ---
@@ -87,6 +83,10 @@ behind the MFD15 display, powered by 5 V taken straight from the display.
 - **PIC18F25K80** in PDIP-28, in a **narrow socket (7.62 mm)**.
 - 16 MHz crystal, load capacitance 32 pF → fit **33 pF** (verified on a
   previous project, not 22 pF).
+- ⚠ **Pin 6 is VDDCORE/VCAP, not a port pin** — the 28-pin K80 has no RA4 and
+  no ENVREG. The core regulator is permanently enabled on the F (not LF) part
+  and needs **10 µF low-ESR to ground within 6 mm of pin 6**. Never tie pin 6
+  to VDD. Datasheet DS39977C §2.4 and Table 31-4.
 
 ### Transceiver
 

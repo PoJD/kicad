@@ -14,12 +14,26 @@ Read the four killer checks in section 3 before drawing anything.
 KiCad is not installed on the development machine yet. Nothing below can be
 done without it.
 
-- [ ] Install **KiCad 8** (same major version as the CI image `kicad/kicad:8.0`).
-- [ ] Add `kicad-cli.exe` to PATH; `kicad-cli version` must run in a plain shell.
-- [ ] Confirm `kicad-cli sch erc --help` and `kicad-cli pcb drc --help` work —
-      these are the two commands CI runs.
+- [ ] Install **KiCad 8** from <https://www.kicad.org/download/windows/> — the
+      single `kicad-8.0.x-x86_64.exe` installer. Match the major version to the
+      CI image `kicad/kicad:8.0`. Accept the default component selection; the
+      GUI, `kicad-cli.exe` and the standard symbol/footprint libraries all come
+      from the same installer. There is no separate CLI download.
+- [ ] **Add the bin directory to PATH by hand.** The Windows installer does not
+      do it (KiCad issue #19639), so `kicad-cli` is not on PATH after a default
+      install even though the binary is there:
 
-**Definition of done:** `kicad-cli version` prints an `8.x` version locally.
+      C:\Program Files\KiCad\8.0\bin
+
+      Without this, `kicad-cli` only works inside the "KiCad Command Prompt"
+      shortcut from the Start menu — which is fine interactively but useless
+      for a script or a git hook.
+- [ ] Confirm in a *fresh* shell: `kicad-cli version` prints `8.x`, and
+      `kicad-cli sch erc --help` and `kicad-cli pcb drc --help` both run. Those
+      are the two commands CI runs.
+
+**Definition of done:** `kicad-cli version` prints an `8.x` version in a plain
+PowerShell window that was opened after the PATH change.
 
 ---
 
@@ -72,7 +86,7 @@ schematic and an empty board.
 | C4        | 100 nF X7R                  | 2.54 mm THT                             | U2 VDD (pin 3)                         |
 | C5        | 100 nF X7R                  | 2.54 mm THT                             | U2 VIO (pin 5)                         |
 | C6        | 10 µF electrolytic, 16 V    | 5 mm THT radial                         | supply input; new part, they age       |
-| C7        | 10 µF low-ESR, 16 V         | 5 mm THT radial                         | **only if U1 uses the internal regulator** — see 3.5 |
+| C7        | 10 µF low-ESR ceramic, 16 V | 2.54 mm THT                             | **mandatory** — U1 VDDCORE/VCAP, see 3.5 |
 | R1        | 10 kΩ                       | 1/4 W THT                               | MCLR pull-up                           |
 | R2        | 10 kΩ                       | 1/4 W THT                               | RA0 pull-down (debug jumper)           |
 | R3, R4    | 1 kΩ                        | 1/4 W THT                               | LED series resistors                   |
@@ -81,7 +95,7 @@ schematic and an empty board.
 | D2        | LED yellow                  | 3 mm THT                                | CAN status                             |
 | J1, J2    | Molex Micro-Fit 3.0 43045-0400 | right-angle, board mount             | wired in parallel — see 3.4            |
 | J3        | 5-pin header 2.54 mm        | 1×5                                     | ICSP                                   |
-| J4        | 2×9 header 2.54 mm          | 2×9                                     | escape hatch — see 5.4                 |
+| J4        | 2×8 header 2.54 mm          | 2×8                                     | escape hatch — see 5.4                 |
 | JP1       | 2-pin header + jumper       | 1×2                                     | debug enable on RA0                    |
 | —         | DIP-28 socket, narrow       |                                         | new                                    |
 | —         | DIP-8 socket                |                                         | new                                    |
@@ -147,19 +161,36 @@ board is a CAN pass-through even with U1 pulled out of its socket.
 Fix this pin order once, here, and keep the harness (`harness.md`) consistent
 with it. Getting +5V and CANH swapped is a dead transceiver.
 
-### 3.5 Blocking check — PIC18F25K80 core supply
+### 3.5 VDDCORE/VCAP needs 10 µF — and pin 6 is not a port pin
 
-Before drawing U1, confirm against the datasheet (DS39977, "Pin Diagrams" and
-the section on the on-chip regulator) whether the 28-pin part exposes
-**ENVREG** and **VDDCORE/VCAP**. This is the one requirement not already
-settled in `CLAUDE.md`, and it is not something to guess at:
+Settled against the datasheet (DS39977C, section 2.4 "Voltage Regulator Pins",
+section 28.3 and Table 31-4). Two things follow, and both are easy to get
+wrong from memory:
 
-- If the pins exist and the internal regulator is used → ENVREG to VDD, and
-  C7 (10 µF low-ESR) from VDDCORE to VSS. Leave that cap off and the part
-  either browns out or never starts.
-- If they do not exist on this package → drop C7 from the BOM.
+**There is no ENVREG pin.** Not on the 28-pin package, not anywhere in the K80
+family. On PIC18F parts (as opposed to PIC18**LF**) the on-chip 3.3 V core
+regulator is *permanently enabled* — there is nothing to tie and no way to
+disable it. VDD stays at 5 V and the I/O is 5 V; only the core runs at 3.3 V.
 
-Resolve this first; it changes the parts list.
+**Pin 6 is VDDCORE/VCAP, not RA4.** The 28-pin K80 has no RA4 at all. Pin 6
+needs C7:
+
+- **10 µF, low-ESR (< 5 Ω)**, ceramic or tantalum, from pin 6 to SGND.
+  Table 31-4 gives CEFC as min 4.7 µF, typ 10 µF. The datasheet's own example
+  part is a TDK C3216X7R1C106K (10 µF X7R 16 V).
+- ⚠ **Pin 6 must never be connected to VDD.** That is the regulator's output,
+  not an input. Tying it to 5 V destroys the part.
+- Keep the trace to the capacitor **under 6 mm** (datasheet: 0.25 inch).
+
+Without C7 the regulator is unstable and the part browns out or never starts —
+and because the symptom is intermittent it is a genuinely nasty one to debug.
+The 0.1 µF figure that turns up in forum posts is for the LF variant, where the
+regulator is disabled. Not this part.
+
+**Available port A pins.** With the crystal on pins 9/10, RA6 and RA7 are gone
+and pin 6 is not a port pin, so port A offers exactly four usable pins:
+**RA0 (2), RA1 (3), RA2 (4), RA3 (5), RA5 (7)** — five, of which RA0 is the
+debug jumper. Port A is tight; do not plan on more.
 
 ---
 
@@ -182,28 +213,49 @@ sensor ground and the harness documentation calls it that.
 
 ### 4.2 U1 — PIC18F25K80, PDIP-28
 
-Confirmed connections:
+The full 28-pin SPDIP pinout, taken from DS39977C page 6. Names abbreviated to
+the functions that matter here.
 
-| Pin   | Function      | Connect to                                       |
-| ----- | ------------- | ------------------------------------------------ |
-| 1     | MCLR/VPP      | R1 (10 kΩ) to +5V, and J3 pin 1. **No capacitor on this pin** — it interferes with ICSP entry. |
-| 2     | RA0           | JP1 to +5V, R2 (10 kΩ) to SGND → `DBG_EN`        |
-| 8, 19 | VSS           | SGND                                             |
-| 9     | OSC1 / RA7    | Y1 + C1                                          |
-| 10    | OSC2 / RA6    | Y1 + C2                                          |
-| 20    | VDD           | +5V, C3 (100 nF) to SGND, as close as the layout allows |
-| 23    | RB2 / CANTX   | `CAN_TX` → U2 pin 1                              |
-| 24    | RB3 / CANRX   | `CAN_RX` → U2 pin 4                              |
-| 27    | RB6 / PGC     | `PGC` → J3 pin 5                                 |
-| 28    | RB7 / PGD     | `PGD` → J3 pin 4                                 |
+| Pin | Name          | Connect to                                                    |
+| --- | ------------- | ------------------------------------------------------------- |
+| 1   | MCLR/RE3      | R1 (10 kΩ) to +5V, and J3 pin 1. **No capacitor on this pin.** |
+| 2   | RA0/AN0       | JP1 to +5V, R2 (10 kΩ) to SGND → `DBG_EN`                     |
+| 3   | RA1/AN1       | R3 → D1 (`LED_PWR`)                                           |
+| 4   | RA2/AN2       | R4 → D2 (`LED_CAN`)                                           |
+| 5   | RA3/AN3       | J4 (escape)                                                   |
+| 6   | **VDDCORE/VCAP** | **C7 (10 µF low-ESR) to SGND. Never to +5V.** See 3.5      |
+| 7   | RA5/AN4       | J4 (escape)                                                   |
+| 8   | VSS           | SGND                                                          |
+| 9   | OSC1/CLKIN/RA7| Y1 + C1                                                       |
+| 10  | OSC2/CLKOUT/RA6| Y1 + C2                                                      |
+| 11  | RC0/SOSCO     | J4 (escape)                                                   |
+| 12  | RC1/SOSCI     | J4 (escape)                                                   |
+| 13  | RC2/T1G/CCP2  | J4 (escape)                                                   |
+| 14  | RC3/SCL/SCK   | J4 (escape)                                                   |
+| 15  | RC4/SDA/SDI   | J4 (escape)                                                   |
+| 16  | RC5/SDO       | J4 (escape)                                                   |
+| 17  | RC6/**CANTX**/TX1 | J4 (escape) — alternate ECAN pin, see below               |
+| 18  | RC7/**CANRX**/RX1 | J4 (escape) — alternate ECAN pin, see below               |
+| 19  | VSS           | SGND                                                          |
+| 20  | VDD           | +5V, C3 (100 nF) to SGND, as close as the layout allows       |
+| 21  | RB0/INT0      | J4 (escape)                                                   |
+| 22  | RB1/INT1      | J4 (escape)                                                   |
+| 23  | RB2/**CANTX** | `CAN_TX` → U2 pin 1                                           |
+| 24  | RB3/**CANRX** | `CAN_RX` → U2 pin 4                                           |
+| 25  | RB4/AN9       | J4 (escape)                                                   |
+| 26  | RB5/T0CKI     | J4 (escape)                                                   |
+| 27  | RB6/**PGC**   | `PGC` → J3 pin 5                                              |
+| 28  | RB7/**PGD**   | `PGD` → J3 pin 4                                              |
 
-Verify pins 1–10 against the datasheet pin diagram while placing the symbol
-(see 3.5) — the low-numbered port A pins are where the K80 variants differ.
+**The ECAN module can be remapped.** CANTX/CANRX are available on RB2/RB3
+*and* on RC6/RC7. Both alternates land on J4, so if RB2/RB3 turn out to be
+wrong — wrong config bit, damaged pin, anything — the fix is two wire links on
+the escape header rather than a new board. Worth knowing before ordering.
 
 LEDs, driven by the PIC so nothing lights up in the car:
 
-- D1 anode ← R3 ← a port A pin (`LED_PWR`), cathode to SGND
-- D2 anode ← R4 ← a second port A pin (`LED_CAN`), cathode to SGND
+- D1 anode ← R3 ← RA1 (pin 3) → `LED_PWR`, cathode to SGND
+- D2 anode ← R4 ← RA2 (pin 4) → `LED_CAN`, cathode to SGND
 
 Firmware only drives them when `DBG_EN` reads high, i.e. when the JP1 jumper is
 fitted. R2 pulls RA0 down, so an absent jumper is a defined low, not a floating
@@ -211,7 +263,10 @@ input.
 
 ### 4.3 J3 — ICSP
 
-PICkit pin order, 2.54 mm, keep pin 1 square-padded and marked on silkscreen:
+PICkit pin order, 2.54 mm, keep pin 1 square-padded and marked on silkscreen.
+Keep the J3-to-U1 traces short; the datasheet (2.5) explicitly rules out
+pull-ups, series diodes and capacitors on PGC/PGD because they interfere with
+the programmer.
 
 | J3 pin | Signal |
 | ------ | ------ |
@@ -281,6 +336,9 @@ Rules behind that sketch:
   the crystal.
 - C3/C4/C5 each within a few millimetres of the pin they decouple, on the same
   side as the pin.
+- **C7 hard against U1 pin 6** — the datasheet caps that trace at 6 mm. Place
+  it before routing anything else; it is the one component with a numeric
+  placement constraint.
 - J1/J2 on the same long edge so the harness leaves in one direction; the vent
   has no room for cables on two sides.
 - D1/D2/JP1 grouped where they are visible without disassembling anything.
@@ -300,12 +358,20 @@ let the pour split the ground under the crystal.
 ### 5.4 J4 — escape hatch
 
 The unused pins, brought out so a design error can be patched with a wire
-rather than a new board. A 2×9 header is 23 × 5 mm — about 2 % of the board
+rather than a new board. A 2×8 header is 20 × 5 mm — about 4 % of the board
 area, which settles the open question in `CLAUDE.md` in favour of fitting it.
 
-Bring out: RA3, RA4, RA5, RB0, RB1, RB4, RB5, RC0–RC7, plus +5V and SGND.
-That is 17 signals in an 18-way header; leave the spare pin unconnected.
-Adjust once section 3.5 has settled which port A pins actually exist.
+Bring out all 14 unused I/O pins, plus power, which fits a 2×8 header exactly:
+
+| Row | Pins                                                        |
+| --- | ----------------------------------------------------------- |
+| A   | RA3 (5), RA5 (7), RC0 (11), RC1 (12), RC2 (13), RC3 (14), RC4 (15), RC5 (16) |
+| B   | RC6 (17), RC7 (18), RB0 (21), RB1 (22), RB4 (25), RB5 (26), +5V, SGND |
+
+There is no RA4 on this package (pin 6 is VDDCORE/VCAP), so it is not in the
+list. Put RC6/RC7 next to each other and label them `CANTX2`/`CANRX2` on the
+silkscreen — they are the ECAN alternates from 4.2 and the whole point of the
+header is that someone finds them in a hurry.
 
 ### 5.5 DRC
 
@@ -380,10 +446,11 @@ stops meaning anything.
 
 | Question                                    | Blocks       | Owner    |
 | ------------------------------------------- | ------------ | -------- |
-| ENVREG / VDDCORE on the 28-pin K80 (3.5)    | schematic    | datasheet |
-| Which port A pins carry the two LEDs        | schematic    | free choice, pick when placing U1 |
 | 4-pin connector for the car side at GME     | harness only | not this board |
 | Enclosure drawing and how the board mounts  | mounting holes | needs `docs/mechanical.md` |
+
+Resolved while writing this: the core supply (3.5 — no ENVREG, 10 µF on pin 6),
+the LED pin assignment (RA1/RA2) and the escape header (2×8, it goes on).
 
 The last one is the only one that can force a board respin: the M3 hole
 positions in 5.1 are a guess until the enclosure is measured. Measure it before
