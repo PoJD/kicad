@@ -234,13 +234,11 @@ was verified with a multimeter, and the CAN pinout (C7/C8) is confirmed.
 
 - Exact 4-pin connector choice at GME for the car side of the harness. Affects
   the loom only, not this board.
-- Temperature class of C6 — nobody has checked whether the electrolytic bought
-  for it is an 85 °C or a 105 °C part, and a closed dashboard vent in summer is
-  not a kind place for one. Blocks nothing; settle it at plan §7.
 
-**Nothing open blocks the layout.** Both of the questions that used to are
+**That is the only one, and it is not about this board.** Everything else is
 closed: the escape header goes on (a 2×8 costs about 4 % of the board area),
-and there is no enclosure.
+there is no enclosure, and C6 turned out to be a 105 °C part with life to spare
+(plan §7).
 
 ### The enclosure was dropped — do not reopen it
 
@@ -406,6 +404,7 @@ Supporting documents in `canfuel/docs/`:
 - `harness.md` — building and testing the loom
 - `pic18f25k80-datasheet.pdf` — Microchip DS39977C, PIC18F66K80 family
 - `mcp2562-datasheet.pdf` — Microchip DS20005167C, MCP2561/2
+- `hitano-exr-datasheet.pdf` — Hitano EXR electrolytics, C6
 - `crystal-datasheet.pdf` — HC-49U/S DIP quartz crystal resonator, supplied
 - `bom-purchase.pdf` — supplied PDF
 

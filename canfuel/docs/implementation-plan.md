@@ -15,6 +15,7 @@ sourcing rule in `CLAUDE.md`. The three documents are in `docs/`:
 | `DS39977C`   | Microchip, PIC18F66K80 family — `pic18f25k80-datasheet.pdf` |
 | `DS20005167C`| Microchip, MCP2561/2 — `mcp2562-datasheet.pdf`        |
 | crystal d/s  | HC-49U/S DIP quartz crystal resonator — `crystal-datasheet.pdf` |
+| Hitano EXR   | C6's electrolytic — `hitano-exr-datasheet.pdf`        |
 
 Section 10 lists what has actually been read out of them, so the next person
 can tell a checked number from an inherited one.
@@ -726,13 +727,21 @@ Electrolytics age unpowered and an unmarked crystal has an unknown load
 capacitance — both are cheap enough that reusing them is a false economy.
 Resistors and LEDs are not in that category and come from the drawer.
 
-**Check when you get here: the temperature class of C6.** The part bought is a
-GME 127-040, `CE 10u/16V IT HIT-EXR 5x11 RM2`, and nobody has looked at whether
-it is an 85 °C or a 105 °C type. A closed dashboard vent in a Prague summer is
-not a benign place for an aluminium electrolytic, and this is the only part on
-the board with a wear-out mechanism. It carries no ripple to speak of — total
-draw is under 30 mA — so this is about ambient temperature and hours, not
-self-heating.
+**C6 is a 105 °C part and needs no second thought.** It is GME 127-040, a
+Hitano `EXR` 10 µF 16 V in 5 × 11 — `hitano-exr-datasheet.pdf`, which gives
+−40 to +105 °C and a 2000 hour load life at 105 °C with rated ripple for the
+5 mm case. Halving the temperature stress doubles that, so at the 50–60 °C a
+closed vent reaches in summer it is tens of thousands of powered hours, and the
+board is only powered while the display is. It carries no ripple worth the name
+either — total draw is under 30 mA. This was the last open question on the
+board and it is closed.
+
+That same datasheet settles §3.5 from the other direction. Its case table gives
+this exact part an impedance of **4.70 Ω at 100 kHz**, against the 5 Ω ceiling
+DS39977C Table 31-4 puts on the VCAP capacitor. Had the six of them bought for
+C6 been pressed into service on pin 6 as well — which is exactly the mistake
+the shape of the order invited — the part would have sat at 94 % of the limit
+with nothing left for tolerance or temperature.
 
 ---
 
@@ -755,7 +764,9 @@ stops meaning anything.
 | Question                                    | Blocks       | Owner    |
 | ------------------------------------------- | ------------ | -------- |
 | 4-pin connector for the car side at GME     | harness only | not this board |
-| Temperature class of C6                     | nothing yet  | check at section 7 |
+
+That is the only one left. C6's temperature class was the other and is settled
+in section 7: it is a 105 °C part.
 
 **Nothing blocks the layout any more.** The enclosure did, and there is no
 longer going to be one.
@@ -844,6 +855,15 @@ list, as of the re-review on 2026-08-08.
 | Drive level              | 100 µW typical, 500 µW max                       |
 | ESR, 14–40 MHz           | 30 Ω max                                         |
 | Dimensions               | 11.40 × 4.80 max, H ≤ 3.5 mm, leads 4.88 ± 0.2 mm |
+
+**Hitano EXR — C6**
+
+| What                     | Value                                            |
+| ------------------------ | ------------------------------------------------ |
+| Temperature range        | −40 to +105 °C                                   |
+| Load life, 5 mm case     | 2000 h at 105 °C with rated ripple               |
+| Shelf life               | 1000 h at 105 °C, no voltage applied             |
+| 10 µF 16 V, 5 × 11       | impedance 4.70 Ω at 100 kHz, ripple 74 mA rms    |
 
 That last row matters for 5.2: the KiCad footprint is
 `Crystal:Crystal_HC49-U_Vertical`, whose pads are 4.88 mm apart and therefore
