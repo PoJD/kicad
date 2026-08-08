@@ -146,12 +146,26 @@ Then, in order:
 
 ### Working with the tools here
 
-**Run the checks without asking.** `.claude/settings.local.json` pre-approves
-`python`, `kicad-cli` (both on PATH and by full path), `pdftotext`, headless
-Chrome for rendering, `curl`, and the ordinary read-only shell tools. ERC, DRC,
+**Run the checks without asking.** `.claude/settings.local.json` sets
+`defaultMode: "dontAsk"`, so `python`, `kicad-cli`, `pdftotext`, headless
+Chrome renders and the ordinary shell tools all run unprompted. ERC, DRC,
 `check-netlist.py` and an SVG render are meant to be run freely and often —
 stopping to ask permission for a verification step is how verification stops
-happening. The file is gitignored, so it is per-machine.
+happening.
+
+**`git commit`, `git push`, `gh pr create`, `git rebase` and `git reset --hard`
+still stop and ask**, by `ask` rules in the same file. Those are the ones that
+leave the machine or throw work away. Everything else does not.
+
+An allowlist of command prefixes was tried first and did not work, for a reason
+worth knowing: prefix rules match the start of a command, and most real
+invocations here are compound — `SP="..."; cd "$SP" && kicad-cli ... && python
+- <<'EOF'`. The variable assignment, the `cd` and the heredoc are not covered
+by `Bash(python:*)`, so every new shape prompted anyway. Keeping commands
+short and single-purpose helps, but the mode is what actually fixed it.
+
+The file is gitignored, so it is per-machine and none of this is imposed on
+anyone else.
 
 Things that cost time to work out the first time:
 
