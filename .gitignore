@@ -1,0 +1,22 @@
+# lokální stav projektu, ne návrh
+*.kicad_prl
+
+# zálohy a autosave
+*-backups/
+_autosave-*
+*.kicad_sch-bak
+*.kicad_pcb-bak
+*.bak
+fp-info-cache
+
+# export z GUI, který nepatří do fab/
+*.net
+*.dsn
+*.ses
+
+# editory a OS
+.vscode/
+.idea/
+*~
+Thumbs.db
+desktop.ini

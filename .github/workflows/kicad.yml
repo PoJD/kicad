@@ -1,0 +1,60 @@
+name: kicad
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  erc-drc:
+    name: ERC a DRC
+    runs-on: ubuntu-latest
+    container:
+      image: kicad/kicad:8.0
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: verze kicad-cli
+        run: kicad-cli version
+
+      # Skeleton: dokud v repu není žádné schéma, projde to naprázdno.
+      # Jakmile první .kicad_sch přibude, začne se kontrolovat samo.
+      - name: ERC všech schémat
+        run: |
+          shopt -s globstar nullglob
+          found=0
+          for sch in **/*.kicad_sch; do
+            found=1
+            echo "--- ERC $sch"
+            kicad-cli sch erc --exit-code-violations "$sch"
+          done
+          [ "$found" = 1 ] || echo "žádné schéma v repu, přeskakuji"
+
+      - name: DRC všech desek
+        run: |
+          shopt -s globstar nullglob
+          found=0
+          for pcb in **/*.kicad_pcb; do
+            found=1
+            echo "--- DRC $pcb"
+            kicad-cli pcb drc --exit-code-violations "$pcb"
+          done
+          [ "$found" = 1 ] || echo "žádná deska v repu, přeskakuji"
+
+  hygiene:
+    name: hygiena repa
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # .kicad_prl je lokální stav, ne návrh. Když se jednou přidá,
+      # zaneřádí každý diff.
+      - name: v repu nesmí být .kicad_prl
+        run: |
+          if find . -name '*.kicad_prl' -not -path './.git/*' | grep -q .; then
+            echo "CHYBA: .kicad_prl patří do .gitignore"
+            find . -name '*.kicad_prl' -not -path './.git/*'
+            exit 1
+          fi
+          echo "ok"
