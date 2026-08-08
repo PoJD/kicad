@@ -58,10 +58,13 @@ Those are marked as measured where they appear. The rule above is about parts.
 
 ## Current state — read this first
 
-**The schematic is drawn and ERC clean. The PCB is an outline and nothing
-else.** `canfuel/` holds `canfuel.kicad_pro`, `canfuel.kicad_sch` (complete,
-one A3 sheet) and `canfuel.kicad_pcb` (55 × 45 mm outline, no footprints
-placed), plus `docs/` and an empty `fab/gerbers/`. `lib/` is empty.
+**The schematic is finished, checked against the datasheets and ERC clean. The
+PCB is an outline with four mounting holes and no footprints placed. Nothing
+blocks the layout.** `canfuel/` holds `canfuel.kicad_pro`, `canfuel.kicad_sch`
+(complete, one A3 sheet) and `canfuel.kicad_pcb` (55 × 45 mm outline, H1–H4),
+plus `docs/` and an empty `fab/gerbers/`. `lib/` is empty.
+
+**All parts are bought.** Nothing is on order and nothing is outstanding.
 
 CI is live and green: it finds both files and runs ERC and DRC on them for
 real. From here on a red run means something.
@@ -121,15 +124,13 @@ concluding it is missing.
 
 ### Resume here — next session
 
-Next up is the PCB layout, section 5 of the plan.
+**Next up is the PCB layout, section 5 of the plan. Nothing blocks it.** The
+enclosure used to, and there is no longer going to be one — see plan §9.1 for
+why, and do not reopen it. The four M3 holes are in the board, they answer to
+nothing but themselves, and whatever the board ends up mounted on is designed
+around them.
 
-**Say this before starting: the layout cannot be finished until the enclosure
-is measured.** The four M3 mounting holes are deliberately not in the board,
-because their positions are a guess until then, and they are the one thing
-that can force a respin. Placement and routing can all be done first — just do
-not generate `fab/` or order anything off a board whose holes are invented.
-
-Then, in order:
+In order:
 
 1. **Read `canfuel/docs/implementation-plan.md` first.** It is the working
    document: reference designators, the full 28-pin PIC pinout, net names, net
@@ -137,12 +138,23 @@ Then, in order:
    it.
 2. **Check the prerequisites hold**: `kicad-cli version` prints `10.x`, the
    three `canfuel/canfuel.*` files are present, `python tools/check-netlist.py`
-   is clean.
+   is clean, `kicad-cli pcb drc` is clean.
 3. **Net classes first** (plan 5.3), then **placement** (5.2), then routing.
-   C7 goes against U1 pin 6 before anything else is routed — the datasheet caps
-   that track at 6 mm and it is the only part with a numeric constraint.
 4. **`kicad-cli pcb drc` until clean**, then commit.
 5. Then `fab/` and the purchase list — plan sections 6 and 7.
+
+**Placement has four numeric constraints, not one**, and they are the part of
+5.2 worth reading twice. All four come from DS39977C:
+
+| Within | What | Section |
+| ------ | ---- | ------- |
+| 6 mm   | C7 to U1 pin 6 — put it on B.Cu directly under the pin | 2.4 |
+| 6 mm   | C3 to U1 pin 20, C4 to U2 pin 3, C5 to U2 pin 5 | 2.2.1 |
+| 6 mm   | R1, R6, C8 and JP2 to U1 pin 1 — four parts, the tightest cluster | 2.3 |
+| 12 mm  | Y1, C1, C2 to U1 pins 9/10, with a grounded pour around them and nothing on the far side under the crystal | 2.6 |
+
+Do the pin-1 cluster before the escape header, not after — it is the one that
+runs out of room.
 
 ### Working with the tools here
 
@@ -220,16 +232,33 @@ was verified with a multimeter, and the CAN pinout (C7/C8) is confirmed.
 
 ### Still open
 
-- **Blocking the layout: the enclosure.** No mechanical drawing, no
-  `canfuel/docs/mechanical.md`, no measurements of how the board mounts in the
-  air vent. The four M3 mounting holes are therefore not in the board yet. This
-  is the only open question that can force a respin, and it now sits directly
-  in front of the next piece of work — measure before ordering, not after.
 - Exact 4-pin connector choice at GME for the car side of the harness. Affects
   the loom only, not this board.
+- Temperature class of C6 — nobody has checked whether the electrolytic bought
+  for it is an 85 °C or a 105 °C part, and a closed dashboard vent in summer is
+  not a kind place for one. Blocks nothing; settle it at plan §7.
 
-The escape header is no longer open — a 2×8 header costs about 4 % of the board
-area, so it goes on.
+**Nothing open blocks the layout.** Both of the questions that used to are
+closed: the escape header goes on (a 2×8 costs about 4 % of the board area),
+and there is no enclosure.
+
+### The enclosure was dropped — do not reopen it
+
+Everything around the board in the vent is plastic, so there is nothing to
+short against. The vent is closed off by a flap, so no airflow, no meaningful
+dust and no water. The board is invisible either way. A box was buying nothing
+but mechanical retention, which standoffs buy better.
+
+The space could never be measured properly anyway — the MFD15 is in the way —
+and the closest off-the-shelf candidate came out exactly at the estimate on two
+axes and 0.1 mm over on the third. Plan §9.1 has the full reasoning.
+
+**Mounting instead:** four nylon M3 standoffs in H1–H4, feet stuck to the floor
+of the vent with automotive-grade double-sided tape (3M VHB or equivalent).
+Standoffs because the through-hole solder joints must not bear on anything;
+VHB because a dashboard reaches 50–60 °C and cheap foam tape lets go there.
+**Not** PVC or Tesa tape wrapped round the board — at those temperatures the
+adhesive creeps across the board and into the sockets.
 
 ---
 
@@ -316,8 +345,10 @@ intentional, not an oversight.
 - **Escape hatch:** bring the PIC's unused pins out to a 2.54 mm header so a
   design error can be patched with a wire. RA1, RA2, RA3 and RA5 are on it and
   are the weak 2 mA pins; the silkscreen has to say so.
-- **Dimensions:** ~55 × 45 mm, two layers, mostly through-hole. Enclosure for
-  the air vent 6.5 × 5.5 cm, depth max ~3 cm.
+- **Dimensions:** 55 × 45 mm, two layers, mostly through-hole. Four M3 holes
+  4 mm in from the edges, on a 47 × 37 mm pattern. Space available in the vent
+  is roughly 6.5 × 5.5 cm; the depth was never measurable because the MFD15 is
+  in the way, which is part of why there is no enclosure.
 
 ---
 

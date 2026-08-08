@@ -68,8 +68,8 @@ Board Setup, applied before any drawing:
 be: DRC reports `invalid_outline` as an error on a board with no Edge.Cuts
 edges, so without it the skeleton commit could not be CI-green. It is the
 settled 55 × 45 mm with R2 corners, origin at (50, 50) on the sheet. The four
-M3 mounting holes are *not* in it — their positions depend on the enclosure
-measurement, which is still open (section 9).
+M3 mounting holes went in later, once dropping the enclosure (section 9.1) made
+their positions ours to choose.
 
 **Definition of done:** CI green on a repository that contains an empty
 schematic and a board that is an outline and nothing else. ✔
@@ -446,9 +446,9 @@ the programmer drives the pin directly and R6 keeps C8 off its back. See 4.3a.
 
 **Not fitted, but recorded:** 2.5 also suggests a series resistor of a few tens
 of ohms, never above 100 Ω, on PGC and PGD if the ICSP connector is expected to
-see an ESD event. This connector lives inside a closed enclosure behind a
+see an ESD event. This connector lives in a closed vent cavity behind the
 dashboard and is touched perhaps twice in the board's life, so nothing is
-fitted. Revisit only if the header is ever brought outside the case.
+fitted. Revisit only if the header is ever brought somewhere reachable.
 
 ### 4.3a MCLR — the full network of DS39977C Figure 2-2
 
@@ -561,13 +561,25 @@ CI green. ✔
 
 ### 5.1 Outline and constraints
 
-- Board **55 × 45 mm**, 2 layers, corners rounded R2 — already drawn in the
-  skeleton commit (section 1). Four M3 mounting holes inset 4 mm from the
-  corners still to add, and see section 9 before trusting those positions.
-- Enclosure is 65 × 55 mm with max ~30 mm depth, so the tallest part
-  (C6 electrolytic, or J4 with a cable on it) sets the height budget. Keep
-  everything under ~20 mm to leave room for the lid and the harness bend.
-- Mostly through-hole; hand assembly.
+- Board **55 × 45 mm**, 2 layers, corners rounded R2. Outline runs x 50…105,
+  y 50…95 on the sheet.
+- **Four M3 holes, ⌀3.2 mm non-plated, 4 mm in from each edge** — H1 (54, 54),
+  H2 (101, 54), H3 (54, 91), H4 (101, 91), a 47 × 37 mm pattern. Keep copper
+  and parts clear of a 7 mm circle around each.
+- **There is no enclosure** (section 9), so those positions answer to nothing
+  but themselves and are not a respin risk. Whatever the board is eventually
+  mounted on adapts to them.
+- **The holes live in the PCB only** — there are no `H1`…`H4` symbols on the
+  schematic, because a mounting hole carries no net. If you ever run *Update
+  PCB from Schematic* in the GUI, leave **Delete footprints with no symbols**
+  unticked or they disappear. It is unticked by default.
+- Available space in the vent is roughly 65 × 55 mm, depth unknown — the MFD15
+  is in the way and cannot be measured around. The board's 55 mm therefore has
+  about 10 mm of margin in the direction that was measured, which is the whole
+  reason the enclosure was dropped.
+- Height budget is generous with no lid to clear: the tallest parts are C6 at
+  11 mm and Y1 standing at about 11.4 mm. Nothing needs to be laid down.
+- Mostly through-hole; hand assembly. C7 is the one SMD part, on B.Cu.
 
 ### 5.2 Placement
 
@@ -618,8 +630,10 @@ against the sketch:
 - J1/J2 on the same long edge so the harness leaves in one direction; the vent
   has no room for cables on two sides.
 - D1/D2/JP1 grouped where they are visible without disassembling anything, and
-  JP2 reachable with the lid off — it has to come out for every programming
-  session.
+  JP2 somewhere a finger and a pair of pliers can reach — it comes out for every
+  programming session.
+- **Keep parts and copper out of a 7 mm circle around each of H1–H4.** A nylon
+  M3 standoff has a 6 mm head and it has to sit flat.
 
 ### 5.3 Net classes
 
@@ -710,6 +724,15 @@ Cross-check against `bom-purchase.pdf`.
 
 Electrolytics age unpowered and an unmarked crystal has an unknown load
 capacitance — both are cheap enough that reusing them is a false economy.
+Resistors and LEDs are not in that category and come from the drawer.
+
+**Check when you get here: the temperature class of C6.** The part bought is a
+GME 127-040, `CE 10u/16V IT HIT-EXR 5x11 RM2`, and nobody has looked at whether
+it is an 85 °C or a 105 °C type. A closed dashboard vent in a Prague summer is
+not a benign place for an aluminium electrolytic, and this is the only part on
+the board with a wear-out mechanism. It carries no ripple to speak of — total
+draw is under 30 mA — so this is about ambient temperature and hours, not
+self-heating.
 
 ---
 
@@ -732,15 +755,46 @@ stops meaning anything.
 | Question                                    | Blocks       | Owner    |
 | ------------------------------------------- | ------------ | -------- |
 | 4-pin connector for the car side at GME     | harness only | not this board |
-| Enclosure drawing and how the board mounts  | mounting holes | needs `docs/mechanical.md` |
+| Temperature class of C6                     | nothing yet  | check at section 7 |
 
-Resolved while writing this: the core supply (3.5 — no ENVREG, 10 µF on pin 6),
-the LED pin assignment (RC0/RC1, see 3.6) and the escape header (2×8, it goes
-on).
+**Nothing blocks the layout any more.** The enclosure did, and there is no
+longer going to be one.
 
-The last one is the only one that can force a board respin: the M3 hole
-positions in 5.1 are a guess until the enclosure is measured. Measure it before
-ordering, not after.
+### 9.1 The enclosure was dropped, and why
+
+It bought nothing here. Everything around the board in the vent is plastic, so
+there is no metal to short against; the vent is closed off by a flap, so no
+air, no dust worth the name and no water; and the board is invisible either
+way. That leaves mechanical retention, which a box is a poor way to buy.
+
+The measurement made it worse rather than better. The available space was only
+ever an estimate — the MFD15 sits in the way and the depth cannot be measured
+around it — and the closest off-the-shelf candidate, a Hammond 1550Q at
+60 × 55 × 30.10 mm, came out exactly at the estimate on two axes and 0.1 mm
+over on the third. Its 3 mm die-cast walls would also have forced corner
+notches in the board, added an isolation and grounding decision that a plastic
+box does not, and required a slot filed through cast aluminium for the
+Micro-Fit connectors.
+
+Dropping it inverts the risk that section 9 used to carry. The M3 holes no
+longer have to hit anything, so they stopped being the thing that could force a
+respin and became cheap insurance instead: any later mounting scheme is
+designed around them.
+
+**Mounting, as decided:** four nylon M3 standoffs in the holes, their feet
+stuck to the floor of the vent with automotive-grade double-sided tape (3M VHB
+or equivalent). Standoffs rather than tape straight onto the board because the
+through-hole solder joints must not bear on anything, and VHB rather than
+ordinary foam tape because a dashboard reaches 50–60 °C in summer and cheap
+adhesive lets go there.
+
+**Rejected:** wrapping the board in PVC or Tesa tape. At dashboard temperatures
+the adhesive creeps, ends up smeared across the board, collects dust, works its
+way into the sockets and makes any future repair miserable — and the insulation
+it provides guards against metal that is not there.
+
+Resolved earlier: the core supply (3.5 — no ENVREG, 10 µF on pin 6), the LED
+pin assignment (RC0/RC1, see 3.6) and the escape header (2×8, it goes on).
 
 ---
 
