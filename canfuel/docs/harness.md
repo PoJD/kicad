@@ -1,80 +1,106 @@
-# Checklist — stavba harnessu a testy před návrhem PCB
+# Checklist — building the harness and testing before the PCB design
 
-Jedna session, ideálně celé odpoledne. Cíl: mít jistotu, že napájení i sběrnice fungují, a odvézt si logy k analýze — teprve pak se kreslí deska.
+One session, ideally a whole afternoon. Goal: be certain that both the power
+supply and the bus work, and come away with logs to analyse — only then is the
+board drawn.
 
-**Co si připravit:** multimetr, USBtin + notebook, oDSS s novým S-AQY.TRI, nové kleště, sada vypichováků, izolepa/maskovací páska, náhradní ACI piny, náhradní dutinky 43030.
-
----
-
-## A. Na stole, než sáhneš na auto
-
-- [ ] **A1. Testovací krimp na ACI pin.** Vezmi náhradní pin, nakrimpuj na 0,5 mm² FLRY novými kleštěmi (druhá pozice čelistí, 22–18 AWG). Zatáhni za drát — musí držet. Nasuň žluté těsnění, zasuň do pouzdra, musí cvaknout a červená pojistka musí jít nasadit.
-  - ❗ Když neprojde, potřebuješ druhé kleště na vodotěsné konektory. Zjisti to teď, ne s rozebranou palubovkou.
-- [ ] **A2. Nastříhat vodiče.** Červená + černá na napájecí běh (auto → plug B), žlutá + bílá na dlouhý CAN běh (budík → průduch). Radši delší, zkrátit jde vždycky.
-- [ ] **A3. Zakroutit CAN pár** po celé délce.
-- [ ] **A4. Nakrimpovat konce.** ACI piny na stranu do auta, Micro-Fit dutinky 43030 na stranu do pouzder. U každého tah rukou.
-- [ ] **A5. Osadit dvě nové dutinky (5 V, SGND) do stávajícího 12pin pouzdra plugu C**, pozice C6 a C12. Do C7/C8 nesahat.
-- [ ] **A6. Prozvonit všechno.** Každý vodič konec-konec, a mezi sousedními pozicemi nesmí být zkrat.
-
-## B. Demontáž a natažení
-
-- [ ] **B1. Rozebrat palubovku** (rádio, středový panel).
-- [ ] **B2. Natáhnout nový dlouhý CAN běh** od budíku do průduchu tak, aby konektor šel vytáhnout ven z průduchu.
-- [ ] **B3. Natáhnout nové napájecí vodiče** z auto-4pinu do plugu B.
-- [ ] **B4. Zatím nic nepřemotávat páskou.** Loom až úplně nakonec.
-
-## C. Měření napájení — dřív než cokoliv dalšího
-
-- [ ] **C1. Zapnout zapalování.**
-- [ ] **C2. Změřit napětí mezi pozicemi 5 V a SGND** na 4pinu, který jde do převodníku (tj. na konci svazku od plugu C). Čekáš ~5 V.
-  - ✅ Sedí → pokračuj.
-  - ❌ Nesedí → **stop.** Padá koncepce napájení a musí se řešit dřív, než palubovku zavřeš. Napiš mi naměřené hodnoty.
-- [ ] **C3. Pro kontrolu změř i 12 V mezi B5 a B6.**
-
-## D. Test sběrnice a TRI
-
-- [ ] **D1. Propojit CAN-H/L** dvěma dupont drátky mezi oběma 4pinovými konektory, zajistit páskou.
-- [ ] **D2. Zapojit MFD15** (plug B i C), zapnout zapalování.
-- [ ] **D3. Nahrát nový S-AQY.TRI** přes oDSS.
-- [ ] **D4. Kontrola, že se TRI načetlo správně:**
-  - DisplayVolt ukazuje reálných ~12–14 V ← tohle je ten hlavní důkaz
-  - DisplayTemp ukazuje rozumnou teplotu
-  - RPM, Speed, CLT, OilTemp, TankL, AccelG, FuelCntRaw žijí
-  - FuelNow, FuelAvg, FuelTank, Range, Torque, Power, VddConv = 0 ← **správně**, převodník neexistuje
-  - ❗ Kdyby se soubor nenačetl nebo se objevil senzor jménem „0" → smaž první řádek `info;1.0;...` a nahraj znovu.
-- [ ] **D5. Nechat běžet pár minut** a sledovat, jestli hodnoty nevypadávají.
-
-## E. Sniffy
-
-### E1. Trip reset — tohle je ten důležitý
-
-- [ ] Zapojit USBtin na CAN-H/L, spustit záznam
-- [ ] Nastartovat, **stát na místě ~30 s** (potřebuju baseline před resetem)
-- [ ] **Zapsat si, co ukazuje trip na budíku** (mělo by být pořád 2,1 km)
-- [ ] **Zmáčknout trip reset**, záznam nechat běžet
-- [ ] **Popojet aspoň 0,1 km** po zahradě, ať trip tikne
-- [ ] Zastavit, **zapsat novou hodnotu tripu**, uložit log jako `06_trip_reset.txt`
-
-### E2. Svižný rozjezd — olej vs. IAT
-
-- [ ] Nový záznam, motor zahřátý
-- [ ] Rychlý rozjezd na jedničku do ~30 km/h, hned brzdit
-- [ ] Uložit jako `07_accel.txt`
-- Rozhodne, jestli je 0x420 b3 teplota oleje, nebo nasávaného vzduchu — IAT by při rozjezdu spadl, olej ne.
-
-## F. Uzavření
-
-- [ ] **F1. Teprve když všechno výše prošlo** — přemotat svazky páskou, uklidit vedení
-- [ ] **F2. Složit palubovku**
-- [ ] **F3. Poslat mi oba logy** + naměřená napětí + co ukazoval trip před a po resetu
+**What to prepare:** multimeter, USBtin and laptop, oDSS with the new
+S-AQY.TRI, new crimping pliers, a set of pin extractors, insulating/masking
+tape, spare ACI pins, spare 43030 sockets.
 
 ---
 
-## Kdy zastavit a napsat
+## A. On the bench, before touching the car
 
-- 5 V na C6 není → mění se napájecí koncepce
-- MFD15 po prodloužení nekomunikuje → **nejdřív podezřívej dupont kontakt**, ne délku kabelu; zkus je přesadit
-- TRI se nenačte ani po smazání řádku `info;`
-- ACI krimp z nových kleští nedrží
+- [ ] **A1. Test crimp on an ACI pin.** Take a spare pin and crimp it onto
+  0.5 mm² FLRY with the new pliers (second jaw position, 22–18 AWG). Pull on
+  the wire — it must hold. Slide on the yellow seal, insert it into the
+  housing; it must click and the red lock must go on.
+  - ❗ If it does not pass, you need a second pair of pliers for waterproof
+    connectors. Find that out now, not with the dashboard in pieces.
+- [ ] **A2. Cut the wires.** Red and black for the power run (car → plug B),
+  yellow and white for the long CAN run (cluster → air vent). Err on the long
+  side; shortening is always possible.
+- [ ] **A3. Twist the CAN pair** along its whole length.
+- [ ] **A4. Crimp the ends.** ACI pins on the car side, Micro-Fit 43030 sockets
+  on the housing side. Tug each one by hand.
+- [ ] **A5. Fit two new sockets (5 V, SGND) into the existing 12-pin housing of
+  plug C**, positions C6 and C12. Do not touch C7/C8.
+- [ ] **A6. Ring everything out.** Every wire end to end, and no short between
+  adjacent positions.
 
-Ve všech čtyřech případech nechávej palubovku otevřenou.
+## B. Disassembly and routing
+
+- [ ] **B1. Take the dashboard apart** (radio, centre panel).
+- [ ] **B2. Route the new long CAN run** from the cluster to the air vent so
+  that the connector can be pulled out of the vent.
+- [ ] **B3. Route the new power wires** from the car's 4-pin to plug B.
+- [ ] **B4. Do not tape anything up yet.** Loom it right at the end.
+
+## C. Measuring the supply — before anything else
+
+- [ ] **C1. Switch on the ignition.**
+- [ ] **C2. Measure the voltage between the 5 V and SGND positions** on the
+  4-pin that goes to the converter (i.e. at the end of the loom from plug C).
+  Expect ~5 V.
+  - ✅ Correct → carry on.
+  - ❌ Wrong → **stop.** The power supply concept has failed and must be sorted
+    out before the dashboard goes back together. Send me the measured values.
+- [ ] **C3. As a cross-check, measure 12 V between B5 and B6 as well.**
+
+## D. Testing the bus and the TRI file
+
+- [ ] **D1. Link CAN-H/L** between the two 4-pin connectors with two DuPont
+  jumpers and secure them with tape.
+- [ ] **D2. Connect the MFD15** (plug B and plug C) and switch on the ignition.
+- [ ] **D3. Upload the new S-AQY.TRI** through oDSS.
+- [ ] **D4. Check that the TRI file loaded correctly:**
+  - DisplayVolt shows a realistic ~12–14 V ← this is the key piece of evidence
+  - DisplayTemp shows a sensible temperature
+  - RPM, Speed, CLT, OilTemp, TankL, AccelG, FuelCntRaw are all live
+  - FuelNow, FuelAvg, FuelTank, Range, Torque, Power, VddConv = 0 ←
+    **correct**, the converter does not exist yet
+  - ❗ If the file does not load, or a sensor named "0" appears → delete the
+    first `info;1.0;...` line and upload again.
+- [ ] **D5. Leave it running for a few minutes** and watch for values dropping out.
+
+## E. Sniffs
+
+### E1. Trip reset — this is the important one
+
+- [ ] Connect the USBtin to CAN-H/L and start recording
+- [ ] Start the engine and **stand still for ~30 s** (a baseline before the
+  reset is needed)
+- [ ] **Write down what the trip meter on the cluster reads** (it should still
+  be 2.1 km)
+- [ ] **Press the trip reset** and keep the recording running
+- [ ] **Drive at least 0.1 km** around the garden so the trip meter ticks
+- [ ] Stop, **write down the new trip value**, save the log as `06_trip_reset.txt`
+
+### E2. Brisk pull-away — oil vs. IAT
+
+- [ ] New recording, engine warm
+- [ ] Quick pull-away in first gear to ~30 km/h, then brake immediately
+- [ ] Save as `07_accel.txt`
+- This settles whether 0x420 b3 is oil temperature or intake air temperature —
+  IAT would drop during the pull-away, oil would not.
+
+## F. Wrapping up
+
+- [ ] **F1. Only once everything above has passed** — tape up the looms and
+  tidy the routing
+- [ ] **F2. Reassemble the dashboard**
+- [ ] **F3. Send me both logs** plus the measured voltages and what the trip
+  meter read before and after the reset
+
+---
+
+## When to stop and write
+
+- There is no 5 V on C6 → the power supply concept changes
+- The MFD15 stops communicating after the extension → **suspect the DuPont
+  contacts first**, not the cable length; try reseating them
+- The TRI file will not load even after deleting the `info;` line
+- The ACI crimp from the new pliers does not hold
+
+In all four cases, leave the dashboard open.

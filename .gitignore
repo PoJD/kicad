@@ -1,7 +1,7 @@
-# lokální stav projektu, ne návrh
+# local project state, not design
 *.kicad_prl
 
-# zálohy a autosave
+# backups and autosave
 *-backups/
 _autosave-*
 *.kicad_sch-bak
@@ -9,12 +9,12 @@ _autosave-*
 *.bak
 fp-info-cache
 
-# export z GUI, který nepatří do fab/
+# GUI exports that do not belong in fab/
 *.net
 *.dsn
 *.ses
 
-# editory a OS
+# editors and OS
 .vscode/
 .idea/
 *~

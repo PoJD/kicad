@@ -1,47 +1,47 @@
 # kicad
 
-Desky plošných spojů. Kontejner na všechny projekty, nástupce staršího repa
-`eagle`.
+Printed circuit boards. A container for all projects, successor to the older
+`eagle` repo.
 
-KiCad 8 — textové formáty, čitelné diffy, ERC i DRC běží v CI přes
-`kicad-cli` bez GUI.
+KiCad 8 — text formats, readable diffs, ERC and DRC running in CI through
+`kicad-cli` without a GUI.
 
-## Desky
+## Boards
 
-| Deska | Stav | Popis |
+| Board | Status | Description |
 |---|---|---|
-| [`canfuel/`](canfuel/) | návrh nezačat | převodník spotřeby do VW New Beetle, napájený z displeje MFD15 |
+| [`canfuel/`](canfuel/) | design not started | fuel consumption converter for a VW New Beetle, powered from the MFD15 display |
 
-## Struktura
+## Layout
 
 ```
-lib/                sdílené symboly a pouzdra napříč projekty
-<deska>/
-  *.kicad_pro       projekt
-  *.kicad_sch       schéma
-  *.kicad_pcb       deska
-  fab/              gerbery, BOM, CPL — commituje se
-  docs/             podklady, datasheety, mechanika
+lib/                symbols and footprints shared across projects
+<board>/
+  *.kicad_pro       project
+  *.kicad_sch       schematic
+  *.kicad_pcb       board
+  fab/              gerbers, BOM, CPL — committed
+  docs/             supporting documents, datasheets, mechanical notes
 ```
 
-`*.kicad_prl` je lokální stav a do repa nepatří (je v `.gitignore`).
+`*.kicad_prl` is local state and does not belong in the repo (it is gitignored).
 
-`fab/` se commituje schválně, i když je generované — u objednané desky musí
-jít zpětně zjistit, co přesně se poslalo do výroby.
+`fab/` is committed deliberately even though it is generated — for an ordered
+board it must be possible to find out exactly what was sent to the fab.
 
 ## CI
 
-`kicad-cli sch erc` a `kicad-cli pcb drc`. Obojí musí projít před objednáním
-desek.
+`kicad-cli sch erc` and `kicad-cli pcb drc`. Both must pass before boards are
+ordered.
 
-Workflow zatím běží v režimu skeletonu — dokud v repu není žádný `.kicad_sch`,
-projde bez práce. Jakmile schéma přibude, začne kontrolovat.
+The workflow currently runs as a skeleton — while the repo contains no
+`.kicad_sch`, it passes doing nothing. Once a schematic lands, it starts checking.
 
-## Související repozitáře
+## Related repositories
 
 - `canfuel` — firmware
-- `mfd15` — displej a TRI
+- `mfd15` — display and TRI file
 
 ## Licence
 
-Zatím neurčeno.
+Not decided yet.

@@ -1,104 +1,118 @@
 # kicad — hardware
 
-Kontejner na desky. Nástupce staršího repa `eagle`, každá deska má vlastní
-podadresář a vlastní `fab/`.
+A container for boards. Successor to the older `eagle` repo; each board gets
+its own subdirectory and its own `fab/`.
 
-KiCad 8. Textové formáty znamenají čitelné diffy a `kicad-cli` umí v CI
-spustit ERC i DRC bez GUI — chyba v návrhu spadne v pull requestu, ne až
-na hotové desce.
+KiCad 8. Text formats mean readable diffs, and `kicad-cli` can run ERC and DRC
+in CI without a GUI — a design error fails in the pull request, not on a
+finished board.
 
-Aktuálně je tu jedna deska: `canfuel/`.
+There is currently one board: `canfuel/`.
 
 ---
 
-## Zadání desky canfuel
+## Language
 
-Převodník spotřeby do VW New Beetle. Sedí v průduchu za displejem MFD15,
-napájený 5 V přímo z displeje.
+**Everything in this repository is written in English** — documentation,
+comments, CI step names, commit messages and file names. Conversation with the
+maintainer may be in Czech; nothing written to disk ever is.
+
+Note that `canfuel/docs/bom-purchase.pdf` and `canfuel/docs/crystal-datasheet.pdf`
+are supplied PDFs whose contents are not in English and cannot be translated
+in place.
+
+---
+
+## Requirements for the canfuel board
+
+A fuel consumption converter for a VW New Beetle. It sits in the air vent
+behind the MFD15 display, powered by 5 V taken straight from the display.
 
 ### MCU
 
-- **PIC18F25K80** v PDIP-28, v **úzké patici (7,62 mm)**.
-- Krystal 16 MHz, zatěžovací kapacita 32 pF → osadit **33 pF**
-  (ověřeno v předchozím projektu, ne 22 pF).
+- **PIC18F25K80** in PDIP-28, in a **narrow socket (7.62 mm)**.
+- 16 MHz crystal, load capacitance 32 pF → fit **33 pF** (verified on a
+  previous project, not 22 pF).
 
 ### Transceiver
 
-- **MCP2562-E/P** v DIP-8 patici.
-- ⚠ **Pin VIO na VDD, pin STBY na zem.** Jinak zůstane v úsporném režimu
-  a nic nepošle. Tohle je nejsnadnější chyba celého návrhu.
+- **MCP2562-E/P** in a DIP-8 socket.
+- ⚠ **Pin VIO to VDD, pin STBY to ground.** Otherwise it stays in standby and
+  transmits nothing. This is the easiest mistake to make in the whole design.
 
-### Napájení
+### Power
 
-- 5 V z konektoru C displeje: **C6 = 5 V, C12 = SensorGround**
-  (ověřeno multimetrem).
-- Žádný regulátor, žádná ochrana proti přepólování, žádný TVS.
-  12V větev z návrhu vypadla.
-- Odběr do 30 mA, limit displeje 0,5 A.
-- Blokování: 100 nF u každého napájecího pinu, 10 µF na vstupu.
+- 5 V from the display's connector C: **C6 = 5 V, C12 = SensorGround**
+  (verified with a multimeter).
+- No regulator, no reverse-polarity protection, no TVS. The 12 V branch was
+  dropped from the design.
+- Draw is under 30 mA; the display's limit is 0.5 A.
+- Decoupling: 100 nF at every supply pin, 10 µF at the input.
 
 ### CAN
 
 - **C7 = CAN-H, C8 = CAN-L.**
-- ⚠ **Terminaci 120 Ω neosazovat** — sběrnice je zakončená v autě, třetí
-  odpor by ji přetížil. Pájecí jumper pro bench test je v pořádku.
+- ⚠ **Do not fit the 120 Ω termination** — the bus is already terminated in the
+  car and a third resistor would overload it. A solder jumper for bench testing
+  is fine.
 
-### Konektory
+### Connectors
 
-- 2× Molex Micro-Fit 3.0 header **43045-0400** (pravoúhlý, do DPS).
-- Oba zapojené **paralelně na tytéž čtyři nety** — CAN-H, CAN-L, 5 V, SGND.
+- 2× Molex Micro-Fit 3.0 header **43045-0400** (right-angle, board mount).
+- Both wired **in parallel onto the same four nets** — CAN-H, CAN-L, 5 V, SGND.
 
-Díky paralelnímu zapojení je záměna kabelů neškodná a deska sama funguje
-jako propojka CAN i s vytaženým PICem. To je záměr, ne omyl v návrhu.
+Wiring them in parallel means swapping the cables is harmless and the board
+itself acts as a CAN pass-through even with the PIC removed. That is
+intentional, not an oversight.
 
-### Ostatní
+### Everything else
 
-- **LED:** dvě (napájení, stav CAN), aktivní jen s nasazeným debug jumperem
-  na RA0. V autě nesvítí nic.
-- **ICSP:** 5pinová hlavička 2,54 mm pro PICkit.
-- **Záchranná brzda:** nepoužité piny PIC vyvést na lištu 2,54 mm, aby šla
-  případná chyba v návrhu opravit drátem.
-- **Rozměry:** ~55 × 45 mm, dvouvrstvá, převážně THT.
-  Krabička do průduchu 6,5 × 5,5 cm, hloubka max ~3 cm.
-
----
-
-## Pravidla repa
-
-- `*.kicad_prl` patří do `.gitignore` — je to lokální stav, ne návrh.
-- `fab/` se **commituje**, i když je generované. Důvod je dohledatelnost:
-  u objednané desky musí jít zpětně zjistit, co přesně se poslalo do výroby.
-- Sdílené symboly a pouzdra jdou do `lib/`, ne do adresáře desky.
-- `kicad-cli sch erc` a `kicad-cli pcb drc` musí projít **před objednáním**.
+- **LEDs:** two (power, CAN status), active only when the debug jumper on RA0
+  is fitted. Nothing lights up in the car.
+- **ICSP:** 5-pin 2.54 mm header for a PICkit.
+- **Escape hatch:** bring the PIC's unused pins out to a 2.54 mm header so a
+  design error can be patched with a wire.
+- **Dimensions:** ~55 × 45 mm, two layers, mostly through-hole. Enclosure for
+  the air vent 6.5 × 5.5 cm, depth max ~3 cm.
 
 ---
 
-## Breadboard fáze se přeskakuje
+## Repository rules
 
-Micro-Fit má rozteč 3,0 mm a na breadboard nesedí. Všechno je v paticích
-a jádro firmwaru se testuje na hostu proti reálným logům (repo `canfuel`).
-
----
-
-## Nákup součástek
-
-Kompletní BOM vypadne až ze schématu, takže **seznam sestavit až po návrhu**,
-ne dřív. Kupovat nadvakrát je horší než kupovat později.
-
-- **Ze šuplíku:** PIC18F25K80. Polovodiče v suchu nedegradují.
-- **Nové:** krystal, všechny kondenzátory, odpory, konektory, patice, LED.
-  Elektrolyty stárnou i bez napětí. U krystalu je hlavní argument, že
-  u neoznačeného kusu neznáš zatěžovací kapacitu.
-- **Nový nákup:** MCP2562.
-
-Podklady: `canfuel/docs/bom-nakup.pdf`, `canfuel/docs/harness.md`.
-
-⚠ **Datasheet krystalu v repu chybí** — v zadání byl uvedený, ale nebyl mezi
-nahranými soubory. Patří do `canfuel/docs/`.
+- `*.kicad_prl` is gitignored — it is local state, not design.
+- `fab/` **is committed**, even though it is generated. The reason is
+  traceability: for an ordered board it must be possible to find out exactly
+  what was sent to the fab.
+- Shared symbols and footprints go in `lib/`, not in a board's directory.
+- `kicad-cli sch erc` and `kicad-cli pcb drc` must pass **before ordering**.
 
 ---
 
-## Související repozitáře
+## The breadboard phase is skipped
+
+Micro-Fit has a 3.0 mm pitch and does not fit a breadboard. Everything is
+socketed and the firmware core is tested on the host against real logs (repo
+`canfuel`).
+
+---
+
+## Buying parts
+
+The complete BOM only falls out of the schematic, so **put the list together
+after the design**, not before. Buying twice is worse than buying later.
+
+- **From the drawer:** PIC18F25K80. Semiconductors do not degrade when kept dry.
+- **New:** crystal, all capacitors, resistors, connectors, sockets, LEDs.
+  Electrolytics age even without voltage. For the crystal the main argument is
+  that an unmarked part has an unknown load capacitance.
+- **New purchase:** MCP2562.
+
+Supporting documents: `canfuel/docs/bom-purchase.pdf`,
+`canfuel/docs/harness.md`, `canfuel/docs/crystal-datasheet.pdf`.
+
+---
+
+## Related repositories
 
 - `canfuel` — firmware
-- `mfd15` — displej a TRI
+- `mfd15` — display and TRI file

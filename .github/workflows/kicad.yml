@@ -7,7 +7,7 @@ on:
 
 jobs:
   erc-drc:
-    name: ERC a DRC
+    name: ERC and DRC
     runs-on: ubuntu-latest
     container:
       image: kicad/kicad:8.0
@@ -15,12 +15,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: verze kicad-cli
+      - name: kicad-cli version
         run: kicad-cli version
 
-      # Skeleton: dokud v repu není žádné schéma, projde to naprázdno.
-      # Jakmile první .kicad_sch přibude, začne se kontrolovat samo.
-      - name: ERC všech schémat
+      # Skeleton: while the repo holds no schematic this passes doing nothing.
+      # As soon as the first .kicad_sch lands, it starts checking on its own.
+      - name: ERC on every schematic
         run: |
           shopt -s globstar nullglob
           found=0
@@ -29,9 +29,9 @@ jobs:
             echo "--- ERC $sch"
             kicad-cli sch erc --exit-code-violations "$sch"
           done
-          [ "$found" = 1 ] || echo "žádné schéma v repu, přeskakuji"
+          [ "$found" = 1 ] || echo "no schematic in the repo, skipping"
 
-      - name: DRC všech desek
+      - name: DRC on every board
         run: |
           shopt -s globstar nullglob
           found=0
@@ -40,20 +40,20 @@ jobs:
             echo "--- DRC $pcb"
             kicad-cli pcb drc --exit-code-violations "$pcb"
           done
-          [ "$found" = 1 ] || echo "žádná deska v repu, přeskakuji"
+          [ "$found" = 1 ] || echo "no board in the repo, skipping"
 
   hygiene:
-    name: hygiena repa
+    name: repository hygiene
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      # .kicad_prl je lokální stav, ne návrh. Když se jednou přidá,
-      # zaneřádí každý diff.
-      - name: v repu nesmí být .kicad_prl
+      # .kicad_prl is local state, not design. Once it is committed it
+      # pollutes every diff.
+      - name: no .kicad_prl in the repo
         run: |
           if find . -name '*.kicad_prl' -not -path './.git/*' | grep -q .; then
-            echo "CHYBA: .kicad_prl patří do .gitignore"
+            echo "ERROR: .kicad_prl belongs in .gitignore"
             find . -name '*.kicad_prl' -not -path './.git/*'
             exit 1
           fi
