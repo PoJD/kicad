@@ -22,9 +22,39 @@ The CI workflow is a working skeleton: it loops over `**/*.kicad_sch` and
 lands it starts running ERC and DRC for real, so expect CI to begin failing
 usefully rather than staying green.
 
-**KiCad is not installed on this machine** (checked for `kicad-cli.exe` under
-Program Files). Installing KiCad 8 is the first prerequisite — `kicad-cli`
-also needs to be on PATH to reproduce what CI does.
+**KiCad 8 is being installed.** It was not present as of 2026-08-08; the
+maintainer is installing it. Note that the Windows installer ships
+`kicad-cli.exe` but does not put it on PATH — `C:\Program Files\KiCad\8.0\bin`
+has to be added by hand.
+
+### Resume here — next session
+
+When asked to carry on with the schematic, do this, in order. Everything needed
+is already written down; nothing has to be re-derived.
+
+1. **Read `canfuel/docs/implementation-plan.md` first.** It is the working
+   document: reference designators, the full 28-pin PIC pinout, net names, net
+   classes, placement plan and the order of commits. This file only summarises
+   it.
+2. **Check the prerequisites actually hold** before touching anything:
+   - `kicad-cli version` prints `8.x` in a plain shell
+   - `canfuel/canfuel.kicad_pro`, `.kicad_sch` and `.kicad_pcb` exist — the
+     maintainer creates these through the GUI (`File → New Project`) so the
+     schema versions are right; do not hand-write them
+   If either is missing, say so and stop rather than working around it.
+3. **Apply the Board Setup values** from section 1 of the plan, then commit the
+   skeleton on its own. That commit is where CI stops being a no-op and starts
+   running ERC and DRC for real.
+4. **Draw the schematic** per sections 3 and 4 of the plan. Section 3 is five
+   failure modes, each of which has killed a board of this kind before — work
+   through them deliberately rather than trusting recall.
+5. **`kicad-cli sch erc` until clean**, then commit.
+
+The PIC datasheet is committed at `canfuel/docs/pic18f25k80-datasheet.pdf`
+(DS39977C, PIC18F66K80 family — the 28-pin diagram is on page 6). It is text
+based, so `pdftotext -layout` works on it; that is how the pinout in the plan
+was verified, and it is the way to settle any further pin question rather than
+answering from memory.
 
 ### Suggested order of work
 
@@ -34,10 +64,10 @@ order of commits — is in `canfuel/docs/implementation-plan.md`. The outline:
 1. Install KiCad 8, confirm `kicad-cli version` runs.
 2. Create the project: `canfuel/canfuel.kicad_pro` plus an empty schematic and
    board. Commit that skeleton on its own so CI going live is a visible step.
-3. Draw the schematic against the requirements below. The four things most
+3. Draw the schematic against the requirements below. The five things most
    worth double-checking, because they are the ones that quietly kill a board:
    MCP2562 VIO and STBY, no 120 Ω termination fitted, 33 pF crystal loading,
-   and both Micro-Fit headers wired in parallel.
+   both Micro-Fit headers wired in parallel, and 10 µF on VDDCORE/VCAP.
 4. `kicad-cli sch erc` until clean.
 5. Lay out the PCB inside ~55 × 45 mm, two layers, mostly through-hole.
 6. `kicad-cli pcb drc` until clean.
@@ -55,7 +85,10 @@ was verified with a multimeter, and the CAN pinout (C7/C8) is confirmed.
 
 - Exact 4-pin connector choice at GME for the car side of the harness.
 - Mechanical drawing of the enclosure and how the board mounts in the air vent.
-  `canfuel/docs/` has no `mechanical.md` yet.
+  `canfuel/docs/` has no `mechanical.md` yet. This is the only open question
+  that can force a respin — the mounting hole positions are a guess until the
+  enclosure is measured.
+
 The escape header is no longer open — a 2×8 header costs about 4 % of the board
 area, so it goes on.
 
@@ -161,8 +194,12 @@ after the design**, not before. Buying twice is worse than buying later.
   that an unmarked part has an unknown load capacitance.
 - **New purchase:** MCP2562.
 
-Supporting documents: `canfuel/docs/bom-purchase.pdf`,
-`canfuel/docs/harness.md`, `canfuel/docs/crystal-datasheet.pdf`.
+Supporting documents in `canfuel/docs/`:
+
+- `implementation-plan.md` — the working document for the design
+- `harness.md` — building and testing the loom
+- `pic18f25k80-datasheet.pdf` — Microchip DS39977C, PIC18F66K80 family
+- `crystal-datasheet.pdf`, `bom-purchase.pdf` — supplied PDFs
 
 ---
 
