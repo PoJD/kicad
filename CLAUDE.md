@@ -67,15 +67,27 @@ SGND poured on both), plus `docs/` and a populated `fab/`. `lib/` is empty.
 **The escape header J4 was removed on 2026-08-09** and the board is 24 parts,
 not 25. It is not an oversight — see below before reinstating it.
 
-**`fab/` is generated and committed — plan section 6 is done.**
-`canfuel/fab/` holds nine gerbers, a merged Excellon drill file with its X2
-plating attributes, a drill map, a `.gbrjob`, `canfuel-bom.csv` and
+**The board is ordered. `fab/` is generated and committed — plan section 6 is
+done.** `canfuel/fab/` holds nine gerbers, `canfuel-PTH.drl` and
+`canfuel-NPTH.drl` with their maps, a `.gbrjob`, `canfuel-bom.csv` and
 `canfuel-cpl.csv`. Plan §6 lists every command with the flags actually used and
 why each one is there; do not regenerate from the bare `kicad-cli` invocations,
-because the defaults are wrong for this board in four places. Section 7, the
+because the defaults are wrong for this board in five places. Section 7, the
 purchase list, was done earlier: all parts are bought, the harness fuse and its
 holder included. There are no open questions left anywhere in the project.
-**The next step is ordering the board.**
+
+**Ordered from Gatema PCB on 2026-08-09** — POOL service, 3 pieces, 900 CZK
+before VAT, five working days quoted. Their form was misbehaving over the
+weekend, so the order was submitted but not yet confirmed; confirmation was
+expected Monday 2026-08-10 and delivery in the week after. Plan §6.1 has the
+full capability comparison and the exact stack-up ordered. **Nothing in this
+repository should change while that order is in flight** — the boards being
+made are commit `c06e710`, and an edit now makes `fab/` stop describing them.
+
+**Two things are outstanding on the parts side, and neither blocks the boards:**
+two more Molex 43045-0400 (GME 899-192) are needed to populate all three, since
+the GME invoice of 2026-08-03 covers four and each board takes two; and the
+number of PIC18F25K80 in the drawer has never been recorded anywhere.
 
 **The silkscreen was sized for no process at all until 2026-08-09.** All 25
 items were 0.80 mm high with a 0.12 mm stroke; the first fab house looked at,
@@ -234,15 +246,23 @@ concluding it is missing.
 
 ### Resume here — next session
 
-**The design is finished and so is `fab/`. The next step is ordering the
-board.** Net classes, placement, routing, pours, silkscreen and the fabrication
-outputs are all done and committed, every check is green, all parts are bought
-and there is not one open question left. Do not go looking for design work to
-do — there is none.
+**The design is finished, `fab/` is finished, and the boards are ordered.**
+Net classes, placement, routing, pours, silkscreen and the fabrication outputs
+are all done and committed, every check is green, all parts are bought and there
+is not one open question left. Do not go looking for design work to do — there
+is none.
 
-If anything is regenerated, re-run all four checks first and re-read plan §6
-for the exact export commands — they are cheap and they are what stands between
-a mistake and an ordered board:
+**The next thing that happens is three bare boards arriving**, not another
+edit. Until they do and have been looked at, the useful work is off this
+repository: the loom (`canfuel/docs/harness.md` is a build document now), the
+two missing Micro-Fit headers, and the firmware in the sibling `canfuel` repo.
+**Do not touch the design while the order is in flight** — what is being
+manufactured is `c06e710`, and changing the board now makes `fab/` describe
+something that does not exist.
+
+If anything is regenerated anyway, re-run all four checks first and re-read
+plan §6 for the exact export commands — they are cheap and they are what stands
+between a mistake and an ordered board:
 
 ```
 python tools/check-netlist.py
@@ -385,10 +405,12 @@ order of commits — is in `canfuel/docs/implementation-plan.md`. The outline:
    Done — 24 parts, routed, poured.
 6. ~~`kicad-cli pcb drc` until clean.~~ Done, zero violations.
 7. ~~Generate `fab/` (gerbers, BOM, CPL) and commit it.~~ Done — plan §6 has
-   the commands and the pre-order checks. ← **next: order the board**
+   the commands and the pre-order checks.
 8. ~~Only then assemble the GME purchase list.~~ Done — everything is bought.
    The rule it came from still stands for any future board: the BOM falls out
    of the schematic, so buying earlier means buying twice.
+9. ~~Order the boards.~~ Done — Gatema PCB, 2026-08-09, 3 pieces.
+   ← **next: the boards arrive and get built**
 
 ### Decisions already made
 

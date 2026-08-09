@@ -991,6 +991,28 @@ and hand-soldered, so no assembly house will use it.
   footprint, pads and a value — and it was the one legend nothing else would
   have caught.
 
+### 6.0 Ordered — Gatema PCB, 2026-08-09
+
+Three pieces, POOL service, **900 CZK before VAT** (300 CZK each, 1089 CZK
+with VAT), five working days at no express surcharge. The stack-up ordered is
+their preset *2V Cu 35/35 µm, 1,5 mm, LF HAL, 2x zelená NM, 1x bílý potisk,
+Tg 135 °C*, single pieces milled out, min track/gap class ≥150 µm, no assembly
+stencil. What was manufactured is commit **`c06e710`**.
+
+Both `Gerbers.zip` and `Odb.zip` were uploaded — the same board from the same
+commit, so they cannot disagree, and ODB++ is the format their CAM department
+prefers. The gerber package carries a `README.txt` because the configurator has
+no comment field and their own handbook accepts a text file for exactly this:
+it states that the PTH diameters are finished sizes, that the NPTH ones are not
+plated, why the 3.00 mm peg holes in particular must not be plated (3.7), and
+that R5 is deliberately unpopulated so its `120R DNF` legend is not read as a
+data error.
+
+Three pieces rather than two because the board is the long-lead item: every
+other part comes from GME in days. Only two can be populated — the GME invoice
+of 2026-08-03 covers four Molex 43045-0400 and each board takes two — so the
+third is a bare spare until two more are bought.
+
 ### 6.1 printed.cz — capability check
 
 <https://printed.cz/vyroba-dps/>, the first fab house considered. Their
