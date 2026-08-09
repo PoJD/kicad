@@ -72,7 +72,8 @@ Next up is `fab/` and the purchase list, plan sections 6 and 7.
 **All parts are bought.** Nothing is on order and nothing is outstanding.
 
 CI is live and green: it finds both files and runs ERC and DRC on them for
-real. From here on a red run means something.
+real, and since 2026-08-09 it also runs `check-netlist.py` and
+`check-placement.py`. From here on a red run means something.
 
 **The schematic was re-reviewed against the datasheets on 2026-08-08** and
 three things changed. Do not undo them without reading plan §3.6, §3.2 and
@@ -100,6 +101,21 @@ and the loops had nothing to do. A step that fails with zero input files is
 failing before it reads any; that is what gave it away. Both steps are plain
 POSIX shell now. Do not reintroduce bash-isms into them, and do not trust a
 description of CI that has not been checked against an actual run.
+
+**The fix left the same bug wearing the opposite mask, and that is fixed too
+(2026-08-09).** The repaired steps printed "no schematic in the repo, skipping"
+and *passed* on an empty list. Green would then have meant "checked and clean"
+or "found nothing at all", with no way to tell the two apart — which is exactly
+the failure the globstar bug taught. Finding zero files is now an error. This
+repository will never again be without design files, so a run that opens none
+of them is broken, not lucky.
+
+**Reading CI without `gh`:** it is not installed here, but the public REST API
+needs no token for run status. `curl -s
+https://api.github.com/repos/PoJD/kicad/actions/runs?per_page=3` gives
+`head_sha`, `status` and `conclusion`, and `.../actions/runs/<id>/jobs` gives
+per-step conclusions. Log *bodies* are a 403 without auth, so verify by
+reasoning about the step definitions rather than expecting to read the output.
 
 **ERC is not enough on its own, so there is a second check.** Run it after any
 edit to the schematic:

@@ -42,6 +42,12 @@ jobs:
       # Every file is checked before the step gives up, rather than stopping
       # at the first bad one, so a red run tells you everything that is wrong
       # in one go.
+      #
+      # Finding nothing is an error, not a note. These steps used to say
+      # "skipping" and pass on an empty list, which is the old globstar bug
+      # wearing the opposite mask: back then a broken loop failed loudly, and
+      # that is what gave it away. A repository that will never again be
+      # without design files has no business going green without opening one.
       - name: ERC on every schematic
         run: |
           find . -path ./.git -prune -o -name '*.kicad_sch' -print | sort > /tmp/sch.list
@@ -52,7 +58,11 @@ jobs:
             echo "--- ERC $sch"
             kicad-cli sch erc --exit-code-violations "$sch" || status=1
           done < /tmp/sch.list
-          [ "$count" -gt 0 ] || echo "no schematic in the repo, skipping"
+          if [ "$count" -eq 0 ]; then
+            echo "ERROR: no .kicad_sch found - this step would have passed without checking anything"
+            exit 1
+          fi
+          echo "$count schematic(s) checked"
           exit $status
 
       - name: DRC on every board
@@ -65,8 +75,27 @@ jobs:
             echo "--- DRC $pcb"
             kicad-cli pcb drc --exit-code-violations "$pcb" || status=1
           done < /tmp/pcb.list
-          [ "$count" -gt 0 ] || echo "no board in the repo, skipping"
+          if [ "$count" -eq 0 ]; then
+            echo "ERROR: no .kicad_pcb found - this step would have passed without checking anything"
+            exit 1
+          fi
+          echo "$count board(s) checked"
           exit $status
+
+      # ERC and DRC prove the files are well formed. They do not prove the
+      # design is the intended one: swapping the labels on U1 pins 23 and 24 -
+      # CANTX and CANRX crossed at the MCU, a board that would never transmit -
+      # passes ERC with zero violations, because both are bidirectional pins.
+      # A decoupling capacitor 40 mm from its pin passes DRC for the same kind
+      # of reason. These two compare the design against the tables in
+      # canfuel/docs/implementation-plan.md instead.
+      #
+      # Both are canfuel-specific by design. A second board would want its own
+      # pair rather than a generalisation of these.
+      - name: Netlist and placement match the plan
+        run: |
+          python3 tools/check-netlist.py
+          python3 tools/check-placement.py
 
   hygiene:
     name: repository hygiene
