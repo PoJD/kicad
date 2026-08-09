@@ -77,6 +77,26 @@ purchase list, was done earlier: all parts are bought, the harness fuse and its
 holder included. There are no open questions left anywhere in the project.
 **The next step is ordering the board.**
 
+**The silkscreen was sized for no process at all until 2026-08-09.** All 25
+items were 0.80 mm high with a 0.12 mm stroke; the first fab house looked at,
+printed.cz, asks for 1.0 mm and 0.15 mm. They are all 1.0 / 0.15 now, which is
+what the project's own `silk_text_*` defaults had always said. `min_text_height`
+and `min_text_thickness` were 0.8 and 0.08 — looser than the process, so the
+board passed its own rules while failing the fab's — and are now 1.0 and 0.15.
+
+**Tightening the numbers alone would have achieved nothing, and that was
+measured.** `text_height` and `text_thickness` ship as *warnings*, and
+`kicad-cli pcb drc --exit-code-violations` exits **0** on warnings: with the new
+limits and the old 0.80 mm text the report listed all 50 violations and the
+command still succeeded. Both are `error` now; the same board then exits 5. Do
+not lower them back to warning — that is the third time this repository has
+found a check that could not fail, after the globstar bug and the empty-file
+list. `silk_overlap`, `silk_over_copper` and `silk_edge_clearance` are still
+warnings and still toothless; the board is clean under them at `error`, so
+promoting them is free whenever someone wants to. Plan §6.1 has the whole
+comparison against printed.cz, including the one number with no margin: the via
+annular ring is 0.15 mm, exactly their published minimum.
+
 **The `120R DNF` silkscreen legend was missing until 2026-08-09** and the plan
 §6 pre-order check is what found it. R5 is the 120 Ω termination that must
 **not** be fitted, and it has a footprint, pads and a value like any other part
@@ -86,6 +106,12 @@ would have caught it: ERC, DRC, `check-netlist.py` and `check-placement.py` are
 all indifferent to silkscreen. It is now a board-level `gr_text` at
 (93.2, 91.5) rather than a footprint field, so a future change to how fields
 are placed cannot take it a second time. Do not delete it.
+
+**Regenerating `fab/` is cheap and it is the rule after any board change.** The
+silkscreen resize proved the point: only `canfuel-F_Silkscreen.gto` and
+`canfuel-B_Silkscreen.gbo` changed substantively, everything else differed by
+its timestamp line alone — so a stale `fab/` next to an edited board is never
+worth the risk of guessing which files matter.
 
 **R1 moved 1.20 mm on 2026-08-09**, after the paper mock-up showed its lead
 almost touching C8's. Those two pads are the opposite ends of JP2, so a bridge

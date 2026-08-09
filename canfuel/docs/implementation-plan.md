@@ -923,8 +923,9 @@ and hand-soldered, so no assembly house will use it.
   board had no board-level text at all: value fields went to F.Fab in the 5.4
   pass and the R5 footprint only ever put its *reference* on F.SilkS, so the
   silk read `R5` and nothing else. A `120R DNF` `gr_text` was added at
-  (93.2, 91.5), 0.8 mm, F.SilkS — its extent is x 90.09..96.31, y 90.82..92.18,
-  which is 1.23 mm clear of R5 pad 2 and 1.20 mm clear of the 3.5 mm keepout
+  (93.2, 91.5), F.SilkS — at the 1.0 mm height of 6.1 its extent is
+  x 89.31..97.09, y 90.65..92.35, which is 0.45 mm clear of R5 pad 2 and
+  0.41 mm clear of the 3.5 mm keepout
   around H4. DRC stays at 0 violations and 0 warnings with `silk_overlap`,
   `silk_over_copper` and `silk_edge_clearance` all enabled, and the plotted
   strokes are in `canfuel-F_Silkscreen.gto`.
@@ -933,6 +934,71 @@ and hand-soldered, so no assembly house will use it.
   only thing on the board that tells an assembler not to fit a part that has a
   footprint, pads and a value — and it was the one legend nothing else would
   have caught.
+
+### 6.1 printed.cz — capability check
+
+<https://printed.cz/vyroba-dps/>, the first fab house considered. Their
+published limits against this board, measured from `canfuel.kicad_pcb`:
+
+| Parameter | printed.cz | canfuel | |
+| --- | --- | --- | --- |
+| layers | 1–12 | 2 | ok |
+| max size | 600 × 600 mm | 55 × 45 mm | ok |
+| thickness | 0.2–3.2 mm | 1.6 mm | ok |
+| outer copper | 18/35/70/105 µm | 35 µm | ok |
+| min track | 0.075 mm (rec. 0.15) | 0.25 mm | ok |
+| min spacing | 0.075 mm (rec. 0.15) | 0.20 mm | ok |
+| drill range | 0.2–6.3 mm | 0.30–3.20 mm | ok |
+| min annular ring | 0.15 mm | 0.15 mm via, 0.24 mm pads | **at the limit** |
+| finish | HASL Pb-free, gold, OSP | HASL | ok |
+| mask / legend | green… / white, black, yellow | green + white | ok |
+| **min text height** | **1 mm** | **was 0.80 mm** | **failed** |
+| **min legend stroke** | **0.15 mm** | **was 0.12 mm** | **failed** |
+| min order | 1 pc | 1 pc | ok |
+| e-test, AOI | free | — | ok |
+
+Track and spacing are not merely inside the limit, they are above the value
+the page *recommends* — this board asks for the cheapest process class they
+run. Two things are worth recording:
+
+**The legend failed, on every single text.** All 25 silkscreen items — 24
+reference designators and the `120R DNF` of 3.3 — were 0.80 mm high with a
+0.12 mm stroke, under both minimums. They are now 1.0 mm / 0.15 mm, which is
+also what `silk_text_size_h/v` and `silk_text_thickness` in the project
+defaults have always said; only the placed items disagreed. Nothing had to
+move: DRC reports 0 violations with `silk_overlap`, `silk_over_copper` and
+`silk_edge_clearance` raised to `error`, and only the two silkscreen gerbers
+changed — copper, mask, paste, drill, edge and the `.gbrjob` are byte-identical
+apart from their timestamp line.
+
+**Our own DRC could not have caught it, and now can.** `min_text_height` was
+0.8 and `min_text_thickness` 0.08 — looser than the process, so the board
+passed its own rules while failing the fab's. Both are now set to the
+printed.cz values.
+
+That alone would still have been useless. `text_height` and `text_thickness`
+ship as **warnings**, and `kicad-cli pcb drc --exit-code-violations` returns 0
+on warnings: with the tightened numbers and the old 0.80 mm text, the report
+listed all 50 violations and the command still **exited 0**. That was measured,
+not assumed. Both severities are now `error`, which was measured too — the same
+board and rules exit 5. A check that cannot fail is not a check; this
+repository has already been bitten by that twice, in CI.
+
+`silk_overlap`, `silk_over_copper` and `silk_edge_clearance` are still
+warnings and therefore still cannot fail a run. The board is clean under all
+three at `error` severity, so promoting them costs nothing — left as a
+deliberate open choice rather than changed unasked.
+
+**The via annular ring is exactly at their stated minimum.** 0.15 mm, from a
+0.60 mm pad on a 0.30 mm drill, on six vias. It is allowed and they publish it
+as manufacturable, but there is no margin. Component pads are 0.24 mm and up,
+so it is the vias alone. If they push back, a 0.70 mm via pad gives 0.20 mm;
+ask before changing anything.
+
+**Not published on their page, so ask:** accepted data formats (whether a ZIP
+of the gerbers is enough, whether Protel extensions are fine, whether PTH and
+NPTH must be separate drill files), copper-to-edge clearance (this board holds
+0.30 mm), lead times and price.
 
 ---
 
