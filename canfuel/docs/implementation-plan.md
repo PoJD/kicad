@@ -636,6 +636,69 @@ against the sketch:
 - **Keep parts and copper out of a 7 mm circle around each of H1–H4.** A nylon
   M3 standoff has a 6 mm head and it has to sit flat.
 
+### 5.2a Placement as built — done
+
+Parts are placed and `tools/check-placement.py` is clean. U1 sits across the
+middle at rot 270, which puts **pins 1–14 along its top edge running right to
+left** and pins 15–28 along the bottom. Everything else follows from that:
+
+| U1 pin       | Faces  | What went next to it                         |
+| ------------ | ------ | -------------------------------------------- |
+| 1 MCLR       | top right | R6, R1, C8, JP2 in the top-right corner   |
+| 6 VCAP       | top    | C7 on B.Cu, under the package                |
+| 9/10 OSC     | top    | Y1 mirrored, C1 and C2 standing either side  |
+| 20 VDD       | bottom | C3 directly below                            |
+| 23/24 CAN    | bottom | U2 below right, then J1/J2                   |
+| 27/28 ICSP   | bottom | J3 below left                                |
+
+J4 takes the right edge as a vertical 2×8, between the H2 and H4 keepouts.
+J1/J2 sit on the bottom edge, cables leaving downwards. D1/D2 and their
+resistors run down the left edge where they can be seen.
+
+Measured against the datasheet:
+
+| Rule    | Constraint            | Measured                    |
+| ------- | --------------------- | --------------------------- |
+| 2.4     | C7 → U1.6 ≤ 6 mm      | **2.25 mm**, on B.Cu        |
+| 2.2.1   | C3 → U1.20 ≤ 6 mm     | **5.67 mm**                 |
+| 2.2.1   | C4 → U2.3 ≤ 6 mm      | **5.68 mm**                 |
+| 2.2.1   | C5 → U2.5 ≤ 6 mm      | **4.49 mm**                 |
+| 2.6     | Y1/C1/C2 ≤ 12 mm      | **5.35 / 9.79 / 6.98 mm** from the pin each is on |
+
+**Two things about the wording are worth keeping.** §2.2.1 and §2.4 limit the
+*trace length from the pin to the capacitor*; §2.3 and §2.6 talk about where the
+*components are placed*. Those are not the same measurement and the difference
+decides whether this board passes, so `check-placement.py` keeps them apart.
+§2.6 also says "close to the **respective** oscillator pins", so C1 is measured
+against OSC1 and C2 against OSC2 — the pins they are actually on.
+
+**Where §2.3 is not met, and why.** It asks for R1, R6, C8 and JP2 all inside a
+6 mm circle centred on pin 1. Pin 1 is a corner pin, so about three quarters of
+that circle is free — roughly 85 mm² — and the four parts are 71 mm² of
+courtyard between them. They do not fit, and no choice of footprint changes
+that: this is an area problem, not a lead-pitch problem. What was done instead:
+
+- **R6 is inside entirely** (farthest corner 5.94 mm). It is the 470 Ω series
+  resistor in the reset path, the one Figure 2-2 note 2 is about.
+- **C8 4.31 mm and JP2 2.04 mm at the nearest edge**; only the far ends of their
+  bodies cross 6 mm.
+- **R1 is the one pushed out** (nearest edge 5.16 mm). It is the 10 kΩ pull-up
+  to VDD — a static bias, and the least distance-sensitive part of the network.
+
+The tolerated figures are recorded in `ALLOW` in `tools/check-placement.py` with
+those reasons, so a deliberate deviation and a regression never look alike.
+
+**Standing resistors.** R1–R6 are `R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical`
+and C8 is the 2.50 mm disc, changed from the 10.16 mm horizontal parts on
+2026-08-09. That is how the maintainer fits axial resistors anyway — body
+upright, leads bent to the narrowest spacing — and it is what got R6 inside the
+circle at all: upright, a resistor reaches 3.95 mm from its first pad against
+11.36 mm lying down.
+
+**C7 is turned across the package, not along it.** Lying along the pin row its
+ground pad shorted pin 5; in the empty channel between the two rows it clears
+both rows by 0.79 mm and still lands 2.25 mm from pin 6.
+
 ### 5.3 Net classes
 
 | Class   | Nets              | Track width | Clearance |
@@ -647,6 +710,26 @@ against the sketch:
 Route CANH/CANL as a pair, side by side, equal length, no stubs beyond the DNF
 R5 pads. Pour SGND on both layers and stitch the pours with vias, but do not
 let the pour split the ground under the crystal.
+
+**Done.** The three classes are in `canfuel.kicad_pro`, assigned by netclass
+pattern: `+5V` and `SGND` to Power, `CANH` and `CANL` to CAN, everything else
+Default. Via sizes stay at KiCad's 0.6/0.3 mm for all three — the table above
+sets track width and clearance only, and 0.3 mm drill is inside every fab
+house's standard process. That is a manufacturing choice, not a datasheet
+number, and nothing in this repository depends on it.
+
+**Routing plan for the layer split**, which falls out of the placement:
+
+- Everything leaving U1's **top row goes down into the channel between the two
+  pin rows first**, then out sideways. That keeps the area above the top row
+  clear for the oscillator's grounded guard, which §2.6 requires be free of
+  signal and power traces.
+- **J4's column B is routed on B.Cu**, coming up to the pads from underneath.
+  All six of its signals already sit on U1's bottom row, and it avoids
+  threading six tracks through the gaps between the column A pads.
+- **Nothing on B.Cu under the crystal.** §2.6 says so in as many words for a
+  two-sided board. The grounded pour there is the guard the same section asks
+  for, and is not what "traces" means.
 
 ### 5.4 J4 — escape hatch
 
@@ -670,6 +753,15 @@ off in a hurry, which is the header's entire purpose.
 pins of 3.6; someone patching a wire onto this header a year from now will not
 remember that. Print `RA1 2mA` and so on, or a shared legend.
 
+**Done** — `RA1-RA3,RA5` / `2mA MAX` on two lines in the free corner below J4.
+Not beside the header, which is where it belongs: the gap between U1 and J4 is
+0.53 mm and fits no text at all.
+
+Value fields moved to F.Fab in the same pass. At this density the stock field
+positions collided with each other and sat over pads; the references are what
+a hand-assembler needs on the silkscreen, and the values are in the BOM and on
+the fab drawing already.
+
 Put RC6/RC7 next to each other and label them `CANTX2`/`CANRX2` — they are the
 ECAN alternates from 4.2.
 
@@ -677,10 +769,18 @@ ECAN alternates from 4.2.
 
 ```
 kicad-cli pcb drc --exit-code-violations canfuel/canfuel.kicad_pcb
+python tools/check-placement.py
 ```
 
-Iterate until it exits 0. Then, separately from DRC, do the checks a tool
-cannot do: run the 3D viewer and confirm the socket, the electrolytic and both
+Iterate until both exit 0. **DRC on its own is not enough, for the same reason
+ERC was not.** A decoupling capacitor 40 mm from its pin is a perfectly legal
+board — it is just a broken one, and DRC will pass it without complaint.
+`check-placement.py` is the board's equivalent of `check-netlist.py`: it
+re-measures the four distance rules of 5.2 and the mounting-hole keepouts, and
+carries the tolerated §2.3 shortfalls with their reasons so an intentional
+deviation never reads as a regression.
+
+Then, separately from either, do the checks a tool cannot do: run the 3D viewer and confirm the socket, the electrolytic and both
 Micro-Fit bodies do not collide, and print the board 1:1 on paper and drop the
 real connectors onto it.
 
@@ -749,9 +849,11 @@ with nothing left for tolerance or temperature.
 
 1. `Add KiCad project skeleton for canfuel` — CI goes live
 2. `Draw canfuel schematic` — ERC clean
-3. `Lay out canfuel PCB` — DRC clean
-4. `Add canfuel fabrication outputs`
-5. `Add canfuel purchase list`
+3. `Place canfuel PCB parts` — net classes, footprints, placement, silkscreen;
+   DRC clean apart from the unrouted ratsnest
+4. `Route canfuel PCB` — DRC clean
+5. `Add canfuel fabrication outputs`
+6. `Add canfuel purchase list`
 
 Each commit should leave CI green. If step 2 needs several passes, that is
 fine — but do not commit a schematic that fails ERC, because then a red CI run

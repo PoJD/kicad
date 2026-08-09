@@ -59,10 +59,13 @@ Those are marked as measured where they appear. The rule above is about parts.
 ## Current state — read this first
 
 **The schematic is finished, checked against the datasheets and ERC clean. The
-PCB is an outline with four mounting holes and no footprints placed. Nothing
-blocks the layout.** `canfuel/` holds `canfuel.kicad_pro`, `canfuel.kicad_sch`
-(complete, one A3 sheet) and `canfuel.kicad_pcb` (55 × 45 mm outline, H1–H4),
-plus `docs/` and an empty `fab/gerbers/`. `lib/` is empty.
+PCB has net classes, all 25 footprints placed and a tidy silkscreen; nothing is
+routed yet.** `canfuel/` holds `canfuel.kicad_pro`, `canfuel.kicad_sch`
+(complete, one A3 sheet) and `canfuel.kicad_pcb` (55 × 45 mm outline, H1–H4,
+25 placed parts), plus `docs/` and an empty `fab/gerbers/`. `lib/` is empty.
+
+DRC reports **zero violations** and 70 unconnected items, which is simply the
+un-routed ratsnest. `python tools/check-placement.py` is clean.
 
 **All parts are bought.** Nothing is on order and nothing is outstanding.
 
@@ -117,6 +120,30 @@ off, so a mistyped label would quietly split a net in two without a violation.
 When the design changes on purpose, update `EXPECT` in the script in the same
 commit. That is what the file is for.
 
+**The board has the same problem and the same answer.** Run after any edit to
+the placement:
+
+```
+python tools/check-placement.py
+```
+
+DRC proves the board is manufacturable; it does not care where a decoupling
+capacitor sits. A part 40 mm from its pin is a legal board and a broken one.
+This measures the four DS39977C distance rules and the mounting-hole keepouts,
+and carries the tolerated §2.3 shortfalls with their reasons, so an intentional
+deviation and a regression never look the same.
+
+**`kicad-cli` cannot sync the board against the sheet** — `kicad-cli pcb`
+offers only drc, export, import, render and upgrade, and none of them is
+*Update PCB from Schematic*. `python tools/import-footprints.py` does it
+headlessly: loads footprints, links them to their symbols by KIID path, assigns
+every pad's net. It is safe to re-run — existing parts keep their position,
+orientation and side, so hand placement survives.
+
+Both scripts need `pcbnew`, which the stock Windows Python cannot import; they
+re-run themselves under KiCad's bundled interpreter, so `python tools/...`
+works either way.
+
 **KiCad 10.0.5 is installed** at `C:\Program Files\KiCad\10.0`, and
 `C:\Program Files\KiCad\10.0\bin\` is on the user PATH. A shell started before
 that PATH edit will not see `kicad-cli`; call it by full path rather than
@@ -124,57 +151,81 @@ concluding it is missing.
 
 ### Resume here — next session
 
-**Next up is the PCB layout, section 5 of the plan. Nothing blocks it.** The
-enclosure used to, and there is no longer going to be one — see plan §9.1 for
-why, and do not reopen it. The four M3 holes are in the board, they answer to
-nothing but themselves, and whatever the board ends up mounted on is designed
-around them.
+**Next up is routing, the rest of plan section 5. Nothing blocks it.** Net
+classes (5.3), placement (5.2a) and the silkscreen (5.4) are done and committed.
 
 In order:
 
 1. **Read `canfuel/docs/implementation-plan.md` first.** It is the working
    document: reference designators, the full 28-pin PIC pinout, net names, net
-   classes, placement plan and the order of commits. This file only summarises
-   it.
-2. **Check the prerequisites hold**: `kicad-cli version` prints `10.x`, the
-   three `canfuel/canfuel.*` files are present, `python tools/check-netlist.py`
-   is clean, `kicad-cli pcb drc` is clean.
-3. **Net classes first** (plan 5.3), then **placement** (5.2), then routing.
-4. **`kicad-cli pcb drc` until clean**, then commit.
+   classes, the placement as built and the order of commits. This file only
+   summarises it.
+2. **Check the prerequisites hold**: `kicad-cli version` prints `10.x`,
+   `python tools/check-netlist.py` and `python tools/check-placement.py` are
+   clean, `kicad-cli pcb drc` reports zero violations.
+3. **Route.** The layer split is in plan 5.3 and is not arbitrary — read it
+   before laying the first track.
+4. **`kicad-cli pcb drc` and `check-placement.py` until both are clean**, then
+   commit.
 5. Then `fab/` and the purchase list — plan sections 6 and 7.
 
-**Placement has four numeric constraints, not one**, and they are the part of
-5.2 worth reading twice. All four come from DS39977C:
+**The four numeric constraints are met and are now machine-checked.** Do not
+re-derive them by hand; run `python tools/check-placement.py`, which measures
+all of them and prints what it measured:
 
-| Within | What | Section |
-| ------ | ---- | ------- |
-| 6 mm   | C7 to U1 pin 6 — put it on B.Cu directly under the pin | 2.4 |
-| 6 mm   | C3 to U1 pin 20, C4 to U2 pin 3, C5 to U2 pin 5 | 2.2.1 |
-| 6 mm   | R1, R6, C8 and JP2 to U1 pin 1 — four parts, the tightest cluster | 2.3 |
-| 12 mm  | Y1, C1, C2 to U1 pins 9/10, with a grounded pour around them and nothing on the far side under the crystal | 2.6 |
+| Within | What | Section | As built |
+| ------ | ---- | ------- | -------- |
+| 6 mm   | C7 to U1 pin 6, on B.Cu across the package | 2.4 | 2.25 mm |
+| 6 mm   | C3/C4/C5 to U1 pin 20, U2 pin 3, U2 pin 5 | 2.2.1 | 5.67 / 5.68 / 4.49 mm |
+| 6 mm   | R1, R6, C8, JP2 to U1 pin 1 | 2.3 | **partly — see below** |
+| 12 mm  | Y1, C1, C2 to their own oscillator pins | 2.6 | 5.35 / 9.79 / 6.98 mm |
 
-Do the pin-1 cluster before the escape header, not after — it is the one that
-runs out of room.
+**§2.3 cannot be met in full and the shortfall is deliberate.** Four parts
+totalling 71 mm² of courtyard do not fit in the ~85 mm² of free area around a
+corner pin, whatever footprints are chosen. R6 — the series resistor in the
+reset path — is inside entirely; C8 and JP2 have their near edges 4.31 and
+2.04 mm from the pin; R1, the static pull-up, is the one pushed out. The
+tolerated numbers live in `ALLOW` in `tools/check-placement.py` next to their
+reasons. **If that check goes red, something moved — do not widen `ALLOW` to
+make it green again.**
+
+**Two readings of the datasheet matter here.** §2.2.1 and §2.4 limit the *trace
+length from pin to capacitor*; §2.3 and §2.6 limit where the *component is
+placed*. Different measurements, and the difference is what decides this board.
+§2.6 also says "the **respective** oscillator pins", so C1 is measured against
+OSC1 and C2 against OSC2.
+
+**R1–R6 stand upright** (`P2.54mm_Vertical`), changed from horizontal
+P10.16 mm on 2026-08-09. That is how the maintainer fits axial resistors —
+body upright, leads bent to the narrowest spacing — and it is also the only
+reason R6 fits inside the 6 mm circle: 3.95 mm reach standing against 11.36 mm
+lying down. Do not quietly revert them to horizontal.
 
 ### Working with the tools here
 
-**Run the checks without asking.** `.claude/settings.local.json` sets
-`defaultMode: "dontAsk"`, so `python`, `kicad-cli`, `pdftotext`, headless
-Chrome renders and the ordinary shell tools all run unprompted. ERC, DRC,
+**Run the checks without asking.** `.claude/settings.local.json` keeps
+`defaultMode: "default"` and an explicit `allow` list covering `python`,
+`kicad-cli` (bare and by full path), `pdftotext` and the read-only git and
+shell commands, under both `Bash(...)` and `PowerShell(...)`. ERC, DRC,
 `check-netlist.py` and an SVG render are meant to be run freely and often —
 stopping to ask permission for a verification step is how verification stops
-happening.
+happening. Verified working on 2026-08-09: all four checks run unprompted.
 
 **`git commit`, `git push`, `gh pr create`, `git rebase` and `git reset --hard`
 still stop and ask**, by `ask` rules in the same file. Those are the ones that
 leave the machine or throw work away. Everything else does not.
 
-An allowlist of command prefixes was tried first and did not work, for a reason
-worth knowing: prefix rules match the start of a command, and most real
-invocations here are compound — `SP="..."; cd "$SP" && kicad-cli ... && python
-- <<'EOF'`. The variable assignment, the `cd` and the heredoc are not covered
-by `Bash(python:*)`, so every new shape prompted anyway. Keeping commands
-short and single-purpose helps, but the mode is what actually fixed it.
+**`defaultMode: "dontAsk"` was tried and is worse than it looks — do not put it
+back.** It does not widen the `allow` list, and with a list this narrow the
+result was that unmatched commands were silently rejected instead of prompting.
+A prompt tells you a rule is missing; a silent rejection just looks like the
+tool failing, and a whole session went that way before anyone worked out why.
+
+Grow the `allow` list one entry at a time instead. Prefix rules match the start
+of a command, so compound invocations — `SP="..."; cd "$SP" && kicad-cli ... &&
+python - <<'EOF'` — are not covered by `Bash(python:*)` and will prompt. The
+fix is to keep commands short and single-purpose, one tool per call, not to
+broaden the mode.
 
 The file is gitignored, so it is per-machine and none of this is imposed on
 anyone else.
