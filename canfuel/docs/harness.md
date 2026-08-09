@@ -1,148 +1,110 @@
-# Checklist — building the harness and testing before the PCB design
+# Building the harness
 
-One session, ideally a whole afternoon. Goal: be certain that both the power
-supply and the bus work, and come away with logs to analyse — only then is the
-board drawn.
+The loom that connects the MFD15 to the car and to the converter board. It
+carries two things: the CAN pair from the cluster to the air vent, and 5 V from
+the display's own plug C to the converter.
 
-**What to prepare:** multimeter, USBtin and laptop, oDSS with the new
-S-AQY.TRI, new crimping pliers, a set of pin extractors, insulating/masking
-tape, spare ACI pins, spare 43030 sockets.
+**The measuring and the sniffing are done.** The supply was checked at C6/C12
+and reads 5.01 V, the TRI file loads and the logs were taken. Everything that
+was in this document about proving those points has been removed — what is left
+is how to make the loom.
+
+**The car-side 4-pin connector is settled too.** It exists and is already
+fitted; this is a re-crimp onto longer wires, not a new connector choice.
+
+**What you need:** crimping pliers, pin extractors, multimeter, spare ACI pins,
+spare Micro-Fit 43030 sockets, butt splices with adhesive-lined heat shrink,
+cable ties, fabric loom tape.
 
 ---
 
-## A. On the bench, before touching the car
+## A. On the bench — making up the loom
 
-- [ ] **A1. Test crimp on an ACI pin.** Take a spare pin and crimp it onto
-  0.5 mm² FLRY with the new pliers (second jaw position, 22–18 AWG). Pull on
+- [ ] **A1. Test crimp on an ACI pin first.** Take a spare pin and crimp it
+  onto 0.5 mm² FLRY with the pliers (second jaw position, 22–18 AWG). Pull on
   the wire — it must hold. Slide on the yellow seal, insert it into the
   housing; it must click and the red lock must go on.
-  - ❗ If it does not pass, you need a second pair of pliers for waterproof
-    connectors. Find that out now, not with the dashboard in pieces.
-- [ ] **A2. Cut the wires.** Red and black for the power run (car → plug B),
-  yellow and white for the long CAN run (cluster → air vent). Err on the long
-  side; shortening is always possible.
+  - ❗ If it does not hold, you need a second pair of pliers for waterproof
+    connectors. Find that out now, on the bench, not with the dashboard in
+    pieces.
+- [ ] **A2. Cut the new wires.** Red and black for the power run to plug B,
+  yellow and white for the long CAN run from the cluster to the air vent. Err
+  on the long side — shortening is always possible and this is a re-crimp
+  precisely because the first set came out short.
 - [ ] **A3. Twist the CAN pair** along its whole length.
 - [ ] **A4. Crimp the ends.** ACI pins on the car side, Micro-Fit 43030 sockets
-  on the housing side. Tug each one by hand.
-- [ ] **A5. Fit two new sockets (5 V, SGND) into the existing 12-pin housing of
-  plug C**, positions C6 and C12. Do not touch C7/C8.
+  on the housing side. Tug every one by hand.
+- [ ] **A5. Fit two sockets (5 V, SGND) into the existing 12-pin housing of
+  plug C**, positions C6 and C12. **Do not touch C7/C8** — those are the
+  display's CAN pins and they are already right.
 - [ ] **A6. Ring everything out.** Every wire end to end, and no short between
-  adjacent positions.
+  adjacent positions. Do this before the fuse goes in, so that a later failure
+  has only one new thing to blame.
 
-## B. Disassembly and routing
-
-- [ ] **B1. Take the dashboard apart** (radio, centre panel).
-- [ ] **B2. Route the new long CAN run** from the cluster to the air vent so
-  that the connector can be pulled out of the vent.
-- [ ] **B3. Route the new power wires** from the car's 4-pin to plug B.
-- [ ] **B4. Do not tape anything up yet.** Loom it right at the end.
-
-## C. Measuring the supply — before anything else
-
-- [ ] **C1. Switch on the ignition.**
-- [ ] **C2. Measure the voltage between the 5 V and SGND positions** on the
-  4-pin that goes to the converter (i.e. at the end of the loom from plug C).
-  Expect ~5 V.
-  - ✅ Correct → carry on.
-  - ❌ Wrong → **stop.** The power supply concept has failed and must be sorted
-    out before the dashboard goes back together. Send me the measured values.
-- [ ] **C3. As a cross-check, measure 12 V between B5 and B6 as well.**
-
-## D. Testing the bus and the TRI file
-
-- [ ] **D1. Link CAN-H/L** between the two 4-pin connectors with two DuPont
-  jumpers and secure them with tape.
-- [ ] **D2. Connect the MFD15** (plug B and plug C) and switch on the ignition.
-- [ ] **D3. Upload the new S-AQY.TRI** through oDSS.
-- [ ] **D4. Check that the TRI file loaded correctly:**
-  - DisplayVolt shows a realistic ~12–14 V ← this is the key piece of evidence
-  - DisplayTemp shows a sensible temperature
-  - RPM, Speed, CLT, OilTemp, TankL, AccelG, FuelCntRaw are all live
-  - FuelNow, FuelAvg, FuelTank, Range, Torque, Power, VddConv = 0 ←
-    **correct**, the converter does not exist yet
-  - ❗ If the file does not load, or a sensor named "0" appears → delete the
-    first `info;1.0;...` line and upload again.
-- [ ] **D5. Leave it running for a few minutes** and watch for values dropping out.
-
-## E. Sniffs
-
-### E1. Trip reset — this is the important one
-
-- [ ] Connect the USBtin to CAN-H/L and start recording
-- [ ] Start the engine and **stand still for ~30 s** (a baseline before the
-  reset is needed)
-- [ ] **Write down what the trip meter on the cluster reads** (it should still
-  be 2.1 km)
-- [ ] **Press the trip reset** and keep the recording running
-- [ ] **Drive at least 0.1 km** around the garden so the trip meter ticks
-- [ ] Stop, **write down the new trip value**, save the log as `06_trip_reset.txt`
-
-### E2. Brisk pull-away — oil vs. IAT
-
-- [ ] New recording, engine warm
-- [ ] Quick pull-away in first gear to ~30 km/h, then brake immediately
-- [ ] Save as `07_accel.txt`
-- This settles whether 0x420 b3 is oil temperature or intake air temperature —
-  IAT would drop during the pull-away, oil would not.
-
-## F. Wrapping up
-
-- [ ] **F1. Only once everything above has passed** — tape up the looms and
-  tidy the routing. **Leave the fuse holder of section G outside the wrap**,
-  and use fabric loom tape, not PVC insulating tape: at dashboard temperatures
-  PVC adhesive creeps, which is the same reason the board is not taped down
-  either.
-- [ ] **F2. Reassemble the dashboard**
-- [ ] **F3. Send me both logs** plus the measured voltages and what the trip
-  meter read before and after the reset
-
----
-
-## G. The 5 V fuse — added 2026-08-09
+## B. On the bench — the 5 V fuse
 
 The converter takes 5 V straight from the display, so a short on the converter
-board is a short across the MFD15's 5 V rail. A fuse in the 5 V wire ends that.
-It is in the loom and not on the board because no 5 × 20 holder fits on a
-finished 55 × 45 mm PCB — plan 9.2 has the measurements and the reasoning.
+board is a short across the MFD15's 5 V rail. The fuse ends that. It is in the
+loom rather than on the board because no 5 × 20 holder fits on a finished
+55 × 45 mm PCB — plan 9.2 has the measurements and the reasoning.
 
 **Parts:** SIBA 179120.0.2, 200 mA 250 V 5 × 20 mm glass, **time-lag T** — not
 the fast F version — in inline cable holder K23411, which comes with 200 mm of
-lead. The holder body is about 46 mm long and 10.5 mm across.
+lead. The holder body is about 46 mm long and 10.5 mm across, so it needs a
+straight run of loom that length and somewhere it can be unscrewed.
 
-- [ ] **G1. Cut the 5 V wire only**, a short way back from the 4-pin connector
-  at the air vent. Leave the ground wire whole. Position it so that the holder
+- [ ] **B1. Cut the 5 V wire only**, a short way back from the 4-pin connector
+  at the air vent end. Leave the ground wire whole. Place the cut so the holder
   ends up in the length of loom that comes out when the MFD15 is pulled — the
   whole point is that the fuse can be changed without dismantling the dash.
-- [ ] **G2. Join each cut end to one lead of the holder.** Crimp butt splices
-  with adhesive-lined heat shrink are the right way. Soldering is acceptable
-  if the joint is then sleeved well past the wick on both sides — a soldered
-  joint in a loom that vibrates cracks exactly at the edge of where the solder
+- [ ] **B2. Join each cut end to one lead of the holder.** Crimp butt splices
+  with adhesive-lined heat shrink are the right way. Soldering is acceptable if
+  the joint is then sleeved well past the wick on both sides — a soldered joint
+  in a loom that vibrates cracks exactly at the edge of where the solder
   travelled.
-- [ ] **G3. Cable-tie the holder to the loom** so it cannot swing and chafe
+- [ ] **B3. Cable-tie the holder to the loom** so it cannot swing and chafe
   against the vent housing.
-- [ ] **G4. Ring it out** — continuity from plug C position C6 through to the
-  4-pin, with the fuse fitted. Then pull the fuse and confirm the circuit
-  really does open, which also proves the fuse is the one carrying the current
-  and not a splice bypassing it.
-- [ ] **G5. Wrap the loom up to the holder and start again after it.** The
-  holder stays outside the tape and stays openable. See F1.
+- [ ] **B4. Ring it out again** — continuity from plug C position C6 through to
+  the 4-pin, with the fuse fitted. Then pull the fuse and confirm the circuit
+  really does open. That second half is the one worth doing: it proves the fuse
+  carries the current and that no splice quietly bypasses it.
 
-**If it blows:** the fault is on the converter board, not in the display. Fit
-one new fuse. If the second one goes as well, stop replacing fuses and find
-the short — that is what the fuse is telling you.
+## C. In the car — routing
 
-**What this does not protect:** the run from plug C to the fuse. That is
-deliberate; it lies inside the dashboard and does not move, and covering it
-would mean putting the fuse where you cannot reach it.
+- [ ] **C1. Take the dashboard apart** (radio, centre panel).
+- [ ] **C2. Route the long CAN run** from the cluster to the air vent, so that
+  the connector can be pulled out of the vent.
+- [ ] **C3. Route the power wires** from the car's 4-pin to plug B. **This is
+  12 V for the MFD15 itself, not for the converter.** The converter's 5 V comes
+  from plug C at C6/C12 and never touches plug B — the 12 V branch was dropped
+  from the board design, so nothing in this step feeds the converter.
+- [ ] **C4. Do not tape anything up yet.** Loom it right at the end, once
+  everything is in place and reaches.
+
+## D. Finishing
+
+- [ ] **D1. Tape up the looms and tidy the routing.** Use **fabric loom tape,
+  not PVC insulating tape** — at dashboard temperatures PVC adhesive creeps,
+  which is the same reason the board is not taped down either.
+- [ ] **D2. Wrap up to the fuse holder and start again after it.** The holder
+  stays outside the tape and stays openable.
+- [ ] **D3. Reassemble the dashboard.**
 
 ---
 
-## When to stop and write
+## If the fuse blows
 
-- There is no 5 V on C6 → the power supply concept changes
-- The MFD15 stops communicating after the extension → **suspect the DuPont
-  contacts first**, not the cable length; try reseating them
-- The TRI file will not load even after deleting the `info;` line
-- The ACI crimp from the new pliers does not hold
+The fault is on the converter board, not in the display. Fit one new fuse — and
+carry a spare, because a blown one behind the dash with no replacement to hand
+is a wasted trip. If the second one goes as well, stop replacing fuses and find
+the short. That is what the fuse is telling you.
 
-In all four cases, leave the dashboard open.
+**What the fuse does not protect:** the run from plug C to the fuse itself.
+That is deliberate — it lies inside the dashboard and does not move, and
+covering it would mean putting the fuse somewhere you cannot reach.
+
+## If a crimp will not hold
+
+Stop and sort the tool out before going any further. A crimp that needs
+persuading on the bench is a crimp that will let go in the car, and everything
+downstream of this loom is inside a dashboard.

@@ -67,9 +67,21 @@ poured on both), plus `docs/` and an empty `fab/gerbers/`. `lib/` is empty.
 **The escape header J4 was removed on 2026-08-09** and the board is 24 parts,
 not 25. It is not an oversight — see below before reinstating it.
 
-Next up is `fab/` and the purchase list, plan sections 6 and 7.
+**Next up is `fab/` — plan section 6, and nothing else.** Section 7, the
+purchase list, is done: all parts are bought, the harness fuse and its holder
+included, nothing is on order and nothing is outstanding. There are no open
+questions left anywhere in the project. `fab/` is the only thing between here
+and an ordered board.
 
-**All parts are bought.** Nothing is on order and nothing is outstanding.
+**R1 moved 1.20 mm on 2026-08-09**, after the paper mock-up showed its lead
+almost touching C8's. Those two pads are the opposite ends of JP2, so a bridge
+would have held the jumper closed for good. Do not move it back — the reasoning
+and the widened `ALLOW` entry are below and in plan §5.2a.
+
+**The 5 V feed is fused, in the harness.** SIBA 179120.0.2, 200 mA time-lag T,
+in inline holder K23411. It is not on the PCB and there is no F1 on the
+schematic; plan §9.2 has the measurement that decided it and `harness.md`
+section B has the wiring.
 
 CI is live and green: it finds both files and runs ERC and DRC on them for
 real, and since 2026-08-09 it also runs `check-netlist.py` and
@@ -171,9 +183,10 @@ concluding it is missing.
 
 ### Resume here — next session
 
-**Section 5 is finished. Next up is `fab/` and the purchase list, plan sections
-6 and 7.** Net classes, placement, routing, pours and silkscreen are all done
-and committed, and every check is green.
+**Everything except `fab/` is finished. Next up is plan section 6 and only
+that.** Net classes, placement, routing, pours and silkscreen are done and
+committed, every check is green, all parts are bought and there is not one open
+question left. Do not go looking for design work to do first — there is none.
 
 Before generating `fab/`, re-run all four checks — they are cheap and they are
 what stands between a mistake and an ordered board:
@@ -198,7 +211,7 @@ The older step-by-step notes below still apply if any of that has to be redone:
    before laying the first track.
 4. **`kicad-cli pcb drc` and `check-placement.py` until both are clean**, then
    commit.
-5. Then `fab/` and the purchase list — plan sections 6 and 7.
+5. Then `fab/` — plan section 6. Section 7, the purchase list, is already done.
 
 **The four numeric constraints are met and are now machine-checked.** Do not
 re-derive them by hand; run `python tools/check-placement.py`, which measures
@@ -315,11 +328,13 @@ order of commits — is in `canfuel/docs/implementation-plan.md`. The outline:
    LEDs off port A.~~ Done — all of them are on the sheet and repeated in its
    notes panel.
 4. ~~`kicad-cli sch erc` until clean.~~ Done, zero violations.
-5. Lay out the PCB inside ~55 × 45 mm, two layers, mostly through-hole.
-6. `kicad-cli pcb drc` until clean.
-7. Generate `fab/` (gerbers, BOM, CPL) and commit it.
-8. Only then assemble the GME purchase list — the BOM falls out of the
-   schematic, so buying earlier means buying twice.
+5. ~~Lay out the PCB inside ~55 × 45 mm, two layers, mostly through-hole.~~
+   Done — 24 parts, routed, poured.
+6. ~~`kicad-cli pcb drc` until clean.~~ Done, zero violations.
+7. **Generate `fab/` (gerbers, BOM, CPL) and commit it.** ← this is the next step
+8. ~~Only then assemble the GME purchase list.~~ Done — everything is bought.
+   The rule it came from still stands for any future board: the BOM falls out
+   of the schematic, so buying earlier means buying twice.
 
 ### Decisions already made
 
@@ -329,11 +344,10 @@ was verified with a multimeter, and the CAN pinout (C7/C8) is confirmed.
 
 ### Still open
 
-- Exact 4-pin connector choice at GME for the car side of the harness. Affects
-  the loom only, not this board.
-
-**That is the only one, and it is not about this board.** Everything else is
-closed: **the escape header came off again** (measured, see below), there is no
+**Nothing.** The last one was the 4-pin connector for the car side of the
+harness, and it is settled: the connector exists and is already fitted, so the
+loom is a re-crimp onto longer wires, not a new choice. Everything else was
+closed before that: **the escape header came off again** (measured, see below), there is no
 enclosure, and C6 turned out to be a 105 °C part with life to spare (plan §7).
 
 ### The escape header was removed — do not put it back
@@ -436,7 +450,7 @@ behind the MFD15 display, powered by 5 V taken straight from the display.
 - **The 5 V feed is fused, but the fuse is in the harness, not on this board** —
   SIBA 179120.0.2, 200 mA time-lag T, in inline holder K23411. No 5 × 20 holder
   fits on a finished 55 × 45 mm board; plan §9.2 has the free-area measurement
-  and `harness.md` section G has the wiring. Nothing about the PCB changes
+  and `harness.md` section B has the wiring. Nothing about the PCB changes
   because of it.
 - Average draw is under 30 mA and the display's limit is 0.5 A — but the
   transceiver alone takes 45 mA typical and 70 mA maximum while it is driving
@@ -532,7 +546,9 @@ becomes a wrong colour in `fab/`.
 Supporting documents in `canfuel/docs/`:
 
 - `implementation-plan.md` — the working document for the design
-- `harness.md` — building and testing the loom
+- `harness.md` — building the loom. The measuring and sniffing steps were
+  stripped out on 2026-08-09 once they had all been done; it is a build
+  document now, not a test plan.
 - `pic18f25k80-datasheet.pdf` — Microchip DS39977C, PIC18F66K80 family
 - `mcp2562-datasheet.pdf` — Microchip DS20005167C, MCP2561/2
 - `hitano-exr-datasheet.pdf` — Hitano EXR electrolytics, C6

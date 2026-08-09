@@ -944,15 +944,15 @@ stops meaning anything.
 
 ## 9. Open questions
 
-| Question                                    | Blocks       | Owner    |
-| ------------------------------------------- | ------------ | -------- |
-| 4-pin connector for the car side at GME     | harness only | not this board |
+**There are none left.** The table that used to be here held one row, the 4-pin
+connector for the car side of the harness, and that is settled: the connector
+exists and is fitted, so the loom is a re-crimp onto longer wires rather than a
+choice to make. C6's temperature class was the other and is settled in section
+7: it is a 105 °C part.
 
-That is the only one left. C6's temperature class was the other and is settled
-in section 7: it is a 105 °C part.
-
-**Nothing blocks the layout any more.** The enclosure did, and there is no
-longer going to be one.
+Every part is bought, the harness fuse and holder included. **Nothing blocks
+the layout, and nothing blocks fabrication either.** The enclosure blocked the
+layout once, and there is no longer going to be one.
 
 ### 9.1 The enclosure was dropped, and why
 
@@ -1061,7 +1061,7 @@ lies inside the dashboard without movement. Moving the fuse to the plug C end
 would cover the cable too, at the price of the access that made a cartridge
 fuse the right choice.
 
-`harness.md` section G has the wiring steps.
+`harness.md` section B has the wiring steps.
 
 ---
 
