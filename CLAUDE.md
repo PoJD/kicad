@@ -84,10 +84,17 @@ full capability comparison and the exact stack-up ordered. **Nothing in this
 repository should change while that order is in flight** — the boards being
 made are commit `c06e710`, and an edit now makes `fab/` stop describing them.
 
-**Two things are outstanding on the parts side, and neither blocks the boards:**
-two more Molex 43045-0400 (GME 899-192) are needed to populate all three, since
-the GME invoice of 2026-08-03 covers four and each board takes two; and the
-number of PIC18F25K80 in the drawer has never been recorded anywhere.
+**One thing is outstanding on the parts side and it is a deliberate wait.**
+Populating all three boards needs two more Molex 43045-0400 (GME 899-192) —
+the GME invoice of 2026-08-03 covers four and each board takes two. The
+maintainer is **not ordering them yet**, on purpose: the third board is a spare
+and there is no point buying its connectors before the first two are built and
+working. Do not treat this as a gap to close.
+
+**PIC18F25K80 is not a constraint: there are about twenty in the drawer.** They
+were bought in PDIP for an earlier project that ended up using the SMD part, so
+they have never been fitted to anything. Nothing about this board's supply
+depends on that one part any more.
 
 **The silkscreen was sized for no process at all until 2026-08-09.** All 25
 items were 0.80 mm high with a 0.12 mm stroke; the first fab house looked at,
