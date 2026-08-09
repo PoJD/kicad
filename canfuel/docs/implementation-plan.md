@@ -1073,6 +1073,37 @@ tolerance class.** The NPTH tolerance is ±0.05 mm, which matches the peg hole's
 band exactly, so a 3.00 mm nominal lands inside Molex's 2.95–3.05 at both
 extremes.
 
+**The board is 1.5 mm, not 1.6 mm, and it was changed to match the order.**
+Gatema's POOL service sells fixed stack-ups and the two-layer ones are all
+1.5 mm; the chosen preset is *2V Cu 35/35 µm, 1,5 mm, LF HAL, 2x zelená NM, 1x
+bílý potisk, Tg 135 °C*. Nothing on this board depends on the 0.1 mm: the via
+aspect ratio goes from 1:5.3 to 1:5.0 against a 1:10 limit, lead-free HAL wants
+0.8–2.5 mm, and SD-43045-001 *recommends* 1.57 mm for the Micro-Fit — 1.5 mm is
+0.07 mm under it, which is the safe direction for a snap-in peg because the
+barb protrudes further below the board.
+
+What did matter is that `canfuel-job.gbrjob` declared `BoardThickness: 1.6`.
+Ordering 1.5 mm while shipping a job file that says 1.6 mm is the kind of
+contradiction a CAM operator either queries or silently resolves the wrong way,
+and it defeats the whole reason `fab/` is committed. So `(general (thickness))`
+is 1.5 and the core is 1.41 mm, and the outputs were regenerated. **The number
+lives in `(general (thickness))`, not in the stackup sum** — editing only the
+core left `GetBoardThickness()` reporting 1.600, which is how the second edit
+was found.
+
+**Copper is 35 µm and the reason is not current.** An 18 µm preset was offered
+and is cheaper. At 18 µm the 0.80 mm power track still carries about 1.26 A by
+IPC-2221 for a 10 °C rise, against this board's 77 mA worst-case peak, so
+electrically either would do. It is 35 µm because the board file's stackup and
+the `.gbrjob` both declare 35 µm, and a delivered board that disagrees with its
+own documentation is the thing `fab/` exists to prevent.
+
+**No assembly stencil.** The POOL configurator offers one and it is the wrong
+purchase twice over. It is offered *Pro vrchní stranu*, and `F.Paste` has zero
+drawing commands — the top side has no SMD pads at all, so that stencil would
+be a blank sheet of steel. Even a bottom one would cover `B.Paste`'s two
+flashes, which are C7's pads, on a board that is hand-soldered throughout.
+
 **No surcharges apply.** Construction class 7 (+10 %) starts at 150 µm track or
 gap and this board is at 200 µm; the drill-density surcharge starts at 1001
 holes/dm² and this board has 97 holes on 0.2475 dm², or 392/dm². Board

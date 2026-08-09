@@ -542,7 +542,13 @@ intentional, not an oversight.
   ICSP connector unroutable on a board this size; see "The escape header was
   removed" above. The PIC's fourteen unused pins carry no-connect flags, and a
   patch goes onto the PDIP socket pins from underneath instead.
-- **Dimensions:** 55 × 45 mm, two layers, mostly through-hole. Four M3 holes
+- **Dimensions:** 55 × 45 mm, **1.5 mm thick**, two layers, mostly through-hole.
+  It was 1.6 mm until 2026-08-09 and changed only because Gatema's POOL service
+  sells fixed stack-ups and every two-layer one is 1.5 mm. Nothing electrical
+  or mechanical depends on it — plan §6.1 has the check. The thickness lives in
+  `(general (thickness))` at the top of `canfuel.kicad_pcb`, **not** in the
+  stackup sum: editing the core alone leaves `GetBoardThickness()` unchanged
+  and the `.gbrjob` still declaring the old number. Four M3 holes
   4 mm in from the edges, on a 47 × 37 mm pattern. Space available in the vent
   is roughly 6.5 × 5.5 cm; the depth was never measurable because the MFD15 is
   in the way, which is part of why there is no enclosure.
