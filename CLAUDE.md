@@ -107,6 +107,17 @@ all indifferent to silkscreen. It is now a board-level `gr_text` at
 (93.2, 91.5) rather than a footprint field, so a future change to how fields
 are placed cannot take it a second time. Do not delete it.
 
+**The drilling ships as two files, `canfuel-PTH.drl` and `canfuel-NPTH.drl`,
+and that is deliberate.** A merged `MixedPlating` Excellon was produced first
+and tags every tool correctly, so on paper it loses nothing. But J1/J2 are held
+by a split plastic peg in a 3.00 ±0.05 mm hole, and a peg hole plated by
+mistake comes out at about 2.90 mm — under Molex's minimum, and the housing
+cracks when it is forced. Two files whose names say what they are cannot be
+misread. Plan §3.7 has the datasheet numbers and §6.1 the wording to send with
+the order. **The order must also say the diameters are finished sizes, not
+drill sizes** — Gatema assumes that by default, but 1.02 mm is the one hole
+that cannot absorb the error.
+
 **Regenerating `fab/` is cheap and it is the rule after any board change.** The
 silkscreen resize proved the point: only `canfuel-F_Silkscreen.gto` and
 `canfuel-B_Silkscreen.gbo` changed substantively, everything else differed by
@@ -594,6 +605,12 @@ Supporting documents in `canfuel/docs/`:
   document now, not a test plan.
 - `pic18f25k80-datasheet.pdf` — Microchip DS39977C, PIC18F66K80 family
 - `mcp2562-datasheet.pdf` — Microchip DS20005167C, MCP2561/2
+- `micro-fit-43045-datasheet.pdf` — Molex SD-43045-001, J1/J2. Beware: the text
+  is converted to outlines, so `pdftotext` returns nothing at all and no switch
+  helps. It has to be read as an image, and nothing on this machine can render
+  a PDF — no `pdftoppm`, no Ghostscript, and headless Chrome returns a blank
+  page. Ask the maintainer for a screenshot; that is how the numbers in plan
+  §3.7 were read.
 - `hitano-exr-datasheet.pdf` — Hitano EXR electrolytics, C6
 - `crystal-datasheet.pdf` — HC-49U/S DIP quartz crystal resonator, supplied
 - `siba-179120-fuse-datasheet.pdf` — SIBA 179120, 5 × 20 glass time-lag fuses,

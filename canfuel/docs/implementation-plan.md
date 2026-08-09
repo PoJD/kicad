@@ -312,6 +312,55 @@ Two things make this worth writing down rather than just fixing:
 
 RA0 is unaffected: it is an input with a pull-down, and sources nothing.
 
+### 3.7 J1/J2 — the Micro-Fit PCB layout, and why the holes are "finished"
+
+`micro-fit-43045-datasheet.pdf` is Molex **SD-43045-001** (rev. 2016/08/23),
+*Micro-Fit (3.0) Dual Row Right Angle Thru Hole Header Ass'y*. It was the last
+part on the board with no datasheet on disk. Its `PCB LAYOUT: COMPONENT SIDE`
+block settles four things that had only ever been taken from the KiCad
+footprint:
+
+| Drawing | Value | As built |
+| --- | --- | --- |
+| contact hole | ⌀ .040±.002 / **1,02±0,05 mm** TYP | 1.02 mm |
+| peg hole | ⌀ .118±.002 / **3,00±0,05 mm** TYP | 3.00 mm NPTH |
+| pitch | .118±.004 / 3,00±0,10 non-accum | 3.00 mm |
+| row spacing | .170±.003 / 4,32±0,08 | ok |
+| recommended board thickness | .062 / **1,57 mm** | 1.60 mm |
+| mates with | receptacle series **43025** | 43025-0400 bought |
+
+The pin itself is **.025 / 0,64 mm SQ TYP**, so its diagonal is 0.905 mm.
+
+**Note 7 of the drawing is a placement rule and nobody had checked it:** *"To
+avoid interference between receptacle and PCB, header must be placed within
+.400/(10,16) max. from edge of PCB."* It limits how far the header may be set
+back, so the mating receptacle does not foul the board. J1 and J2 courtyards
+end **0.33 mm** from the bottom edge — effectively flush, against a 10.16 mm
+limit. It passes with room, but it passes by luck rather than by design, so it
+is written down now: if these connectors are ever moved inward, this is the
+number that decides it.
+
+**The holes must be ordered as finished sizes, not drill sizes.** A fab that
+compensates for plating turns a 1.02 mm tool into a 0.92 mm finished hole,
+which is below the drawing's 0.97 mm lower limit — out of spec. Asked the other
+way the error is benign: a hole 0.1 mm too large loosens the pin and drops the
+annular ring to 0.19 mm, still far above any fab's minimum. So "finished" is
+both correct and the safe direction. See 6.1.
+
+**The peg hole is the fussy one, and the answer is not a smaller number.** The
+plastic peg is split and spreads under the board, so the instinct is to
+undersize the hole for grip. Molex already allowed for that: ±0.05 mm is the
+band the peg is designed to hold across. Moving the nominal down to 2.95 or
+2.97 puts the low end of any normal fab tolerance under 2.95 and out of spec,
+and forcing a split LCP peg into an undersized hole is how the housing cracks —
+on a right-angle part the peg also carries the plug insertion force.
+
+The real hazard is plating, not the nominal. A **plated** peg hole comes out at
+about 2.90 mm, under the 2.95 minimum, which is exactly the "have to force it"
+failure; and plating compensation wrongly applied to a hole that is not plated
+gives 3.10 mm, where the peg does not grip at all. Both are avoided by shipping
+PTH and NPTH as separate drill files and saying which is which — see 6.
+
 ---
 
 ## 4. Schematic — done
@@ -881,7 +930,8 @@ Generated into `canfuel/fab/` and **committed** — for an ordered board it must
 be possible to recover exactly what was sent.
 
 ```
-fab/gerbers/    9 gerbers, canfuel.drl, canfuel-drl_map.gbr, canfuel-job.gbrjob
+fab/gerbers/    9 gerbers, canfuel-PTH.drl, canfuel-NPTH.drl,
+                their two drill maps, canfuel-job.gbrjob
 fab/canfuel-bom.csv
 fab/canfuel-cpl.csv
 ```
@@ -894,7 +944,8 @@ kicad-cli pcb export gerbers --output canfuel/fab/gerbers \
   --layers "F.Cu,B.Cu,F.Paste,B.Paste,F.SilkS,B.SilkS,F.Mask,B.Mask,Edge.Cuts" \
   --check-zones canfuel/canfuel.kicad_pcb
 kicad-cli pcb export drill --output canfuel/fab/gerbers \
-  --generate-map --map-format gerberx2 canfuel/canfuel.kicad_pcb
+  --excellon-separate-th --generate-map --map-format gerberx2 \
+  canfuel/canfuel.kicad_pcb
 kicad-cli sch export bom --output canfuel/fab/canfuel-bom.csv \
   --group-by "Value,Footprint" canfuel/canfuel.kicad_sch
 kicad-cli pcb export pos --output canfuel/fab/canfuel-cpl.csv \
@@ -909,8 +960,13 @@ kicad-cli pcb export pos --output canfuel/fab/canfuel-cpl.csv \
   which would have produced a file named `.csv` that is not one.
 - `--exclude-dnp` keeps R5 out of the CPL. It is the one part on the board that
   must not be fitted; a placement file listing it is worse than no file.
-- The drill file is one merged `MixedPlating,1,2` Excellon. It tags T1–T5
-  `Plated,PTH` and T6/T7 `NonPlated,NPTH` per tool, so merging loses nothing.
+- `--excellon-separate-th` splits the drilling into `canfuel-PTH.drl`
+  (`TF.FileFunction,Plated,1,2,PTH`, tools 0.30/0.80/0.90/1.00/1.02) and
+  `canfuel-NPTH.drl` (`NonPlated,1,2,NPTH`, tools 3.00 and 3.20). A single
+  merged `MixedPlating` file was produced first and tags every tool correctly,
+  so it loses nothing on paper — but the peg holes of 3.7 fail if they are
+  plated by mistake, and two files whose names say what they are cannot be
+  misread. That is worth more than one fewer attachment.
 
 The CPL is generated for completeness only — every part here is through-hole
 and hand-soldered, so no assembly house will use it.
@@ -995,10 +1051,38 @@ as manufacturable, but there is no margin. Component pads are 0.24 mm and up,
 so it is the vias alone. If they push back, a 0.70 mm via pad gives 0.20 mm;
 ask before changing anything.
 
-**Not published on their page, so ask:** accepted data formats (whether a ZIP
-of the gerbers is enough, whether Protel extensions are fine, whether PTH and
-NPTH must be separate drill files), copper-to-edge clearance (this board holds
-0.30 mm), lead times and price.
+**Drill diameters must be declared, and Gatema's default is the dangerous
+one.** The handbook says outright: *"Pokud nebude žádná poznámka, výrobce DPS
+předpokládá, že jde o průměry výsledné"* — with no note, the numbers are read
+as finished holes, and a plated hole loses about 0.1 mm to the plating. That
+default happens to be what this board wants, and it is still stated explicitly
+in the enquiry, because the one hole that cannot absorb the error is J1/J2 at
+1.02 mm (3.7). The wording to send:
+
+> Průměry prokovených otvorů (`canfuel-PTH.drl`: 0,30 / 0,80 / 0,90 / 1,00 /
+> 1,02 mm) jsou **výsledné** rozměry po prokovení. Otvory v
+> `canfuel-NPTH.drl` (3,00 a 3,20 mm) jsou **neprokovené**, vrtaný rozměr =
+> výsledný.
+
+**Their standard plated-hole tolerance is wider than Molex's, and it still
+passes.** Gatema quotes ±0.08 mm standard (±0.05 mm on request) against the
+drawing's ±0.05 mm, so the worst case is a 0.94 mm hole where Molex allows
+0.97 mm. It does not matter: the pin is 0.64 mm square, diagonal 0.905 mm, so
+even 0.94 mm leaves 0.035 mm of clearance. **Do not pay for the tighter
+tolerance class.** The NPTH tolerance is ±0.05 mm, which matches the peg hole's
+band exactly, so a 3.00 mm nominal lands inside Molex's 2.95–3.05 at both
+extremes.
+
+**No surcharges apply.** Construction class 7 (+10 %) starts at 150 µm track or
+gap and this board is at 200 µm; the drill-density surcharge starts at 1001
+holes/dm² and this board has 97 holes on 0.2475 dm², or 392/dm². Board
+thickness 1.6 mm and lead-free HAL are both base price.
+
+**Not published on their page, so ask:** whether a ZIP of the gerbers is
+enough and whether Protel extensions are fine, copper-to-edge clearance (this
+board holds 0.30 mm against their 0.200 mm for milled outlines), lead times and
+price. ODB++ is their preferred format and `kicad-cli pcb export odb` produces
+it, so it is worth offering.
 
 ---
 
