@@ -539,7 +539,7 @@ python tools/check-netlist.py
 ```
 
 It exports the netlist and compares every `ref.pin -> net` against the tables
-in sections 3 and 4 above — 103 connections, 33 nets, 25 components, no pin in
+in sections 3 and 4 above — 87 connections, 33 nets, 24 components, no pin in
 the netlist unaccounted for and none missing. It catches the RB2/RB3 swap
 above. Needs `kicad-cli` on PATH; exits nonzero on any mismatch.
 
@@ -687,11 +687,33 @@ rotation:
 | --- | --- | --- |
 | C8  | 1.66 mm | 7.50 mm |
 | JP2 | 1.88 mm | 8.67 mm |
-| R1  | 2.02 mm | 7.92 mm |
+| R1  | 2.89 mm | 8.91 mm |
 | R6  | 2.46 mm | 7.63 mm |
 
-Every part is within 2.5 mm of the pin at its nearest edge, and the far corners
+Every part is within 3 mm of the pin at its nearest edge, and the far corners
 are bodies extending outward, not connections — the pin sees the near end.
+
+**R1 was then moved 1.20 mm further out, on purpose (2026-08-09).** The search
+above optimised for distance to the pin and produced an arrangement where R1's
+courtyard and C8's touched — 0.03 mm — with R1 pad 2 and C8 pad 1 2.66 mm apart,
+1.06 mm of bare board between the copper. Those two pads are `MCLR_RC` and
+`MCLR_C`: the two ends of JP2. A solder bridge there would tie the jumper
+closed permanently, which is the one failure the jumper exists to prevent, and
+it would look like a working board until the first attempt to program it.
+
+Moving R1 west by 1.20 mm opens that gap to 2.26 mm of bare board (courtyards
+1.23 mm apart) and costs about 0.9 mm of extra track from R1 to the MCLR node.
+R1 is the 10 kΩ static pull-up — the least length-sensitive part of Figure 2-2 —
+so that is the right part to spend the distance on. The move was sized by the
+nearest-edge rule, not by eye: 1.20 mm is what keeps R1 at 2.89 mm, inside the
+3 mm assertion with a little margin. `ALLOW["2.3 R1"]` went from 8.5 to 9.0 to
+match, which is where JP2 already sits.
+
+The two tracks that reach R1 were re-laid for it. +5V arrives on B.Cu along
+y = 61.4 and used to step down into pad 1 right where pad 2 now sits, so the
+step became a longer run west and one 45° diagonal; `MCLR_RC` gained a 45°
+diagonal from the new pad 2 up to the existing vertical at x = 92.8. DRC is
+clean and there are no unconnected items.
 
 An earlier arrangement had R6 wholly inside at 5.94 mm but C8 out at 10.68 mm.
 That was worse: R6 fitting was an accident of it being small, and it left the

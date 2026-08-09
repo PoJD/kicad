@@ -80,7 +80,7 @@ OSC_LIMIT = 12.0
 #
 # What is done instead is to make every one of them hug the pin: the
 # arrangement was found by search, minimising the worst far corner, and all
-# four have their nearest edge within 2.5 mm. The far corners below are the
+# four have their nearest edge within 3 mm. The far corners below are the
 # bodies extending outward, not the connections - which is what 2.3 is
 # really about, since the pin sees the near end.
 #
@@ -90,8 +90,12 @@ ALLOW = {
     "2.3 R6":  (8.0, "series resistor, nearest edge 2.46 mm from pin 1"),
     "2.3 C8":  (8.0, "reset capacitor, nearest edge 1.66 mm"),
     "2.3 JP2": (9.0, "in series with C8, nearest edge 1.88 mm"),
-    "2.3 R1":  (8.5, "10 k pull-up to VDD: static bias, the least "
-                     "distance-sensitive part of Figure 2-2"),
+    "2.3 R1":  (9.0, "10 k pull-up to VDD: static bias, the least "
+                     "distance-sensitive part of Figure 2-2. Moved 1.20 mm "
+                     "further out on 2026-08-09 to open the gap to C8 from "
+                     "1.06 to 2.26 mm of bare board: those two pads are "
+                     "MCLR_RC and MCLR_C, opposite ends of JP2, and a solder "
+                     "bridge between them would defeat the jumper"),
 }
 MCLR_NEAR = 3.0        # every MCLR part's nearest edge must be this close
 

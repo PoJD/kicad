@@ -124,7 +124,7 @@ edit to the schematic:
 python tools/check-netlist.py
 ```
 
-It exports the netlist and compares all 103 connections against the tables in
+It exports the netlist and compares all 87 connections against the tables in
 `canfuel/docs/implementation-plan.md`, which are transcribed into the script.
 Not a formality: swapping the labels on U1 pins 23 and 24 — CANTX and CANRX
 crossed at the MCU, a board that would never transmit — passes ERC with
@@ -216,13 +216,24 @@ all of them and prints what it measured:
 totalling 71 mm² of courtyard do not fit in the ~85 mm² of free area around a
 corner pin, whatever footprints are chosen. Rather than get one part wholly
 inside, all four hug the pin: nearest edges 1.66 mm (C8), 1.88 mm (JP2),
-2.02 mm (R1) and 2.46 mm (R6), worst far corner 8.67 mm. The arrangement was
+2.46 mm (R6) and 2.89 mm (R1), worst far corner 8.91 mm. The arrangement was
 found by search, not by hand.
+
+**R1 was moved 1.20 mm further out on 2026-08-09, deliberately.** The search
+optimised for closeness to pin 1 and left R1's courtyard touching C8's, with
+only 1.06 mm of bare board between R1 pad 2 and C8 pad 1 — and those two pads
+are `MCLR_RC` and `MCLR_C`, the two ends of JP2. A bridge there would hold the
+jumper closed for good, which is exactly what it exists to prevent. The gap is
+now 2.26 mm, R1's nearest edge 2.89 mm (the 3 mm rule sized the move) and its
+`ALLOW` far corner 8.5 → 9.0. Plan §5.2a has the full account and the two
+re-laid tracks.
 
 `tools/check-placement.py` holds the tolerated far corners in `ALLOW` with
 their reasons, and asserts every nearest edge stays within 3 mm — that second
 check is the one that matters. **If it goes red, something moved. Do not widen
-either number to make it green again.**
+either number to make it green again** — a deliberate move like R1's above is
+widened in the same commit that moves the part, with the reason next to the
+number, so the two never look alike.
 
 **Two readings of the datasheet matter here.** §2.2.1 and §2.4 limit the *trace
 length from pin to capacitor*; §2.3 and §2.6 limit where the *component is
