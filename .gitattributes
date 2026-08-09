@@ -1,10 +1,16 @@
 # Normalise line endings so Windows checkouts stop warning about CRLF.
-# KiCad 8 files are text, which is what makes their diffs readable.
+# KiCad files are text, which is what makes their diffs readable.
 * text=auto eol=lf
 
 # Fabrication output is generated and must match what went to the fab
 # byte for byte.
-fab/** -text
+#
+# The pattern is **/fab/** and not fab/**: a pattern containing a slash is
+# anchored to the directory holding this file, so fab/** matched only a
+# top-level fab/, and every board's outputs live one level down in
+# <board>/fab/. It went unnoticed until canfuel/fab/ was first generated and
+# git announced it was about to rewrite the gerbers' line endings.
+**/fab/** -text
 *.gbr -text
 *.drl -text
 

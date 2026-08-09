@@ -58,20 +58,34 @@ Those are marked as measured where they appear. The rule above is about parts.
 
 ## Current state — read this first
 
-**The schematic and the PCB are both finished. ERC, DRC, `check-netlist.py` and
-`check-placement.py` are all clean, with zero unconnected items.** `canfuel/`
-holds `canfuel.kicad_pro`, `canfuel.kicad_sch` (complete, one A3 sheet) and
-`canfuel.kicad_pcb` (55 × 45 mm, 24 parts, routed on two layers with SGND
-poured on both), plus `docs/` and an empty `fab/gerbers/`. `lib/` is empty.
+**The board is finished and `fab/` is generated. ERC, DRC, `check-netlist.py`
+and `check-placement.py` are all clean, with zero unconnected items.**
+`canfuel/` holds `canfuel.kicad_pro`, `canfuel.kicad_sch` (complete, one A3
+sheet) and `canfuel.kicad_pcb` (55 × 45 mm, 24 parts, routed on two layers with
+SGND poured on both), plus `docs/` and a populated `fab/`. `lib/` is empty.
 
 **The escape header J4 was removed on 2026-08-09** and the board is 24 parts,
 not 25. It is not an oversight — see below before reinstating it.
 
-**Next up is `fab/` — plan section 6, and nothing else.** Section 7, the
-purchase list, is done: all parts are bought, the harness fuse and its holder
-included, nothing is on order and nothing is outstanding. There are no open
-questions left anywhere in the project. `fab/` is the only thing between here
-and an ordered board.
+**`fab/` is generated and committed — plan section 6 is done.**
+`canfuel/fab/` holds nine gerbers, a merged Excellon drill file with its X2
+plating attributes, a drill map, a `.gbrjob`, `canfuel-bom.csv` and
+`canfuel-cpl.csv`. Plan §6 lists every command with the flags actually used and
+why each one is there; do not regenerate from the bare `kicad-cli` invocations,
+because the defaults are wrong for this board in four places. Section 7, the
+purchase list, was done earlier: all parts are bought, the harness fuse and its
+holder included. There are no open questions left anywhere in the project.
+**The next step is ordering the board.**
+
+**The `120R DNF` silkscreen legend was missing until 2026-08-09** and the plan
+§6 pre-order check is what found it. R5 is the 120 Ω termination that must
+**not** be fitted, and it has a footprint, pads and a value like any other part
+— the legend is the only thing on the board that says so. Moving value fields
+to F.Fab in the escape-header pass had quietly taken it away, and nothing else
+would have caught it: ERC, DRC, `check-netlist.py` and `check-placement.py` are
+all indifferent to silkscreen. It is now a board-level `gr_text` at
+(93.2, 91.5) rather than a footprint field, so a future change to how fields
+are placed cannot take it a second time. Do not delete it.
 
 **R1 moved 1.20 mm on 2026-08-09**, after the paper mock-up showed its lead
 almost touching C8's. Those two pads are the opposite ends of JP2, so a bridge
@@ -183,13 +197,15 @@ concluding it is missing.
 
 ### Resume here — next session
 
-**Everything except `fab/` is finished. Next up is plan section 6 and only
-that.** Net classes, placement, routing, pours and silkscreen are done and
-committed, every check is green, all parts are bought and there is not one open
-question left. Do not go looking for design work to do first — there is none.
+**The design is finished and so is `fab/`. The next step is ordering the
+board.** Net classes, placement, routing, pours, silkscreen and the fabrication
+outputs are all done and committed, every check is green, all parts are bought
+and there is not one open question left. Do not go looking for design work to
+do — there is none.
 
-Before generating `fab/`, re-run all four checks — they are cheap and they are
-what stands between a mistake and an ordered board:
+If anything is regenerated, re-run all four checks first and re-read plan §6
+for the exact export commands — they are cheap and they are what stands between
+a mistake and an ordered board:
 
 ```
 python tools/check-netlist.py
@@ -331,7 +347,8 @@ order of commits — is in `canfuel/docs/implementation-plan.md`. The outline:
 5. ~~Lay out the PCB inside ~55 × 45 mm, two layers, mostly through-hole.~~
    Done — 24 parts, routed, poured.
 6. ~~`kicad-cli pcb drc` until clean.~~ Done, zero violations.
-7. **Generate `fab/` (gerbers, BOM, CPL) and commit it.** ← this is the next step
+7. ~~Generate `fab/` (gerbers, BOM, CPL) and commit it.~~ Done — plan §6 has
+   the commands and the pre-order checks. ← **next: order the board**
 8. ~~Only then assemble the GME purchase list.~~ Done — everything is bought.
    The rule it came from still stands for any future board: the BOM falls out
    of the schematic, so buying earlier means buying twice.

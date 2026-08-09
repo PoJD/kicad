@@ -203,9 +203,14 @@ the right values. That is what the derivation above does.
 The car's bus is already terminated at both ends. A third resistor overloads
 it. R5 gets a footprint and silkscreen, and is **not fitted**:
 
-- Place R5 across CANH/CANL near U2.
-- Silkscreen next to it: `120R DNF`.
+- Place R5 across CANH/CANL near U2. Done — (85.52, 91.5).
+- Silkscreen next to it: `120R DNF`. Done — a board-level `gr_text` at
+  (93.2, 91.5), added when the 6 pre-order check found it missing. It is not
+  part of the R5 footprint, so re-running `import-footprints.py` cannot take it
+  away again.
 - Mark it `Do not populate` in the symbol's fields so it drops out of the BOM.
+  Done — `in_bom no` and `dnp yes`; it is in neither `canfuel-bom.csv` nor
+  `canfuel-cpl.csv`.
 
 A separate solder jumper is not worth the area — for a bench test the resistor
 has to be soldered in anyway, and an unpopulated footprint is exactly as quick.
@@ -831,6 +836,12 @@ positions collided with each other and sat over pads; the references are what
 a hand-assembler needs on the silkscreen, and the values are in the BOM and on
 the fab drawing already.
 
+That left the front silkscreen carrying reference designators and footprint
+outlines and nothing else — which is right for every part but one. R5's `120R
+DNF` warning went with the values, and stayed missing until the 6 pre-order
+check caught it. It is now a board-level text, not a footprint field, so it
+cannot be swept up by a change to how fields are placed.
+
 ### 5.5 DRC
 
 ```
@@ -864,29 +875,64 @@ real connectors onto it.
 
 ---
 
-## 6. Fabrication outputs
+## 6. Fabrication outputs — done
 
 Generated into `canfuel/fab/` and **committed** — for an ordered board it must
 be possible to recover exactly what was sent.
 
 ```
-fab/gerbers/    gerbers + drill files
+fab/gerbers/    9 gerbers, canfuel.drl, canfuel-drl_map.gbr, canfuel-job.gbrjob
 fab/canfuel-bom.csv
 fab/canfuel-cpl.csv
 ```
 
+These are the commands as run, not an outline. Every flag beyond the bare
+export is here because the default was wrong for this board:
+
 ```
-kicad-cli pcb export gerbers --output canfuel/fab/gerbers canfuel/canfuel.kicad_pcb
-kicad-cli pcb export drill   --output canfuel/fab/gerbers canfuel/canfuel.kicad_pcb
-kicad-cli sch export bom     --output canfuel/fab/canfuel-bom.csv canfuel/canfuel.kicad_sch
-kicad-cli pcb export pos     --output canfuel/fab/canfuel-cpl.csv canfuel/canfuel.kicad_pcb
+kicad-cli pcb export gerbers --output canfuel/fab/gerbers \
+  --layers "F.Cu,B.Cu,F.Paste,B.Paste,F.SilkS,B.SilkS,F.Mask,B.Mask,Edge.Cuts" \
+  --check-zones canfuel/canfuel.kicad_pcb
+kicad-cli pcb export drill --output canfuel/fab/gerbers \
+  --generate-map --map-format gerberx2 canfuel/canfuel.kicad_pcb
+kicad-cli sch export bom --output canfuel/fab/canfuel-bom.csv \
+  --group-by "Value,Footprint" canfuel/canfuel.kicad_sch
+kicad-cli pcb export pos --output canfuel/fab/canfuel-cpl.csv \
+  --format csv --units mm --side both --exclude-dnp canfuel/canfuel.kicad_pcb
 ```
+
+- `--layers` is mandatory in practice: `export gerbers` plots nothing useful
+  without it. Both paste layers are included even though only C7 is SMD.
+- `--check-zones` refills the pours before plotting, so a stale fill cannot be
+  what gets sent. It changes the output, never the board file.
+- `--format csv --units mm` on `export pos`: the default is ASCII in inches,
+  which would have produced a file named `.csv` that is not one.
+- `--exclude-dnp` keeps R5 out of the CPL. It is the one part on the board that
+  must not be fitted; a placement file listing it is worse than no file.
+- The drill file is one merged `MixedPlating,1,2` Excellon. It tags T1–T5
+  `Plated,PTH` and T6/T7 `NonPlated,NPTH` per tool, so merging loses nothing.
 
 The CPL is generated for completeness only — every part here is through-hole
 and hand-soldered, so no assembly house will use it.
 
-Check before ordering: R5 must be absent from the BOM, and the gerber silk
-layer must actually carry the `120R DNF` legend.
+**Both pre-order checks pass, and one of them needed a fix first.**
+
+- R5 is absent from `canfuel-bom.csv` (23 rows against 24 parts) and from
+  `canfuel-cpl.csv`. It carries `in_bom no` and `dnp yes` on the sheet.
+- The silk layer **did not** carry the `120R DNF` legend of 3.3 until now. The
+  board had no board-level text at all: value fields went to F.Fab in the 5.4
+  pass and the R5 footprint only ever put its *reference* on F.SilkS, so the
+  silk read `R5` and nothing else. A `120R DNF` `gr_text` was added at
+  (93.2, 91.5), 0.8 mm, F.SilkS — its extent is x 90.09..96.31, y 90.82..92.18,
+  which is 1.23 mm clear of R5 pad 2 and 1.20 mm clear of the 3.5 mm keepout
+  around H4. DRC stays at 0 violations and 0 warnings with `silk_overlap`,
+  `silk_over_copper` and `silk_edge_clearance` all enabled, and the plotted
+  strokes are in `canfuel-F_Silkscreen.gto`.
+
+  This is exactly why the check is written down as a check. `120R DNF` is the
+  only thing on the board that tells an assembler not to fit a part that has a
+  footprint, pads and a value — and it was the one legend nothing else would
+  have caught.
 
 ---
 
@@ -933,8 +979,9 @@ with nothing left for tolerance or temperature.
 3. `Place canfuel PCB parts` — net classes, footprints, placement, silkscreen;
    DRC clean apart from the unrouted ratsnest
 4. `Route canfuel PCB, drop the escape header` — DRC clean, 0 unconnected
-5. `Add canfuel fabrication outputs`
-6. `Add canfuel purchase list`
+5. `Add canfuel fabrication outputs` — and the `120R DNF` silkscreen legend the
+   pre-order check of 6 found missing
+6. `Add canfuel purchase list` — done ahead of 5; everything is bought
 
 Each commit should leave CI green. If step 2 needs several passes, that is
 fine — but do not commit a schematic that fails ERC, because then a red CI run
