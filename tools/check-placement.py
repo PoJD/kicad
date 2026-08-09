@@ -76,17 +76,33 @@ OSC_LIMIT = 12.0
 # 2.3 asks for four parts inside a 6 mm circle centred on a corner pin of a
 # DIP-28. Three quarters of that circle is free, about 85 mm2, and the four
 # parts are 71 mm2 of courtyard between them: they do not fit, and no choice
-# of footprint changes that. R6 is inside entirely because it is the series
-# resistor in the reset path; the others are placed nearest-edge-in, in the
-# order that the datasheet's own Figure 2-2 note 2 implies matters - the
-# capacitor and its jumper before the static pull-up.
+# of footprint changes that.
+#
+# What is done instead is to make every one of them hug the pin: the
+# arrangement was found by search, minimising the worst far corner, and all
+# four have their nearest edge within 2.5 mm. The far corners below are the
+# bodies extending outward, not the connections - which is what 2.3 is
+# really about, since the pin sees the near end.
+#
+# MCLR_NEAR below is the assertion that actually carries weight now. If the
+# far corners drift, something moved; do not widen these to make it green.
 ALLOW = {
-    "2.3 R1":  (9.0,  "10 k pull-up to VDD: static bias, the least "
-                      "distance-sensitive part of Figure 2-2"),
-    "2.3 C8":  (11.0, "nearest pad is 4.3 mm from pin 1; the far end of the "
-                      "body is what exceeds 6 mm"),
-    "2.3 JP2": (9.5,  "in series with C8, same reasoning"),
+    "2.3 R6":  (8.0, "series resistor, nearest edge 2.46 mm from pin 1"),
+    "2.3 C8":  (8.0, "reset capacitor, nearest edge 1.66 mm"),
+    "2.3 JP2": (9.0, "in series with C8, nearest edge 1.88 mm"),
+    "2.3 R1":  (8.5, "10 k pull-up to VDD: static bias, the least "
+                     "distance-sensitive part of Figure 2-2"),
 }
+MCLR_NEAR = 3.0        # every MCLR part's nearest edge must be this close
+
+# DS39977C 2.6 keep-outs, matching the ones the router is given.
+OSC_GUARD = (64.0, 51.0, 86.5, 62.4)      # guard area on F.Cu, around Y1/C1/C2
+CRYSTAL_BACK = (68.5, 55.0, 81.6, 62.0)   # the far side, under the crystal
+OSC_OK = {"OSC1", "OSC2", "SGND"}         # the oscillator's own nets and ground
+
+
+def _hits(a, b):
+    return not (a[2] < b[0] or b[2] < a[0] or a[3] < b[1] or b[3] < a[1])
 
 
 def mm(v):
@@ -160,6 +176,10 @@ def main():
         else:
             verdict = "FAIL"
             bad.append(f"2.3: {ref} reaches {far:.2f} mm from U1 pin 1")
+        if near > MCLR_NEAR:
+            verdict = "FAIL"
+            bad.append(f"2.3: {ref} nearest edge is {near:.2f} mm from U1 "
+                       f"pin 1, wanted within {MCLR_NEAR}")
         print(f"  {ref:<4} nearest edge {near:5.2f}  farthest corner {far:5.2f} mm"
               f"  {verdict}")
         if verdict == "allowed":
@@ -182,6 +202,33 @@ def main():
     print(f"  same side of the board as U1: {'no - ' + ', '.join(off) if off else 'yes'}")
     if off:
         bad.append(f"2.6: {', '.join(off)} is not on the same side as U1")
+
+    # DS39977C 2.6, the two rules about copper rather than parts:
+    #   "Do not run any signal traces or power traces inside the ground pour"
+    #   "avoid any traces on the other side of the board where the crystal is"
+    # The ground pour itself is exempt: it IS the guard the section asks for.
+    print("\nOscillator guard (DS39977C 2.6)")
+    intruders = []
+    for t in board.Tracks():
+        if t.GetClass() == "PCB_VIA":
+            box = (mm(t.GetPosition().x), mm(t.GetPosition().y)) * 2
+            box = (box[0], box[1], box[0], box[1])
+        else:
+            s, e = t.GetStart(), t.GetEnd()
+            box = (min(mm(s.x), mm(e.x)), min(mm(s.y), mm(e.y)),
+                   max(mm(s.x), mm(e.x)), max(mm(s.y), mm(e.y)))
+        net = t.GetNetname()
+        on_front = t.GetLayer() == pcbnew.F_Cu or t.GetClass() == "PCB_VIA"
+        if on_front and net not in OSC_OK and _hits(box, OSC_GUARD):
+            intruders.append(f"{net} crosses the guard area on F.Cu")
+        if t.GetLayer() == pcbnew.B_Cu and _hits(box, CRYSTAL_BACK):
+            intruders.append(f"{net} runs under the crystal on B.Cu")
+    for msg in sorted(set(intruders)):
+        print("  " + msg + "  FAIL")
+        bad.append("2.6: " + msg)
+    if not intruders:
+        print("  no signal or power traces in the guard area, nothing on B.Cu "
+              "under the crystal")
 
     print("\nBoard outline and mounting-hole keepout")
     for ref, fp in sorted(fps.items()):

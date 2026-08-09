@@ -172,7 +172,27 @@ def main():
             fp.SetDNP(True)
             fp.SetExcludedFromBOM(True)
 
+    # Build the lookup before removing anything: once board.Remove has been
+    # called, iterating Footprints() hands back raw SwigPyObjects.
     by_ref = {f.GetReference(): f for f in board.Footprints()}
+
+    # Footprints the schematic no longer has. H1-H4 are exempt and must stay:
+    # a mounting hole carries no net and has no symbol, which is exactly why
+    # the GUI's "Delete footprints with no symbols" is left unticked there.
+    #
+    # The removed objects are parked in `detached` on purpose: board.Remove
+    # hands ownership back to Python, and if the footprint is then collected,
+    # every later SWIG lookup on the board starts returning bare SwigPyObjects.
+    # Holding a reference until the process exits keeps the board usable.
+    wanted = {c["ref"] for c in comps}
+    detached = []
+    for ref in sorted(by_ref):
+        if ref in wanted or ref.startswith("H"):
+            continue
+        print(f"  {ref}: no longer in the schematic, removed from the board")
+        fp = by_ref.pop(ref)
+        board.Remove(fp)
+        detached.append(fp)
     for netname, nodes in nets.items():
         net = board.FindNet(netname)
         if net is None:

@@ -58,14 +58,16 @@ Those are marked as measured where they appear. The rule above is about parts.
 
 ## Current state — read this first
 
-**The schematic is finished, checked against the datasheets and ERC clean. The
-PCB has net classes, all 25 footprints placed and a tidy silkscreen; nothing is
-routed yet.** `canfuel/` holds `canfuel.kicad_pro`, `canfuel.kicad_sch`
-(complete, one A3 sheet) and `canfuel.kicad_pcb` (55 × 45 mm outline, H1–H4,
-25 placed parts), plus `docs/` and an empty `fab/gerbers/`. `lib/` is empty.
+**The schematic and the PCB are both finished. ERC, DRC, `check-netlist.py` and
+`check-placement.py` are all clean, with zero unconnected items.** `canfuel/`
+holds `canfuel.kicad_pro`, `canfuel.kicad_sch` (complete, one A3 sheet) and
+`canfuel.kicad_pcb` (55 × 45 mm, 24 parts, routed on two layers with SGND
+poured on both), plus `docs/` and an empty `fab/gerbers/`. `lib/` is empty.
 
-DRC reports **zero violations** and 70 unconnected items, which is simply the
-un-routed ratsnest. `python tools/check-placement.py` is clean.
+**The escape header J4 was removed on 2026-08-09** and the board is 24 parts,
+not 25. It is not an oversight — see below before reinstating it.
+
+Next up is `fab/` and the purchase list, plan sections 6 and 7.
 
 **All parts are bought.** Nothing is on order and nothing is outstanding.
 
@@ -78,7 +80,9 @@ three things changed. Do not undo them without reading plan §3.6, §3.2 and
 
 - **The LEDs moved from RA1/RA2 to RC0/RC1.** RA1 and RA2 are inside
   PORTA<5:0>, whose absolute maximum is 2 mA sourced or sunk; 1 kΩ from a 5 V
-  rail is about 2.2 mA. RA1/RA2 took the escape-header slots RC0/RC1 vacated.
+  rail is about 2.2 mA. RA1/RA2 took the escape-header slots RC0/RC1 vacated —
+  and when the header itself went, all fourteen of those pins became
+  no-connects.
 - **MCLR gained R6 470 Ω, C8 100 nF and jumper JP2** — the full Figure 2-2
   network. The old note "no capacitor on this pin" was §2.5 (which is about
   PGC and PGD) misapplied to MCLR.
@@ -151,10 +155,21 @@ concluding it is missing.
 
 ### Resume here — next session
 
-**Next up is routing, the rest of plan section 5. Nothing blocks it.** Net
-classes (5.3), placement (5.2a) and the silkscreen (5.4) are done and committed.
+**Section 5 is finished. Next up is `fab/` and the purchase list, plan sections
+6 and 7.** Net classes, placement, routing, pours and silkscreen are all done
+and committed, and every check is green.
 
-In order:
+Before generating `fab/`, re-run all four checks — they are cheap and they are
+what stands between a mistake and an ordered board:
+
+```
+python tools/check-netlist.py
+python tools/check-placement.py
+kicad-cli sch erc --exit-code-violations canfuel/canfuel.kicad_sch
+kicad-cli pcb drc --exit-code-violations canfuel/canfuel.kicad_pcb
+```
+
+The older step-by-step notes below still apply if any of that has to be redone:
 
 1. **Read `canfuel/docs/implementation-plan.md` first.** It is the working
    document: reference designators, the full 28-pin PIC pinout, net names, net
@@ -178,16 +193,20 @@ all of them and prints what it measured:
 | 6 mm   | C7 to U1 pin 6, on B.Cu across the package | 2.4 | 2.25 mm |
 | 6 mm   | C3/C4/C5 to U1 pin 20, U2 pin 3, U2 pin 5 | 2.2.1 | 5.67 / 5.68 / 4.49 mm |
 | 6 mm   | R1, R6, C8, JP2 to U1 pin 1 | 2.3 | **partly — see below** |
+| — | no foreign traces in the oscillator guard, none on B.Cu under the crystal | 2.6 | enforced and re-checked |
 | 12 mm  | Y1, C1, C2 to their own oscillator pins | 2.6 | 5.35 / 9.79 / 6.98 mm |
 
 **§2.3 cannot be met in full and the shortfall is deliberate.** Four parts
 totalling 71 mm² of courtyard do not fit in the ~85 mm² of free area around a
-corner pin, whatever footprints are chosen. R6 — the series resistor in the
-reset path — is inside entirely; C8 and JP2 have their near edges 4.31 and
-2.04 mm from the pin; R1, the static pull-up, is the one pushed out. The
-tolerated numbers live in `ALLOW` in `tools/check-placement.py` next to their
-reasons. **If that check goes red, something moved — do not widen `ALLOW` to
-make it green again.**
+corner pin, whatever footprints are chosen. Rather than get one part wholly
+inside, all four hug the pin: nearest edges 1.66 mm (C8), 1.88 mm (JP2),
+2.02 mm (R1) and 2.46 mm (R6), worst far corner 8.67 mm. The arrangement was
+found by search, not by hand.
+
+`tools/check-placement.py` holds the tolerated far corners in `ALLOW` with
+their reasons, and asserts every nearest edge stays within 3 mm — that second
+check is the one that matters. **If it goes red, something moved. Do not widen
+either number to make it green again.**
 
 **Two readings of the datasheet matter here.** §2.2.1 and §2.4 limit the *trace
 length from pin to capacitor*; §2.3 and §2.6 limit where the *component is
@@ -287,9 +306,32 @@ was verified with a multimeter, and the CAN pinout (C7/C8) is confirmed.
   the loom only, not this board.
 
 **That is the only one, and it is not about this board.** Everything else is
-closed: the escape header goes on (a 2×8 costs about 4 % of the board area),
-there is no enclosure, and C6 turned out to be a 105 °C part with life to spare
-(plan §7).
+closed: **the escape header came off again** (measured, see below), there is no
+enclosure, and C6 turned out to be a 105 °C part with life to spare (plan §7).
+
+### The escape header was removed — do not put it back
+
+It was fitted, and on 2026-08-09 routing showed what it actually cost. Same
+router, same placement, same order, with and against:
+
+| | with J4 | without J4 |
+| --- | --- | --- |
+| connections to route | 39 | 25 |
+| **left unroutable** | **8** | **0** |
+| DRC | incomplete | **0 violations** |
+
+**Five of those eight failures were not escape signals** — both status LEDs and
+the whole ICSP header. J4's fourteen signals congest the channel between U1's
+pin rows, which is the only way across a 55 × 45 mm board, and ICSP is what
+starves. A header that exists to rescue a design error was stopping the chip
+being programmed.
+
+Patching now goes onto the **PDIP socket pins from underneath**; they are
+through-hole and reachable, so the escape route survives without the header.
+
+The freed column was inside the 6 mm circle of DS39977C §2.3, so the MCLR
+cluster was re-placed into it — worst far corner 10.68 mm → 8.67 mm. Plan §5.4
+has the full account.
 
 ### The enclosure was dropped — do not reopen it
 
@@ -341,9 +383,8 @@ behind the MFD15 display, powered by 5 V taken straight from the display.
   to VDD. Datasheet DS39977C §2.4 and Table 31-4.
 - ⚠ **RA0–RA3 and RA5 can only take 2 mA**, sourced or sunk — DS39977C page
   541, against 25 mA for port B and port C. Nothing that draws current goes on
-  those pins. It is why the LEDs are on RC0/RC1 and why the escape header
-  labels the port A pins as weak. The DC characteristics table looks like it
-  permits 3 mA; absolute maximums win.
+  those pins. It is why the LEDs are on RC0/RC1. The DC characteristics table
+  looks like it permits 3 mA; absolute maximums win.
 - **MCLR** carries the full network of DS39977C Figure 2-2: R1 10 kΩ to +5V,
   R6 470 Ω in series into pin 1, C8 100 nF to ground behind jumper **JP2**.
   JP2 comes off before programming and goes back after — the datasheet asks
@@ -391,9 +432,11 @@ intentional, not an oversight.
   are on port C rather than port A because of the 2 mA limit above — do not
   move them back.
 - **ICSP:** 5-pin 2.54 mm header for a PICkit.
-- **Escape hatch:** bring the PIC's unused pins out to a 2.54 mm header so a
-  design error can be patched with a wire. RA1, RA2, RA3 and RA5 are on it and
-  are the weak 2 mA pins; the silkscreen has to say so.
+- **Escape hatch:** ~~bring the PIC's unused pins out to a 2.54 mm header~~
+  **Removed 2026-08-09.** The 2×8 header made both status LEDs and the whole
+  ICSP connector unroutable on a board this size; see "The escape header was
+  removed" above. The PIC's fourteen unused pins carry no-connect flags, and a
+  patch goes onto the PDIP socket pins from underneath instead.
 - **Dimensions:** 55 × 45 mm, two layers, mostly through-hole. Four M3 holes
   4 mm in from the edges, on a 47 × 37 mm pattern. Space available in the vent
   is roughly 6.5 × 5.5 cm; the depth was never measurable because the MFD15 is

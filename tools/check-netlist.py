@@ -30,19 +30,26 @@ SCH = os.path.join(os.path.dirname(HERE), "canfuel", "canfuel.kicad_sch")
 
 EXPECT = {}
 
+# Sentinel for a pin that carries a no-connect flag on purpose. KiCad names
+# such a net "unconnected-(U1-RA1{slash}AN1-Pad3)", which is generated from the
+# pin's own name and would turn this table into a transcription exercise; what
+# is actually being asserted is "nothing is wired here, deliberately".
+NC = object()
+
 # 4.2 U1 - PIC18F25K80, the full 28-pin table. Pin 6 is VDDCORE/VCAP and pin
 # 20 is Vdd; neither is a port pin and the plan says so twice for a reason.
 #
 # The LEDs are on RC0/RC1, not RA1/RA2: the Absolute Maximum Ratings on
 # DS39977C page 541 allow PORTA<5:0> only 2 mA sourced or sunk, against 25 mA
-# for PORTB and PORTC. RA1/RA2 went to the escape header in exchange.
+# for PORTB and PORTC. RA1/RA2 took the RC0/RC1 escape slots in exchange, and
+# when the escape header itself went (plan 5.4) all fourteen became NC.
 for pin, net in {
-        1: "~{MCLR}", 2: "DBG_EN", 3: "ESC_RA1", 4: "ESC_RA2", 5: "ESC_RA3",
-        6: "VCAP", 7: "ESC_RA5", 8: "SGND", 9: "OSC1", 10: "OSC2",
-        11: "LED_PWR", 12: "LED_CAN", 13: "ESC_RC2", 14: "ESC_RC3",
-        15: "ESC_RC4", 16: "ESC_RC5", 17: "CANTX2", 18: "CANRX2",
-        19: "SGND", 20: "+5V", 21: "ESC_RB0", 22: "ESC_RB1",
-        23: "CAN_TX", 24: "CAN_RX", 25: "ESC_RB4", 26: "ESC_RB5",
+        1: "~{MCLR}", 2: "DBG_EN", 3: NC, 4: NC, 5: NC,
+        6: "VCAP", 7: NC, 8: "SGND", 9: "OSC1", 10: "OSC2",
+        11: "LED_PWR", 12: "LED_CAN", 13: NC, 14: NC,
+        15: NC, 16: NC, 17: NC, 18: NC,
+        19: "SGND", 20: "+5V", 21: NC, 22: NC,
+        23: "CAN_TX", 24: "CAN_RX", 25: NC, 26: NC,
         27: "PGC", 28: "PGD"}.items():
     EXPECT["U1.%d" % pin] = net
 
@@ -91,21 +98,21 @@ EXPECT.update({"R1.1": "+5V", "R1.2": "MCLR_RC",
 EXPECT.update({"J3.1": "~{MCLR}", "J3.2": "+5V", "J3.3": "SGND",
                "J3.4": "PGD", "J3.5": "PGC"})
 
-# 5.4 escape hatch: odd pins are row A, even pins row B. Row A runs RA1, RA2,
-# RA3, RA5 then RC2..RC5 - in pin order, because the header exists to be read
-# in a hurry.
-EXPECT.update({"J4.1": "ESC_RA1", "J4.3": "ESC_RA2", "J4.5": "ESC_RA3",
-               "J4.7": "ESC_RA5", "J4.9": "ESC_RC2", "J4.11": "ESC_RC3",
-               "J4.13": "ESC_RC4", "J4.15": "ESC_RC5",
-               "J4.2": "CANTX2", "J4.4": "CANRX2", "J4.6": "ESC_RB0",
-               "J4.8": "ESC_RB1", "J4.10": "ESC_RB4", "J4.12": "ESC_RB5",
-               "J4.14": "+5V", "J4.16": "SGND"})
+# 5.4 escape hatch: REMOVED on 2026-08-09, see plan 5.4. The fourteen ESC_*
+# labels above are now single-node nets and U1's unused pins carry no-connect
+# flags. They stay named because the name is what says which pin is which.
+#
+# Why it went: with J4 fitted the router left 8 of 39 connections unroutable,
+# and five of those eight were not escape signals - both status LEDs and the
+# whole ICSP header. A header whose job is to rescue a design error was
+# stopping the chip being programmed. Without it the board routes complete and
+# DRC clean. Patching now means soldering to the PDIP socket pins underneath.
 
 # Section 2 of the plan, less R5's absence from the BOM which is a separate
 # check - see plan section 6.
 WANT_REFS = {"U1", "U2", "Y1", "C1", "C2", "C3", "C4", "C5", "C6", "C7", "C8",
              "R1", "R2", "R3", "R4", "R5", "R6", "D1", "D2",
-             "J1", "J2", "J3", "J4", "JP1", "JP2"}
+             "J1", "J2", "J3", "JP1", "JP2"}
 
 # --------------------------------------------------------------------------
 
@@ -191,9 +198,15 @@ def main():
     for key in sorted(EXPECT, key=lambda k: (k.split(".")[0],
                                              int(k.split(".")[1]))):
         got = actual.get(key, "<not in netlist>")
-        if got != EXPECT[key]:
+        want = EXPECT[key]
+        if want is NC:
+            if not got.startswith("unconnected-"):
+                print("MISMATCH %-8s plan says no-connect  netlist says %s"
+                      % (key, got))
+                bad += 1
+        elif got != want:
             print("MISMATCH %-8s plan says %-12s netlist says %s"
-                  % (key, EXPECT[key], got))
+                  % (key, want, got))
             bad += 1
 
     for key in sorted(set(actual) - set(EXPECT)):

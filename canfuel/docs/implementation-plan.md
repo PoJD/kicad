@@ -104,7 +104,7 @@ schematic and a board that is an outline and nothing else. ✔
 | D2        | LED yellow                  | 3 mm THT                                | CAN status                             |
 | J1, J2    | Molex Micro-Fit 3.0 43045-0400 | right-angle, board mount             | wired in parallel — see 3.4            |
 | J3        | 5-pin header 2.54 mm        | 1×5                                     | ICSP                                   |
-| J4        | 2×8 header 2.54 mm          | 2×8                                     | escape hatch — see 5.4                 |
+| ~~J4~~    | ~~2×8 header 2.54 mm~~      | —                                       | **removed 2026-08-09 — see 5.4**       |
 | JP1       | 2-pin header + jumper       | 1×2                                     | debug enable on RA0                    |
 | JP2       | 2-pin header + jumper       | 1×2                                     | isolates C8 for programming — see 4.3a |
 | —         | DIP-28 socket, narrow       |                                         | new                                    |
@@ -651,9 +651,9 @@ left** and pins 15–28 along the bottom. Everything else follows from that:
 | 23/24 CAN    | bottom | U2 below right, then J1/J2                   |
 | 27/28 ICSP   | bottom | J3 below left                                |
 
-J4 takes the right edge as a vertical 2×8, between the H2 and H4 keepouts.
 J1/J2 sit on the bottom edge, cables leaving downwards. D1/D2 and their
-resistors run down the left edge where they can be seen.
+resistors run down the left edge where they can be seen. The right-hand column
+held J4 until 2026-08-09 and now holds most of the MCLR network instead.
 
 Measured against the datasheet:
 
@@ -676,17 +676,33 @@ against OSC1 and C2 against OSC2 — the pins they are actually on.
 6 mm circle centred on pin 1. Pin 1 is a corner pin, so about three quarters of
 that circle is free — roughly 85 mm² — and the four parts are 71 mm² of
 courtyard between them. They do not fit, and no choice of footprint changes
-that: this is an area problem, not a lead-pitch problem. What was done instead:
+that: this is an area problem, not a lead-pitch problem.
 
-- **R6 is inside entirely** (farthest corner 5.94 mm). It is the 470 Ω series
-  resistor in the reset path, the one Figure 2-2 note 2 is about.
-- **C8 4.31 mm and JP2 2.04 mm at the nearest edge**; only the far ends of their
-  bodies cross 6 mm.
-- **R1 is the one pushed out** (nearest edge 5.16 mm). It is the 10 kΩ pull-up
-  to VDD — a static bias, and the least distance-sensitive part of the network.
+What was done instead is to make all four hug the pin rather than get one of
+them fully inside. The arrangement was found by search (`mclr_opt.py`, a
+throwaway), minimising the worst far corner over every legal position and
+rotation:
 
-The tolerated figures are recorded in `ALLOW` in `tools/check-placement.py` with
-those reasons, so a deliberate deviation and a regression never look alike.
+| | nearest edge | farthest corner |
+| --- | --- | --- |
+| C8  | 1.66 mm | 7.50 mm |
+| JP2 | 1.88 mm | 8.67 mm |
+| R1  | 2.02 mm | 7.92 mm |
+| R6  | 2.46 mm | 7.63 mm |
+
+Every part is within 2.5 mm of the pin at its nearest edge, and the far corners
+are bodies extending outward, not connections — the pin sees the near end.
+
+An earlier arrangement had R6 wholly inside at 5.94 mm but C8 out at 10.68 mm.
+That was worse: R6 fitting was an accident of it being small, and it left the
+reset capacitor — the part §2.3's own Figure 2-2 note is about — furthest away.
+The room to improve came from removing J4, whose column was inside the circle
+(see 5.4).
+
+`tools/check-placement.py` records the tolerated far corners in `ALLOW` with
+their reasons and, more to the point, asserts that every nearest edge stays
+within 3 mm. That second check is the one carrying weight. Do not widen either
+to make a red run green.
 
 **Standing resistors.** R1–R6 are `R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical`
 and C8 is the 2.50 mm disc, changed from the 10.16 mm horizontal parts on
@@ -724,46 +740,74 @@ number, and nothing in this repository depends on it.
   pin rows first**, then out sideways. That keeps the area above the top row
   clear for the oscillator's grounded guard, which §2.6 requires be free of
   signal and power traces.
-- **J4's column B is routed on B.Cu**, coming up to the pads from underneath.
-  All six of its signals already sit on U1's bottom row, and it avoids
-  threading six tracks through the gaps between the column A pads.
 - **Nothing on B.Cu under the crystal.** §2.6 says so in as many words for a
   two-sided board. The grounded pour there is the guard the same section asks
   for, and is not what "traces" means.
 
-### 5.4 J4 — escape hatch
+Both are given to the router as keep-out rectangles and re-checked afterwards
+by `check-placement.py`, so they cannot quietly rot.
 
-The unused pins, brought out so a design error can be patched with a wire
-rather than a new board. A 2×8 header is 20 × 5 mm — about 4 % of the board
-area, which settles the open question in `CLAUDE.md` in favour of fitting it.
+**Done, 0 unconnected items.** Routing was done by a throwaway grid router
+(A* per connection over both layers, 0.2 mm grid) rather than by hand — thirty
+nets of hand-written waypoints is a lot of arithmetic to get wrong. Two things
+it taught, worth knowing if it is ever run again:
 
-Bring out all 14 unused I/O pins, plus power, which fits a 2×8 header exactly:
+- **Net order decides whether it finishes.** Oscillator and VCAP first, then
+  the rest alphabetically, routed 32 of 39 with J4 still fitted. Longest-first
+  managed 25 and +5V-last managed 27: the 0.8 mm +5V net becomes a wall the
+  thin signals cannot cross if it goes early, and cannot reach its own thirteen
+  pads if it goes late.
+- **A via is 0.6 mm of copper on both layers, not a point.** Treating it as a
+  point produced three clearance violations DRC caught afterwards.
 
-| Row | J4 pins   | Signals                                                   |
-| --- | --------- | --------------------------------------------------------- |
-| A   | 1,3,…,15  | RA1 (3), RA2 (4), RA3 (5), RA5 (7), RC2 (13), RC3 (14), RC4 (15), RC5 (16) |
-| B   | 2,4,…,16  | RC6 (17), RC7 (18), RB0 (21), RB1 (22), RB4 (25), RB5 (26), +5V, SGND |
+### 5.4 The escape hatch was removed — measured, not argued
 
-There is no RA4 on this package (pin 6 is VDDCORE/VCAP), so it is not in the
-list. RC0 and RC1 are not either — they drive the LEDs, and RA1/RA2 took their
-place here when the LEDs moved (3.6). Row A runs in pin order so it can be read
-off in a hurry, which is the header's entire purpose.
+J4 was a 2×8 header bringing out all 14 unused I/O pins plus power, so a design
+error could be patched with a wire rather than a new board. It was fitted, and
+on **2026-08-09 it was taken off again.** Do not put it back without reading
+this.
 
-**Mark the weak pins on the silkscreen.** RA1, RA2, RA3 and RA5 are the 2 mA
-pins of 3.6; someone patching a wire onto this header a year from now will not
-remember that. Print `RA1 2mA` and so on, or a shared legend.
+**What it cost, measured.** Routing the board with and without it, same router,
+same placement, same ordering:
 
-**Done** — `RA1-RA3,RA5` / `2mA MAX` on two lines in the free corner below J4.
-Not beside the header, which is where it belongs: the gap between U1 and J4 is
-0.53 mm and fits no text at all.
+| | with J4 | without J4 |
+| --- | --- | --- |
+| connections to route | 39 | 25 |
+| **left unroutable** | **8** | **0** |
+| DRC | incomplete | **0 violations** |
+
+**The part that settles it is which connections failed.** Five of the eight
+were not escape signals at all:
+
+- `LED_PWR` and `LED_CAN` — both status LEDs
+- `PGD`, `PGC` and `~{MCLR}` — the entire ICSP header
+
+J4 does not only occupy its own area. Its fourteen signals congest the channel
+between U1's two pin rows, which is the only way across the board, and the ICSP
+and LED nets are what get starved. A header whose whole purpose is to rescue a
+design error was preventing the chip from being programmed — which is the
+design error it would have had to rescue.
+
+**What replaces it.** Nothing on the board. U1's fourteen unused pins carry
+no-connect flags in the schematic. If a patch is ever needed, it goes onto the
+**PDIP socket pins from underneath** — they are through-hole and accessible, so
+the escape route survives without the header. That was the maintainer's call
+and it is a good one: the socket was always the real escape hatch.
+
+**What the space bought.** J4 sat in the right-hand column, which lies inside
+the 6 mm circle DS39977C §2.3 draws around U1 pin 1 — so it was also the reason
+the MCLR cluster could not be tightened. With it gone the cluster was re-placed
+by search (see 5.2a) and the worst far corner fell from 10.68 mm to 8.67 mm,
+with every one of the four parts now within 2.5 mm of the pin at its nearest
+edge.
+
+The `RA1-RA3,RA5` / `2mA MAX` silkscreen legend went with it; it warned about
+the weak port A pins on a header that no longer exists.
 
 Value fields moved to F.Fab in the same pass. At this density the stock field
 positions collided with each other and sat over pads; the references are what
 a hand-assembler needs on the silkscreen, and the values are in the BOM and on
 the fab drawing already.
-
-Put RC6/RC7 next to each other and label them `CANTX2`/`CANRX2` — they are the
-ECAN alternates from 4.2.
 
 ### 5.5 DRC
 
@@ -772,13 +816,23 @@ kicad-cli pcb drc --exit-code-violations canfuel/canfuel.kicad_pcb
 python tools/check-placement.py
 ```
 
-Iterate until both exit 0. **DRC on its own is not enough, for the same reason
-ERC was not.** A decoupling capacitor 40 mm from its pin is a perfectly legal
-board — it is just a broken one, and DRC will pass it without complaint.
-`check-placement.py` is the board's equivalent of `check-netlist.py`: it
-re-measures the four distance rules of 5.2 and the mounting-hole keepouts, and
+**Both are clean: 0 violations, 0 unconnected items.** The board is routed on
+two layers with SGND poured on both and stitched through the through-hole pads.
+
+**DRC on its own is not enough, for the same reason ERC was not.** A decoupling
+capacitor 40 mm from its pin is a perfectly legal board — it is just a broken
+one, and DRC will pass it without complaint. `check-placement.py` is the
+board's equivalent of `check-netlist.py`: it re-measures the four distance
+rules of 5.2, the mounting-hole keepouts and the §2.6 oscillator guard, and
 carries the tolerated §2.3 shortfalls with their reasons so an intentional
 deviation never reads as a regression.
+
+**Pads connect to the pours through thermal reliefs** — 0.6 mm spokes, 0.3 mm
+gap. The board is hand soldered, and a through-hole ground pin tied straight
+into a plane sinks heat faster than an iron replaces it; cold joints on ground
+are the usual result. The first attempt used 0.8 mm spokes and two pads came
+out with a single spoke each, which DRC flags as `starved_thermal`; narrowing
+the spokes let the rest through.
 
 Then, separately from either, do the checks a tool cannot do: run the 3D viewer and confirm the socket, the electrolytic and both
 Micro-Fit bodies do not collide, and print the board 1:1 on paper and drop the
@@ -851,7 +905,7 @@ with nothing left for tolerance or temperature.
 2. `Draw canfuel schematic` — ERC clean
 3. `Place canfuel PCB parts` — net classes, footprints, placement, silkscreen;
    DRC clean apart from the unrouted ratsnest
-4. `Route canfuel PCB` — DRC clean
+4. `Route canfuel PCB, drop the escape header` — DRC clean, 0 unconnected
 5. `Add canfuel fabrication outputs`
 6. `Add canfuel purchase list`
 
