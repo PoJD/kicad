@@ -433,8 +433,18 @@ behind the MFD15 display, powered by 5 V taken straight from the display.
   (verified with a multimeter).
 - No regulator, no reverse-polarity protection, no TVS. The 12 V branch was
   dropped from the design.
-- Draw is under 30 mA; the display's limit is 0.5 A.
-- Decoupling: 100 nF at every supply pin, 10 µF at the input.
+- **The 5 V feed is fused, but the fuse is in the harness, not on this board** —
+  SIBA 179120.0.2, 200 mA time-lag T, in inline holder K23411. No 5 × 20 holder
+  fits on a finished 55 × 45 mm board; plan §9.2 has the free-area measurement
+  and `harness.md` section G has the wiring. Nothing about the PCB changes
+  because of it.
+- Average draw is under 30 mA and the display's limit is 0.5 A — but the
+  transceiver alone takes 45 mA typical and 70 mA maximum while it is driving
+  a dominant bit (DS20005167C §2.2), so the worst-case instantaneous total is
+  about 77 mA. C6 and C7 carry those peaks, which is what lets a fuse with
+  2.5 Ω of hot element sit in the feed at all.
+- Decoupling: 100 nF at every supply pin, 10 µF at the input. **C6 is
+  downstream of the harness fuse** and that is load-bearing, not incidental.
 
 ### CAN
 
@@ -527,6 +537,13 @@ Supporting documents in `canfuel/docs/`:
 - `mcp2562-datasheet.pdf` — Microchip DS20005167C, MCP2561/2
 - `hitano-exr-datasheet.pdf` — Hitano EXR electrolytics, C6
 - `crystal-datasheet.pdf` — HC-49U/S DIP quartz crystal resonator, supplied
+- `siba-179120-fuse-datasheet.pdf` — SIBA 179120, 5 × 20 glass time-lag fuses,
+  the harness fuse. Beware: `pdftotext -layout` shifts its parameter table by
+  one row, because it pulls the mV/W/A²s unit header into the first data row.
+  `-table` and `-raw` agree with each other and are right. The 200 mA row is
+  500 mV, 0.3 W, 0.7 A²s.
+- `fuse-holder-5x20-datasheet.pdf` — inline holder K23411, a dimensioned
+  drawing with no text layer and no ratings on it
 - `bom-purchase.pdf` — supplied PDF
 
 ---

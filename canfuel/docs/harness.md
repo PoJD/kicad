@@ -88,10 +88,52 @@ tape, spare ACI pins, spare 43030 sockets.
 ## F. Wrapping up
 
 - [ ] **F1. Only once everything above has passed** — tape up the looms and
-  tidy the routing
+  tidy the routing. **Leave the fuse holder of section G outside the wrap**,
+  and use fabric loom tape, not PVC insulating tape: at dashboard temperatures
+  PVC adhesive creeps, which is the same reason the board is not taped down
+  either.
 - [ ] **F2. Reassemble the dashboard**
 - [ ] **F3. Send me both logs** plus the measured voltages and what the trip
   meter read before and after the reset
+
+---
+
+## G. The 5 V fuse — added 2026-08-09
+
+The converter takes 5 V straight from the display, so a short on the converter
+board is a short across the MFD15's 5 V rail. A fuse in the 5 V wire ends that.
+It is in the loom and not on the board because no 5 × 20 holder fits on a
+finished 55 × 45 mm PCB — plan 9.2 has the measurements and the reasoning.
+
+**Parts:** SIBA 179120.0.2, 200 mA 250 V 5 × 20 mm glass, **time-lag T** — not
+the fast F version — in inline cable holder K23411, which comes with 200 mm of
+lead. The holder body is about 46 mm long and 10.5 mm across.
+
+- [ ] **G1. Cut the 5 V wire only**, a short way back from the 4-pin connector
+  at the air vent. Leave the ground wire whole. Position it so that the holder
+  ends up in the length of loom that comes out when the MFD15 is pulled — the
+  whole point is that the fuse can be changed without dismantling the dash.
+- [ ] **G2. Join each cut end to one lead of the holder.** Crimp butt splices
+  with adhesive-lined heat shrink are the right way. Soldering is acceptable
+  if the joint is then sleeved well past the wick on both sides — a soldered
+  joint in a loom that vibrates cracks exactly at the edge of where the solder
+  travelled.
+- [ ] **G3. Cable-tie the holder to the loom** so it cannot swing and chafe
+  against the vent housing.
+- [ ] **G4. Ring it out** — continuity from plug C position C6 through to the
+  4-pin, with the fuse fitted. Then pull the fuse and confirm the circuit
+  really does open, which also proves the fuse is the one carrying the current
+  and not a splice bypassing it.
+- [ ] **G5. Wrap the loom up to the holder and start again after it.** The
+  holder stays outside the tape and stays openable. See F1.
+
+**If it blows:** the fault is on the converter board, not in the display. Fit
+one new fuse. If the second one goes as well, stop replacing fuses and find
+the short — that is what the fuse is telling you.
+
+**What this does not protect:** the run from plug C to the fuse. That is
+deliberate; it lies inside the dashboard and does not move, and covering it
+would mean putting the fuse where you cannot reach it.
 
 ---
 

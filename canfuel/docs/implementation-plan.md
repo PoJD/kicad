@@ -898,6 +898,11 @@ Cross-check against `bom-purchase.pdf`.
 - **From the drawer:** U1 (PIC18F25K80).
 - **Buy new:** MCP2562-E/P, Y1, every capacitor, every resistor, both sockets,
   J1/J2 and their crimp housings, headers, LEDs.
+- **For the harness, not the board:** SIBA 179120.0.2 fuse (200 mA, time-lag T,
+  5 × 20) and inline holder K23411. These are not in `fab/canfuel-bom.csv` and
+  never will be — the BOM comes from the schematic and the fuse is not on it.
+  Buy a spare fuse; a blown one behind the dash is worth having a second of.
+  See 9.2.
 
 Electrolytics age unpowered and an unmarked crystal has an unknown load
 capacitance — both are cheap enough that reusing them is a false economy.
@@ -984,6 +989,79 @@ it provides guards against metal that is not there.
 
 Resolved earlier: the core supply (3.5 — no ENVREG, 10 µF on pin 6), the LED
 pin assignment (RC0/RC1, see 3.6) and the escape header (2×8, it goes on).
+
+### 9.2 The 5 V feed is fused — in the harness, not on the board
+
+The board takes 5 V straight from the display and has no protection of its own.
+A short anywhere on it — a bridged solder joint, a failed electrolytic — is
+therefore a short across the MFD15's 5 V rail. Adding a fuse closes that.
+
+**It goes in the loom, not on the PCB, and that is a measured decision.** The
+largest free rectangle left on the board is 12.2 × 15.2 mm, at x 92–104.5,
+y 72–87.5; a 5 × 20 mm holder lying flat needs about 24 × 7 mm and there is no
+rectangle that size anywhere on the board. The alternatives were a vertical
+holder standing ~25 mm tall — against a vent depth that has never been
+measurable, because the MFD15 is in the way — or soldering the fuse down, which
+gives up the one thing a cartridge fuse is for. In the loom it costs the board
+nothing: the schematic, the PCB and all four checks are untouched.
+
+Access is the reason a cartridge fuse beats a resettable PTC here, and it comes
+from the car, not a datasheet: pulling the MFD15 out of the vent exposes this
+part of the loom, so replacing a blown fuse does not mean dismantling the
+dashboard.
+
+**The parts.** SIBA **179120.0.2** — 200 mA, 250 V, 5 × 20 mm, glass, time-lag
+T to IEC 60127-2/3 (`siba-179120-fuse-datasheet.pdf`, doc G79120-30 Rev. 0) —
+in inline cable holder **K23411** (`fuse-holder-5x20-datasheet.pdf`), which
+takes a 5.2 × 20 mm fuse and comes with 200 mm of lead. Its body is about
+46 mm long and 10.5 mm across, so it needs a straight run of loom that length
+and it must not be buried where it cannot be unscrewed.
+
+That drawing is the whole of the holder's datasheet: it carries no ratings. The
+6.3 A / 250 V AC figure is from the GME product page, which is a shop listing
+and not a manufacturer document — recorded here as such. It does not matter
+much either way, since the fuse in it is rated 200 mA and the circuit runs at
+5 V.
+
+**Why 200 mA, from the datasheet's own table.** The row for 200 mA gives a
+voltage drop of **500 mV** at rated current, 0.3 W dissipation at 1.5 In and a
+melting integral of **0.7 A²s**. Both numbers decide something:
+
+- *The drop.* 500 mV at 200 mA is 2.5 Ω while the element is hot, and that is
+  not negligible against the 0.51 V of headroom between the 5.01 V measured at
+  C6/C12 and the 4.5 V minimum DS20005167C §2.2 puts on the MCP2562's VDD. It
+  is survivable because **C6 and C7 are downstream of the fuse**: the 45–70 mA
+  the transceiver draws during dominant bits comes out of 20 µF of local
+  capacitance, and the fuse only ever sees the average, which is under 30 mA.
+  At 30 mA even the hot resistance gives 75 mV. Had the bulk capacitor been
+  left on the display side of the fuse, this would not work.
+- *The melting integral.* Charging those same 20 µF from 5 V through a loom of
+  well under an ohm is an I²t of the order of 10⁻³ A²s, three orders below
+  0.7 A²s. Inrush cannot nuisance-blow it, which is what the time-lag
+  characteristic was chosen for in the first place.
+
+**Why it protects what it is meant to.** The display's limit is 0.5 A. The
+fusing-time limits in the same datasheet, for the 125 mA – 6.3 A group:
+
+| | 1.5 In = 0.30 A | 2.1 In = 0.42 A | 2.75 In = 0.55 A | 4 In = 0.80 A | 10 In = 2.0 A |
+| --- | --- | --- | --- | --- | --- |
+| min | 1 h | 600 ms | 150 ms | 20 ms | — |
+| max | — | 2 min | 10 s | 3 s | 300 ms |
+
+Any fault heavy enough to exceed the display's 0.5 A opens the fuse inside
+10 s, and a hard short inside 300 ms. Normal running is 30 mA, 15 % of rating,
+nowhere near the 1 hour it is guaranteed not to open at 0.30 A. The band it
+does not cover is 0.30–0.42 A sustained — and that is below the display's limit
+anyway, so nothing there needs covering.
+
+**What it does not protect.** The fuse sits at the vent end of the loom, where
+it is reachable. The run from plug C to the fuse is therefore unfused. That is
+deliberate: the fault this exists for is on the board, and that section of loom
+lies inside the dashboard without movement. Moving the fuse to the plug C end
+would cover the cable too, at the price of the access that made a cartridge
+fuse the right choice.
+
+`harness.md` section G has the wiring steps.
 
 ---
 
