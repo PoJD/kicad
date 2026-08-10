@@ -65,7 +65,9 @@ cable ties, fabric loom tape.
   pad of the row at the board edge and pad 3 (CANH) sits directly behind it,
   because the lower row of a right-angle header is the one nearest the PCB.
 
-  `harness-connector.svg` next to this file draws both — it is generated from
+  `pinout.md` next to this file is the one-page connector reference for all
+  three plugs, drawn the way the MFD15 manual draws its own.
+  `harness-connector.svg` draws both — it is generated from
   the pad coordinates in `canfuel.kicad_pcb`, not drawn by hand, so it cannot
   disagree with the board. `harness-nets-on-pcb.svg` is the same four nets
   drawn on the real copper, turned the way up the 1:1 paper print comes out.

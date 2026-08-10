@@ -635,6 +635,11 @@ becomes a wrong colour in `fab/`.
 Supporting documents in `canfuel/docs/`:
 
 - `implementation-plan.md` — the working document for the design
+- `pinout.md` — the one-page connector reference: both MFD15 plugs and the
+  converter's own, all drawn rear/cable side. Plugs B and C are transcribed
+  from the MFD15 manual in the sibling `mfd15` repo, which stays the authority;
+  the converter plug's figure is generated from J1's pad nets so it cannot
+  drift from the board.
 - `harness.md` — building the loom. The measuring and sniffing steps were
   stripped out on 2026-08-09 once they had all been done; it is a build
   document now, not a test plan.
