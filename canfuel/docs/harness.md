@@ -34,6 +34,51 @@ cable ties, fabric loom tape.
 - [ ] **A3. Twist the CAN pair** along its whole length.
 - [ ] **A4. Crimp the ends.** ACI pins on the car side, Micro-Fit 43030 sockets
   on the housing side. Tug every one by hand.
+- [ ] **A4a. Fit the sockets into the 4-pin Micro-Fit housing (43025-0400) in
+  the right cavities.** This was missing here until 2026-08-10 and had to be
+  worked out mid-build; the order itself is fixed by plan 3.4 and matches the
+  pads of J1/J2 on the board.
+
+  | Micro-Fit circuit | Net  | Wire   | Plug C |
+  | ----------------- | ---- | ------ | ------ |
+  | 1                 | +5V  | red    | C6     |
+  | 2                 | SGND | black  | C12    |
+  | 3                 | CANH | white  | C7     |
+  | 4                 | CANL | yellow | C8     |
+
+  **Find the cavities from the moulded `1`, not by counting from an end** —
+  seen from the wire side the numbering is the mirror of what it is from the
+  mating face, so counting is exactly how this gets swapped. Circuits 1 and 2
+  are the row the `1` belongs to; 3 and 4 are the other row, with **3 directly
+  across from 1** and 4 diagonally opposite it. So the white wire goes across
+  from the `1`, the yellow one diagonally from it.
+
+  On the housings actually bought (moulded `MSH`), held wire-side towards you
+  with the board header behind, the `1` is the **bottom right** cavity, so:
+
+  ```
+      4 CANL yellow    3 CANH white     upper row
+      2 SGND  black    1 +5V   red      lower row, nearer the PCB
+  ```
+
+  That is the same way round as the board: J1/J2 pad 1 (+5V) is the right-hand
+  pad of the row at the board edge and pad 3 (CANH) sits directly behind it,
+  because the lower row of a right-angle header is the one nearest the PCB.
+
+  `harness-connector.svg` next to this file draws both — it is generated from
+  the pad coordinates in `canfuel.kicad_pcb`, not drawn by hand, so it cannot
+  disagree with the board. `harness-nets-on-pcb.svg` is the same four nets
+  drawn on the real copper, turned the way up the 1:1 paper print comes out.
+
+  **On a bare board the two pairs can be told apart by eye**: +5V is routed at
+  0.8 mm and CANH/CANL at 0.4 mm, so the fattest tracks leaving the connectors
+  are the power pair. SGND has no track at all — it is entirely the pour.
+
+  ❗ Swapping CANH and CANL only stops the bus working. Putting a CAN wire in
+  circuit 1 or 2 puts **5 V on it** — plan 3.4 calls that a dead transceiver.
+  So **ring circuit 1 out to the board's +5V pad before the first power-up**,
+  which is also the only check that catches a housing whose numbering does not
+  follow the header's.
 - [ ] **A5. Fit two sockets (5 V, SGND) into the existing 12-pin housing of
   plug C**, positions C6 and C12. **Do not touch C7/C8** — those are the
   display's CAN pins and they are already right.
