@@ -26,10 +26,22 @@ application notes summarised from memory, not "this is what everyone fits", not
 a value that worked on a previous project, and not the recollection of whoever
 is at the keyboard — including the model's.
 
-When the datasheet does not settle a question, **ask the maintainer**. Do not
-fill the gap with a plausible number and move on. A guess that looks like a
-specification is worse than an open question, because the next person cannot
-tell the two apart.
+When the datasheet does not settle a question, **decide it and write the
+decision down as a decision** — what was chosen, what it was chosen over, and
+what the reasoning was. Do not fill the gap with a plausible number presented
+as a fact, and do not stop and ask. A guess dressed up as a specification is
+worse than an open question, because the next person cannot tell them apart; a
+decision that says it is a decision is neither.
+
+**Do not queue up questions for the maintainer.** Judgement calls belong in the
+work, next to the thing they produce. If something is genuinely undecidable
+without information nobody has yet — a measurement off the car, a part that has
+not arrived — say so in the same place, in one line, and carry on with
+everything that does not depend on it.
+
+(This paragraph used to say "ask the maintainer", which contradicted the
+identical rule in the `canfuel` repository and was the weaker of the two. The
+sibling's wording is now used verbatim, so the two cannot drift again.)
 
 In practice this means:
 

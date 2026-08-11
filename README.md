@@ -3,14 +3,21 @@
 Printed circuit boards. A container for all projects, successor to the older
 `eagle` repo.
 
-KiCad 8 — text formats, readable diffs, ERC and DRC running in CI through
-`kicad-cli` without a GUI.
+KiCad 10 — text formats, readable diffs, ERC and DRC running in CI through
+`kicad-cli` without a GUI. The CI container image tracks the local major
+version, because KiCad refuses to open files written by a newer one.
 
 ## Boards
 
 | Board | Status | Description |
 |---|---|---|
-| [`canfuel/`](canfuel/) | design not started | fuel consumption converter for a VW New Beetle, powered from the MFD15 display |
+| [`canfuel/`](canfuel/) | **ordered 2026-08-09**, three pieces from Gatema | fuel consumption converter for a VW New Beetle, powered from the MFD15 display |
+
+The `canfuel` board is finished: schematic and PCB complete, ERC and DRC clean
+with zero unconnected items, 24 parts on 55 × 45 mm and two layers, `fab/`
+generated and committed. **The boards being manufactured are commit
+`c06e710`**, so an edit to the board files now makes `fab/` stop describing
+them.
 
 ## Layout
 
@@ -32,10 +39,11 @@ board it must be possible to find out exactly what was sent to the fab.
 ## CI
 
 `kicad-cli sch erc` and `kicad-cli pcb drc`. Both must pass before boards are
-ordered.
+ordered, and both do — the schematic and the board have been in the repository
+since the design landed, so the workflow does real work on every push.
 
-The workflow currently runs as a skeleton — while the repo contains no
-`.kicad_sch`, it passes doing nothing. Once a schematic lands, it starts checking.
+Two project-specific checks run alongside them: `check-netlist.py` and
+`check-placement.py`.
 
 ## Related repositories
 
