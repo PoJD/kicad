@@ -25,6 +25,27 @@ whole build path, across all three repositories, is
 [`canfuel/docs/install.md`](https://github.com/PoJD/canfuel/blob/main/docs/install.md);**
 the steps this repository owns are the board and the loom.
 
+## Prerequisites
+
+| For | What | Notes |
+|---|---|---|
+| opening and editing | **KiCad 10.x** | the **major** version matters, see below |
+| the checks | **`kicad-cli`** | installed with KiCad, no separate download |
+| `tools/check-*.py` | **Python 3** | no third-party packages |
+
+```
+kicad-cli version          # must print 10.x
+```
+
+**The major version is not a preference.** KiCad refuses to open files written
+by a newer major version, so a mismatch is a hard failure rather than a
+warning. CI runs the `kicad/kicad:10.0` container image and that image tracks
+whatever is installed locally — bump the two together, never separately.
+
+Nothing here needs a licence, an account or a plugin. Making the board also
+needs no KiCad at all: `fab/` is generated and committed, so a fab house can be
+given those files directly.
+
 ## Layout
 
 ```
