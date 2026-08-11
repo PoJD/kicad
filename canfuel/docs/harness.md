@@ -84,7 +84,7 @@ cable ties, fabric loom tape.
 - [ ] **A5. Fit two sockets (5 V, SGND) into the existing 12-pin housing of
   plug C**, positions C6 and C12. **Do not touch C7/C8** — those are the
   display's CAN pins and they are already right.
-- [ ] **A6. Ring everything out.** Every wire end to end, and no short between
+- [x] **A6. Ring everything out.** Every wire end to end, and no short between
   adjacent positions. Do this before the fuse goes in, so that a later failure
   has only one new thing to blame.
 
@@ -111,7 +111,7 @@ straight run of loom that length and somewhere it can be unscrewed.
   travelled.
 - [ ] **B3. Cable-tie the holder to the loom** so it cannot swing and chafe
   against the vent housing.
-- [ ] **B4. Ring it out again** — continuity from plug C position C6 through to
+- [x] **B4. Ring it out again** — continuity from plug C position C6 through to
   the 4-pin, with the fuse fitted. Then pull the fuse and confirm the circuit
   really does open. That second half is the one worth doing: it proves the fuse
   carries the current and that no splice quietly bypasses it.
@@ -133,8 +133,21 @@ straight run of loom that length and somewhere it can be unscrewed.
 - [ ] **D1. Tape up the looms and tidy the routing.** Use **fabric loom tape,
   not PVC insulating tape** — at dashboard temperatures PVC adhesive creeps,
   which is the same reason the board is not taped down either.
-- [ ] **D2. Wrap up to the fuse holder and start again after it.** The holder
-  stays outside the tape and stays openable.
+- [x] **D2. ~~Wrap up to the fuse holder and start again after it.~~
+  Overridden on the build: the holder is wrapped over as well.** The intent
+  was that the fuse could be changed without unwrapping anything. On the
+  actual holder one end leaves **bare 5 V exposed**, and bare metal loose
+  behind a dashboard was judged the worse of the two risks, so it is taped
+  over along with the rest of the loom.
+
+  **What that costs:** changing a fuse now means peeling the tape back and
+  re-wrapping it. So **the spare fuse in the car is not enough on its own —
+  a roll of the fabric tape has to travel with it**, or the roadside repair
+  cannot be finished.
+
+  The alternative, if this is ever rebuilt: sleeve only the exposed end and
+  leave the holder body outside the tape, which gets both. Not worth
+  dismantling a finished loom for.
 - [ ] **D3. Reassemble the dashboard.**
 
 ---
@@ -142,8 +155,9 @@ straight run of loom that length and somewhere it can be unscrewed.
 ## If the fuse blows
 
 The fault is on the converter board, not in the display. Fit one new fuse — and
-carry a spare, because a blown one behind the dash with no replacement to hand
-is a wasted trip. If the second one goes as well, stop replacing fuses and find
+carry a spare **and a roll of the fabric tape**, because the holder is wrapped
+over (see D2) and a blown fuse behind the dash with nothing to hand is a wasted
+trip. If the second one goes as well, stop replacing fuses and find
 the short. That is what the fuse is telling you.
 
 **What the fuse does not protect:** the run from plug C to the fuse itself.
