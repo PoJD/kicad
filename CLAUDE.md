@@ -688,6 +688,13 @@ so always run git inside one of the three.
 
 Neither of them constrains this board's design. The coupling in this project is
 between `canfuel` and `mfd15` (the layout of CAN frames 0x600–0x602), not here.
+
+**`canfuel/docs/refuted.md` collects the refuted hypotheses of all three
+repositories**, this one included — the escape header and the enclosure are
+entries D1 and D2 there, alongside the fuller accounts kept here. It is one
+file rather than three because a good idea that was tried and failed is worth
+finding whichever repository somebody is standing in. When something here is
+settled *against*, add it there and keep the detail here.
 What this repo owes them is only that the pinout in the requirements above —
 C6/C12 for power, C7/C8 for CAN — matches the harness described in
 `canfuel/docs/harness.md`.
