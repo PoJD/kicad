@@ -44,4 +44,14 @@ The workflow currently runs as a skeleton — while the repo contains no
 
 ## Licence
 
-Not decided yet.
+[Apache License 2.0](LICENSE). Use it, change it, order the boards, sell them —
+the only obligations are to keep the copyright and licence notices and to say
+what you changed.
+
+**`NOTICE` lists what is not ours.** The manufacturer datasheets under
+`canfuel/docs/` belong to their manufacturers and are redistributed for
+reference only; the licence above does not cover them and does not claim to.
+Everything else in this repository is covered.
+
+Questions, corrections and pull requests are welcome as issues on any of the
+three repositories.

@@ -1,0 +1,44 @@
+kicad — printed circuit boards
+Copyright 2026 PoJD (https://github.com/PoJD)
+
+Licensed under the Apache License, Version 2.0. See the LICENSE file.
+
+================================================================================
+Third-party material redistributed in this repository
+================================================================================
+
+The files listed below are NOT covered by the Apache License 2.0. They remain
+the copyright of their respective owners and are included here only for
+reference, so that a board can be checked against the parts it actually uses
+without hunting for a download. No licence to them is granted by this
+repository, and nothing in the LICENSE file should be read as claiming any
+right in them.
+
+  canfuel/docs/pic18f25k80-datasheet.pdf
+      Microchip Technology Inc. — PIC18F66K80 family data sheet, DS39977C.
+      Copyright (c) 2011 Microchip Technology Inc.
+
+  canfuel/docs/mcp2562-datasheet.pdf
+      Microchip Technology Inc. — MCP2561/2 data sheet, DS20005167C.
+      Copyright (c) 2013-2014 Microchip Technology Inc.
+
+  canfuel/docs/crystal-datasheet.pdf
+      HC-49U/S DIP quartz crystal resonator data sheet, from the manufacturer.
+
+  canfuel/docs/hitano-exr-datasheet.pdf
+      Hitano Enterprise Corp. — EXR series aluminium electrolytic capacitors.
+
+  canfuel/docs/micro-fit-43045-datasheet.pdf
+      Molex — Micro-Fit 3.0 series, 43045 header family.
+
+  canfuel/docs/siba-179120-fuse-datasheet.pdf
+      SIBA GmbH — 5 x 20 mm glass fuse, type 179120.
+
+  canfuel/docs/fuse-holder-5x20-datasheet.pdf
+      Inline 5 x 20 mm fuse holder, from the manufacturer.
+
+Every electrical number taken out of these is cited in the design documents by
+document and section, so removing them costs traceability but breaks nothing.
+
+`canfuel/docs/bom-purchase.pdf` is a purchase record for this project and is
+covered by the LICENSE like the rest of the repository.
