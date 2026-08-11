@@ -28,8 +28,18 @@ lib/                symbols and footprints shared across projects
   *.kicad_sch       schematic
   *.kicad_pcb       board
   fab/              gerbers, BOM, CPL — committed
-  docs/             supporting documents, datasheets, mechanical notes
+  docs/             design documents, datasheets, and how to build the harness
 ```
+
+For the `canfuel` board specifically, `canfuel/docs/` holds:
+
+| File | Contents |
+|---|---|
+| `harness.md` | **making the loom and wiring it into the car** — a checklist, with the crimping, the connector cavities and the fuse |
+| `pinout.md` | one-page reference for all three connectors |
+| `harness-*.svg` | the connector and the four nets drawn from the real pad coordinates in `canfuel.kicad_pcb`, so they cannot disagree with the board |
+| `implementation-plan.md` | how the board was designed, every number cited to a datasheet |
+| `*.pdf` | the manufacturers' datasheets, listed in `NOTICE` as theirs |
 
 `*.kicad_prl` is local state and does not belong in the repo (it is gitignored).
 
@@ -47,8 +57,19 @@ Two project-specific checks run alongside them: `check-netlist.py` and
 
 ## Related repositories
 
-- `canfuel` — firmware
-- `mfd15` — display and TRI file
+The `canfuel` board is one third of a project that needs all three
+repositories. Clone them side by side.
+
+| Repository | What it holds | Go there for |
+|---|---|---|
+| **`kicad`** (this one) | the converter board | the schematic, the PCB, `fab/`, and **`canfuel/docs/harness.md` — how to make the loom and wire it into the car** |
+| [`canfuel`](https://github.com/PoJD/canfuel) | the converter firmware | building and flashing the hex, what the LEDs mean, how the car's frames are decoded |
+| [`mfd15`](https://github.com/PoJD/mfd15) | the display configuration | the TRI file the display runs and how to upload it |
+
+**The coupling to `canfuel` is the pin assignment**, and it is one-way: the
+firmware is written against the board, not the other way round. It is frozen —
+the boards being manufactured are commit `c06e710`, so an edit to the board
+files now makes both `fab/` and the firmware stop describing them.
 
 ## Licence
 
