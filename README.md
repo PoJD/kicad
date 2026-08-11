@@ -19,6 +19,12 @@ generated and committed. **The boards being manufactured are commit
 `c06e710`**, so an edit to the board files now makes `fab/` stop describing
 them.
 
+The harness is built, fitted in the car and measured —
+[`canfuel/docs/harness.md`](canfuel/docs/harness.md) is the procedure. **The
+whole build path, across all three repositories, is
+[`canfuel/docs/install.md`](https://github.com/PoJD/canfuel/blob/main/docs/install.md);**
+the steps this repository owns are the board and the loom.
+
 ## Layout
 
 ```

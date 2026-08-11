@@ -2,10 +2,13 @@
 
 How to get from an empty repository to an ordered board. The requirements in
 the root `CLAUDE.md` are the input and are treated as settled; this document
-turns them into reference designators, nets, pin numbers and a sequence of
-commits.
+turns them into reference designators, nets and pin numbers.
 
 Read the killer checks in section 3 before drawing anything.
+
+**This is a design reference, not a progress tracker.** What is left to do in
+the project as a whole, and where this car has got to, lives in one place:
+[`canfuel/docs/install.md`](https://github.com/PoJD/canfuel/blob/main/docs/install.md).
 
 > ⚠ **This document was written before the board was drawn, and the board is
 > now made.** Most of it is still the reference — the pin table in 4.2, the
@@ -1213,20 +1216,14 @@ with nothing left for tolerance or temperature.
 
 ---
 
-## 8. Sequence of commits
+## 8. Committing work on a board
 
-1. `Add KiCad project skeleton for canfuel` — CI goes live
-2. `Draw canfuel schematic` — ERC clean
-3. `Place canfuel PCB parts` — net classes, footprints, placement, silkscreen;
-   DRC clean apart from the unrouted ratsnest
-4. `Route canfuel PCB, drop the escape header` — DRC clean, 0 unconnected
-5. `Add canfuel fabrication outputs` — and the `120R DNF` silkscreen legend the
-   pre-order check of 6 found missing
-6. `Add canfuel purchase list` — done ahead of 5; everything is bought
+**One rule, and it outlives this board:** every commit leaves CI green. If the
+schematic needs several passes, that is fine — but never commit one that fails
+ERC, because then a red CI run stops meaning anything.
 
-Each commit should leave CI green. If step 2 needs several passes, that is
-fine — but do not commit a schematic that fails ERC, because then a red CI run
-stops meaning anything.
+The commit-by-commit account of how this board was built is git history and is
+not duplicated here.
 
 ---
 

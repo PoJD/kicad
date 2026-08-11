@@ -263,18 +263,20 @@ works either way.
 that PATH edit will not see `kicad-cli`; call it by full path rather than
 concluding it is missing.
 
-### Resume here — next session
+### There is no design work left in this repository
 
-**The design is finished, `fab/` is finished, and the boards are ordered.**
-Net classes, placement, routing, pours, silkscreen and the fabrication outputs
-are all done and committed, every check is green, all parts are bought and there
-is not one open question left. Do not go looking for design work to do — there
-is none.
+**The design is finished, `fab/` is finished, the boards are ordered and the
+loom is built and in the car.** Net classes, placement, routing, pours,
+silkscreen and the fabrication outputs are all done and committed, every check
+is green, all parts are bought and there is not one open question left. Do not
+go looking for design work to do — there is none.
 
-**The next thing that happens is three bare boards arriving**, not another
-edit. Until they do and have been looked at, the useful work is off this
-repository: the loom (`canfuel/docs/harness.md` is a build document now), the
-two missing Micro-Fit headers, and the firmware in the sibling `canfuel` repo.
+**The next action for the project as a whole is step 4 of
+`canfuel/docs/install.md`** — populate a board, programme it, loopback on the
+desk — and it is waiting on the boards, expected in the week of 2026-08-17.
+That document is the plan and it tracks its own progress; this file
+deliberately does not keep a second copy of it.
+
 **Do not touch the design while the order is in flight** — what is being
 manufactured is `c06e710`, and changing the board now makes `fab/` describe
 something that does not exist.
@@ -405,31 +407,16 @@ Things that cost time to work out the first time:
   though note the KiCad symbol's pinout has now been checked against it and
   agrees, including pin 6 being `Vcap` and there being no RA4.
 
-### Suggested order of work
+### How this board got built, in one line
 
-The detailed version — reference designators, pin numbers, net classes and the
-order of commits — is in `canfuel/docs/implementation-plan.md`. The outline:
+Schematic, ERC, layout, DRC, `fab/`, purchase list, order — in that order, each
+step clean before the next. The detail that still matters is in this file and in
+`canfuel/docs/implementation-plan.md`; the step-by-step of what was done when is
+git history and is not repeated here.
 
-1. ~~Install KiCad, confirm `kicad-cli version` runs.~~ Done — 10.0.5.
-2. ~~Create the project: `canfuel/canfuel.kicad_pro` plus an empty schematic and
-   board, committed on its own so CI going live is a visible step.~~ Done.
-3. ~~Draw the schematic against the requirements below. The things most worth
-   double-checking, because they are the ones that quietly kill a board:
-   MCP2562 VIO and STBY, no 120 Ω termination fitted, 33 pF crystal loading,
-   both Micro-Fit headers wired in parallel, 10 µF on VDDCORE/VCAP, and the
-   LEDs off port A.~~ Done — all of them are on the sheet and repeated in its
-   notes panel.
-4. ~~`kicad-cli sch erc` until clean.~~ Done, zero violations.
-5. ~~Lay out the PCB inside ~55 × 45 mm, two layers, mostly through-hole.~~
-   Done — 24 parts, routed, poured.
-6. ~~`kicad-cli pcb drc` until clean.~~ Done, zero violations.
-7. ~~Generate `fab/` (gerbers, BOM, CPL) and commit it.~~ Done — plan §6 has
-   the commands and the pre-order checks.
-8. ~~Only then assemble the GME purchase list.~~ Done — everything is bought.
-   The rule it came from still stands for any future board: the BOM falls out
-   of the schematic, so buying earlier means buying twice.
-9. ~~Order the boards.~~ Done — Gatema PCB, 2026-08-09, 3 pieces.
-   ← **next: the boards arrive and get built**
+**One rule from it survives for any future board:** the BOM falls out of the
+schematic, so assembling a purchase list before the schematic is finished means
+buying twice.
 
 ### Decisions already made
 

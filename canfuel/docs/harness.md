@@ -4,6 +4,24 @@ The loom that connects the MFD15 to the car and to the converter board. It
 carries two things: the CAN pair from the cluster to the air vent, and 5 V from
 the display's own plug C to the converter.
 
+> **Status of the one in this car: built, fitted and measured, 2026-08-10/11.**
+> The dashboard came apart, the old loom came out, and a complete new one went
+> in — longer 12 V and ground into the MFD15's plug B, the CAN pair and the
+> 5 V/SGND run terminating in the Micro-Fit that the converter board will plug
+> into. **5.01 V measured at the 4-pin itself**, which is the number that
+> matters: it is the supply the board will see, through the fuse and both
+> splices, not a reading taken at plug C before the loom existed. The display
+> was then run on this loom with the CAN pair on DuPont jumpers in place of the
+> board, and it worked.
+>
+> **What is left in this car is the board**, not the loom. See
+> `canfuel/docs/install.md` step 4.
+>
+> The checkboxes below are deliberately left unticked: this is the procedure
+> for building one, and everything learnt while building ours has been folded
+> back into the steps rather than recorded as ticks. The one place ours
+> deviates from the plan is D2, and it says so there.
+
 **The measuring and the sniffing are done.** The supply was checked at C6/C12
 and reads 5.01 V, the TRI file loads and the logs were taken. Everything that
 was in this document about proving those points has been removed — what is left
@@ -84,7 +102,7 @@ cable ties, fabric loom tape.
 - [ ] **A5. Fit two sockets (5 V, SGND) into the existing 12-pin housing of
   plug C**, positions C6 and C12. **Do not touch C7/C8** — those are the
   display's CAN pins and they are already right.
-- [x] **A6. Ring everything out.** Every wire end to end, and no short between
+- [ ] **A6. Ring everything out.** Every wire end to end, and no short between
   adjacent positions. Do this before the fuse goes in, so that a later failure
   has only one new thing to blame.
 
@@ -111,7 +129,7 @@ straight run of loom that length and somewhere it can be unscrewed.
   travelled.
 - [ ] **B3. Cable-tie the holder to the loom** so it cannot swing and chafe
   against the vent housing.
-- [x] **B4. Ring it out again** — continuity from plug C position C6 through to
+- [ ] **B4. Ring it out again** — continuity from plug C position C6 through to
   the 4-pin, with the fuse fitted. Then pull the fuse and confirm the circuit
   really does open. That second half is the one worth doing: it proves the fuse
   carries the current and that no splice quietly bypasses it.
@@ -133,7 +151,7 @@ straight run of loom that length and somewhere it can be unscrewed.
 - [ ] **D1. Tape up the looms and tidy the routing.** Use **fabric loom tape,
   not PVC insulating tape** — at dashboard temperatures PVC adhesive creeps,
   which is the same reason the board is not taped down either.
-- [x] **D2. ~~Wrap up to the fuse holder and start again after it.~~
+- [ ] **D2. ~~Wrap up to the fuse holder and start again after it.~~
   Overridden on the build: the holder is wrapped over as well.** The intent
   was that the fuse could be changed without unwrapping anything. On the
   actual holder one end leaves **bare 5 V exposed**, and bare metal loose
