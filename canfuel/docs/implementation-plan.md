@@ -7,6 +7,23 @@ commits.
 
 Read the killer checks in section 3 before drawing anything.
 
+> ⚠ **This document was written before the board was drawn, and the board is
+> now made.** Most of it is still the reference — the pin table in 4.2, the
+> footprints in 4.7, the fab commands in 6 — but where the design moved after
+> the plan was written, the plan has been corrected in place rather than
+> rewritten, with the old text quoted and dated so a decision cannot be mistaken
+> for an oversight.
+>
+> **The big one is the escape header J4**, removed on 2026-08-09 because routing
+> put a number on what it cost: eight unroutable connections, five of them
+> nothing to do with the escape signals. Section 5.4 is the full account, and
+> `canfuel/docs/refuted.md` entry D1 is the short one. Fourteen pins that this
+> document originally sent to J4 now go **nowhere**, and driving them low is a
+> firmware obligation — see 3.6.
+>
+> `canfuel/docs/refuted.md` collects every idea in this project that was
+> believed and turned out wrong, across all three repositories.
+
 **Every electrical number below is cited to a manufacturer datasheet**, per the
 sourcing rule in `CLAUDE.md`. The three documents are in `docs/`:
 
@@ -190,8 +207,10 @@ required to avoid overdriving crystals with low drive level specification", and
 this crystal's drive level is 100 µW typical, 500 µW maximum. Whether it is
 actually needed cannot be decided from the datasheets — it takes a measurement
 on a built board. The same PIC-family part drives the same crystal without Rs
-in `can-pcb`, so none is fitted. If the oscillator misbehaves, RC0/RC1 and the
-rest of J4 are next to it and a series resistor can be tacked in.
+in `can-pcb`, so none is fitted. If the oscillator misbehaves, a series
+resistor has to be tacked in at the socket pins — this used to say "RC0/RC1 and
+the rest of J4 are next to it", which stopped being true when J4 was removed
+(§5.4).
 
 Microchip's own tables are guidance only and do not cover this case directly:
 Table 3-3 (crystals, HS) lists 27 pF at 4 MHz, 22 pF at 8 MHz and 15 pF at
@@ -295,8 +314,10 @@ DS39977C page 541, Absolute Maximum Ratings, splits the ports:
 
 RA1 and RA2 are inside PORTA<5:0>. An LED at 1 kΩ off a 5 V rail draws about
 2.2 mA once VOH is taken as VDD − 0.7 (D090) and Vf as 2.1 V — over the limit,
-so **D1 and D2 are on RC0 (pin 11) and RC1 (pin 12)** and RA1/RA2 went to the
-escape header instead. R3 and R4 stay at 1 kΩ.
+so **D1 and D2 are on RC0 (pin 11) and RC1 (pin 12)**, and RA1/RA2 were left
+unused. R3 and R4 stay at 1 kΩ. (They "went to the escape header instead" until
+J4 was removed on 2026-08-09, §5.4; on the manufactured board they go nowhere
+and the firmware drives them low.)
 
 Two things make this worth writing down rather than just fixing:
 
@@ -406,7 +427,7 @@ default track width.
 | D1, D2  | `Device:LED`                          | `LED_THT:LED_D3.0mm`                                           |
 | J1, J2  | `Connector_Generic:Conn_02x02_Odd_Even` | `Connector_Molex:Molex_Micro-Fit_3.0_43045-0400_2x02_P3.00mm_Horizontal` |
 | J3      | `Connector_Generic:Conn_01x05`        | `Connector_PinHeader_2.54mm:PinHeader_1x05_P2.54mm_Vertical`   |
-| J4      | `Connector_Generic:Conn_02x08_Odd_Even` | `Connector_PinHeader_2.54mm:PinHeader_2x08_P2.54mm_Vertical`  |
+| ~~J4~~  | ~~`Connector_Generic:Conn_02x08_Odd_Even`~~ | ~~`Connector_PinHeader_2.54mm:PinHeader_2x08_P2.54mm_Vertical`~~ — **removed 2026-08-09, see 5.4** |
 | JP1     | `Connector_Generic:Conn_01x02`        | `Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical`   |
 
 Two of those deserve a sentence, because both look wrong at a glance:
@@ -431,37 +452,44 @@ the functions that matter here.
 | --- | ------------- | ------------------------------------------------------------- |
 | 1   | MCLR/RE3      | R6 (470 Ω) from the R1 node, and J3 pin 1. See 4.3a           |
 | 2   | RA0/AN0       | JP1 to +5V, R2 (10 kΩ) to SGND → `DBG_EN`                     |
-| 3   | RA1/AN1       | J4 (escape) — 2 mA pin, see 3.6                               |
-| 4   | RA2/AN2       | J4 (escape) — 2 mA pin, see 3.6                               |
-| 5   | RA3/AN3       | J4 (escape)                                                   |
+| 3   | RA1/AN1       | **nothing — see 3.6.** 2 mA pin                                |
+| 4   | RA2/AN2       | **nothing — see 3.6.** 2 mA pin                                |
+| 5   | RA3/AN3       | **nothing — see 3.6**                                         |
 | 6   | **VDDCORE/VCAP** | **C7 (10 µF low-ESR) to SGND. Never to +5V.** See 3.5      |
-| 7   | RA5/AN4       | J4 (escape)                                                   |
+| 7   | RA5/AN4       | **nothing — see 3.6**                                         |
 | 8   | VSS           | SGND                                                          |
 | 9   | OSC1/CLKIN/RA7| Y1 + C1                                                       |
 | 10  | OSC2/CLKOUT/RA6| Y1 + C2                                                      |
 | 11  | RC0/SOSCO     | R3 → D1 (`LED_PWR`) — see 3.6                                 |
 | 12  | RC1/SOSCI     | R4 → D2 (`LED_CAN`) — see 3.6                                 |
-| 13  | RC2/T1G/CCP2  | J4 (escape)                                                   |
-| 14  | RC3/SCL/SCK   | J4 (escape)                                                   |
-| 15  | RC4/SDA/SDI   | J4 (escape)                                                   |
-| 16  | RC5/SDO       | J4 (escape)                                                   |
-| 17  | RC6/**CANTX**/TX1 | J4 (escape) — alternate ECAN pin, see below               |
-| 18  | RC7/**CANRX**/RX1 | J4 (escape) — alternate ECAN pin, see below               |
+| 13  | RC2/T1G/CCP2  | **nothing — see 3.6**                                         |
+| 14  | RC3/SCL/SCK   | **nothing — see 3.6**                                         |
+| 15  | RC4/SDA/SDI   | **nothing — see 3.6**                                         |
+| 16  | RC5/SDO       | **nothing — see 3.6**                                         |
+| 17  | RC6/**CANTX**/TX1 | **nothing — see 3.6.** Alternate ECAN pin, see below       |
+| 18  | RC7/**CANRX**/RX1 | **nothing — see 3.6.** Alternate ECAN pin, see below       |
 | 19  | VSS           | SGND                                                          |
 | 20  | VDD           | +5V, C3 (100 nF) to SGND, as close as the layout allows       |
-| 21  | RB0/INT0      | J4 (escape)                                                   |
-| 22  | RB1/INT1      | J4 (escape)                                                   |
+| 21  | RB0/INT0      | **nothing — see 3.6**                                         |
+| 22  | RB1/INT1      | **nothing — see 3.6**                                         |
 | 23  | RB2/**CANTX** | `CAN_TX` → U2 pin 1                                           |
 | 24  | RB3/**CANRX** | `CAN_RX` → U2 pin 4                                           |
-| 25  | RB4/AN9       | J4 (escape)                                                   |
-| 26  | RB5/T0CKI     | J4 (escape)                                                   |
+| 25  | RB4/AN9       | **nothing — see 3.6**                                         |
+| 26  | RB5/T0CKI     | **nothing — see 3.6**                                         |
 | 27  | RB6/**PGC**   | `PGC` → J3 pin 5                                              |
 | 28  | RB7/**PGD**   | `PGD` → J3 pin 4                                              |
 
 **The ECAN module can be remapped.** CANTX/CANRX are available on RB2/RB3
-*and* on RC6/RC7. Both alternates land on J4, so if RB2/RB3 turn out to be
-wrong — wrong config bit, damaged pin, anything — the fix is two wire links on
-the escape header rather than a new board. Worth knowing before ordering.
+*and* on RC6/RC7.
+
+⚠ **This used to say the alternates land on J4, so a remap would be two wire
+links on the escape header. J4 was removed on 2026-08-09 (§5.4), so it is not.**
+RC6 and RC7 go nowhere on the manufactured board, and moving the ECAN now means
+soldering to the PDIP socket pins from underneath — they are through-hole and
+reachable, so the escape route survives, but it is a soldering iron and not a
+jumper. That is the single strongest reason to get `CANMX` right the first
+time, and it is why the firmware reads the bit out of the built hex rather than
+trusting the source.
 
 LEDs, driven by the PIC so nothing lights up in the car:
 
@@ -474,12 +502,19 @@ Firmware only drives them when `DBG_EN` reads high, i.e. when the JP1 jumper is
 fitted. R2 pulls RA0 down, so an absent jumper is a defined low, not a floating
 input.
 
-**Unused pins are a firmware obligation, not just a header.** DS39977C 2.7:
-unused I/O should be configured as outputs driven low, or given a 1–10 kΩ
-resistor to VSS. The fourteen pins on J4 sit at a header with nothing on the
-other end, so the firmware in the `canfuel` repository has to drive them low at
-start-up. There is no resistor for this on the board — fourteen of them would
-cost more area than the header.
+**Unused pins are a firmware obligation, and since J4 went it is the only
+option.** DS39977C 2.7 offers two: unused I/O configured as outputs driven low,
+**or** a 1–10 kΩ resistor to VSS. There are no such resistors on this board —
+fourteen of them would have cost more area than they were worth — so the first
+option is the only one available, and the firmware in the `canfuel` repository
+has to drive all fourteen low at start-up: RA1, RA2, RA3, RA5, RC2–RC7, RB0,
+RB1, RB4, RB5.
+
+⚠ **This paragraph used to say the fourteen pins "sit at a header with nothing
+on the other end".** They did until 2026-08-09; J4 was removed (§5.4) and they
+now go nowhere at all. The firmware obligation is unchanged and is if anything
+more load-bearing, because software is now the only thing standing between
+those pins and floating inputs.
 
 ### 4.3 J3 — ICSP
 
@@ -641,7 +676,8 @@ CI green. ✔
 ```
         55 mm
   ┌───────────────────────────┐
-  │  J3 ICSP        J4 escape │  ← top edge, both reachable with the lid off
+  │  J3 ICSP                  │  ← top edge, reachable with the lid off
+  │        (J4 was here, 5.4) │
   │                           │
   │   Y1  C1 C2               │
   │   ┌──────────┐            │  45 mm
@@ -669,7 +705,9 @@ against the sketch:
   is unavoidable the 6 mm still counts from pin to capacitor.
 - **R1, R6, C8 and JP2 all within 6 mm of U1 pin 1** — 2.3, "any components
   associated with the MCLR pin". Four parts inside a 6 mm radius is the
-  tightest cluster on the board; lay it out before the escape header, not after.
+  tightest cluster on the board; lay it out first, before anything that is
+  merely convenient. (This said "before the escape header, not after" — in the
+  event the cluster won and the header went, 5.4.)
 - **The oscillator circuit within 12 mm of pins 9/10**, on the same side of the
   board as U1, with C1 and C2 next to Y1 itself — 2.6.
 - **A grounded copper pour around the oscillator**, routed directly to the MCU
@@ -1238,7 +1276,9 @@ way into the sockets and makes any future repair miserable — and the insulatio
 it provides guards against metal that is not there.
 
 Resolved earlier: the core supply (3.5 — no ENVREG, 10 µF on pin 6), the LED
-pin assignment (RC0/RC1, see 3.6) and the escape header (2×8, it goes on).
+pin assignment (RC0/RC1, see 3.6) and the escape header — which at the time
+resolved as "2×8, it goes on", and was then removed on 2026-08-09 once routing
+put a number on what it cost (5.4).
 
 ### 9.2 The 5 V feed is fused — in the harness, not on the board
 
