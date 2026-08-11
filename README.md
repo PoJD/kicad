@@ -60,6 +60,11 @@ Two project-specific checks run alongside them: `check-netlist.py` and
 The `canfuel` board is one third of a project that needs all three
 repositories. Clone them side by side.
 
+**Building one?** [`canfuel/docs/install.md`](https://github.com/PoJD/canfuel/blob/main/docs/install.md)
+is the whole path from three clones to a working device, in the order it has to
+happen. Making up the harness — the part that lives in this repository — is
+step 3 of seven.
+
 | Repository | What it holds | Go there for |
 |---|---|---|
 | **`kicad`** (this one) | the converter board | the schematic, the PCB, `fab/`, and **`canfuel/docs/harness.md` — how to make the loom and wire it into the car** |
