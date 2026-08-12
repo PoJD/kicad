@@ -204,12 +204,28 @@ the failure the globstar bug taught. Finding zero files is now an error. This
 repository will never again be without design files, so a run that opens none
 of them is broken, not lucky.
 
-**Reading CI without `gh`:** it is not installed here, but the public REST API
-needs no token for run status. `curl -s
-https://api.github.com/repos/PoJD/kicad/actions/runs?per_page=3` gives
-`head_sha`, `status` and `conclusion`, and `.../actions/runs/<id>/jobs` gives
-per-step conclusions. Log *bodies* are a 403 without auth, so verify by
-reasoning about the step definitions rather than expecting to read the output.
+**Reading CI: `gh` is installed and on the PATH.** Use it:
+
+```
+gh run list -R PoJD/kicad --limit 3
+gh run view <id> -R PoJD/kicad --json jobs --jq '.jobs[] | .name, (.steps[] | "  \(.name): \(.conclusion)")'
+gh run view <id> -R PoJD/kicad --log-failed
+```
+
+**This paragraph used to say the opposite and it was wrong by 2026-08-12.** It
+claimed `gh` was not installed and that log *bodies* were a 403, and pointed at
+`curl` against the public REST API instead. Both halves were true when they
+were written on 2026-08-09 — that was the day `gh` was installed, mid-session,
+and the shell then running predated it — and neither has been true since. The
+token lives in the OS keyring with `repo` scope, so full logs read fine;
+verified on run 31618205896. `gh --version` settles it in a second, which is
+cheaper than trusting this file.
+
+The `curl` route still works and needs no token for run status, so it remains
+the fallback on a machine without `gh`:
+`curl -s https://api.github.com/repos/PoJD/kicad/actions/runs?per_page=3` gives
+`head_sha`, `status` and `conclusion`. Log bodies there really are a 403
+without auth — that part was never about `gh`.
 
 **ERC is not enough on its own, so there is a second check.** Run it after any
 edit to the schematic:
