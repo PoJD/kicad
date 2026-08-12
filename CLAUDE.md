@@ -432,6 +432,24 @@ loom is a re-crimp onto longer wires, not a new choice. Everything else was
 closed before that: **the escape header came off again** (measured, see below), there is no
 enclosure, and C6 turned out to be a 105 °C part with life to spare (plan §7).
 
+### Ideas for a board that does not exist — `canfuel/docs/revision-b.md`
+
+**There is no revision B and nothing in that file is scheduled.** It exists so
+that an idea worth keeping does not have to become an edit to a frozen design.
+One entry so far, written 2026-08-12: a **hold-up supply and shutdown
+detection**, which would let the firmware write its trip accumulators at the
+moment the ignition goes off instead of losing up to twenty seconds of them
+every time. Three parts — a Schottky in the 5 V feed, a bulk capacitor behind
+it, and a sense line from the display side to a spare pin — with the currents
+and the capacitance worked out from the datasheets, and a measurement that
+should come before any of it: nobody has looked at how fast the MFD15's 5 V
+actually collapses, and if it decays slowly then most of the hold-up is
+already there.
+
+It is a completeness fix rather than a fault fix. The loss it removes is
+invisible on the display, because FuelAvg is a ratio and both halves shrink
+together; `canfuel/src/persist.h` in the sibling repository has that argument.
+
 ### The escape header was removed — do not put it back
 
 It was fitted, and on 2026-08-09 routing showed what it actually cost. Same
@@ -642,6 +660,9 @@ Supporting documents in `canfuel/docs/`:
 - `harness.md` — building the loom. The measuring and sniffing steps were
   stripped out on 2026-08-09 once they had all been done; it is a build
   document now, not a test plan.
+- `revision-b.md` — ideas for a board that does not exist. Nothing in it is
+  scheduled and nothing in it may become an edit to the frozen design; see the
+  section above.
 - `pic18f25k80-datasheet.pdf` — Microchip DS39977C, PIC18F66K80 family
 - `mcp2562-datasheet.pdf` — Microchip DS20005167C, MCP2561/2
 - `micro-fit-43045-datasheet.pdf` — Molex SD-43045-001, J1/J2. Beware: the text
