@@ -39,10 +39,6 @@ without information nobody has yet — a measurement off the car, a part that ha
 not arrived — say so in the same place, in one line, and carry on with
 everything that does not depend on it.
 
-(This paragraph used to say "ask the maintainer", which contradicted the
-identical rule in the `canfuel` repository and was the weaker of the two. The
-sibling's wording is now used verbatim, so the two cannot drift again.)
-
 In practice this means:
 
 - **Quote the source.** Every constraint written into the plan or the schematic
@@ -92,142 +88,97 @@ Those are marked as measured where they appear. The rule above is about parts.
 
 ---
 
-## Current state — read this first
+## What this repository holds
 
 **The board is finished and `fab/` is generated. ERC, DRC, `check-netlist.py`
 and `check-placement.py` are all clean, with zero unconnected items.**
 `canfuel/` holds `canfuel.kicad_pro`, `canfuel.kicad_sch` (complete, one A3
-sheet) and `canfuel.kicad_pcb` (55 × 45 mm, 24 parts, routed on two layers with
-SGND poured on both), plus `docs/` and a populated `fab/`. `lib/` is empty.
+sheet) and `canfuel.kicad_pcb` (55 × 45 mm, 24 parts on the sheet of which 23
+are fitted, routed on two layers with SGND poured on both), plus `docs/` and a
+populated `fab/`. `lib/` is empty.
 
-**The escape header J4 was removed on 2026-08-09** and the board is 24 parts,
-not 25. It is not an oversight — see below before reinstating it.
+`canfuel/fab/` holds nine gerbers, `canfuel-PTH.drl` and `canfuel-NPTH.drl`
+with their maps, a `.gbrjob`, `canfuel-bom.csv` and `canfuel-cpl.csv`.
 
-**The board is ordered. `fab/` is generated and committed — plan section 6 is
-done.** `canfuel/fab/` holds nine gerbers, `canfuel-PTH.drl` and
-`canfuel-NPTH.drl` with their maps, a `.gbrjob`, `canfuel-bom.csv` and
-`canfuel-cpl.csv`. Plan §6 lists every command with the flags actually used and
-why each one is there; do not regenerate from the bare `kicad-cli` invocations,
-because the defaults are wrong for this board in five places. Section 7, the
-purchase list, was done earlier: all parts are bought, the harness fuse and its
-holder included. There are no open questions left anywhere in the project.
+**Regenerating `fab/` is the rule after any board change**, and it is cheap: a
+silkscreen resize changed only the two silkscreen gerbers substantively, with
+everything else differing by its timestamp line alone. A stale `fab/` beside an
+edited board is never worth guessing which files matter.
 
-**Ordered from Gatema PCB on 2026-08-09** — POOL service, 3 pieces, 900 CZK
-before VAT, five working days quoted. Their form was misbehaving over the
-weekend, so the order was submitted but not yet confirmed; confirmation was
-expected Monday 2026-08-10 and delivery in the week after. Plan §6.1 has the
-full capability comparison and the exact stack-up ordered. **Nothing in this
-repository should change while that order is in flight** — the boards being
-made are commit `c06e710`, and an edit now makes `fab/` stop describing them.
+⚠ **Use the commands in plan §6, not bare `kicad-cli` invocations.** The
+defaults are wrong for this board in five places, and §6 lists every flag with
+the reason it is there.
 
-**One thing is outstanding on the parts side and it is a deliberate wait.**
-Populating all three boards needs two more Molex 43045-0400 (GME 899-192) —
-the GME invoice of 2026-08-03 covers four and each board takes two. The
-maintainer is **not ordering them yet**, on purpose: the third board is a spare
-and there is no point buying its connectors before the first two are built and
-working. Do not treat this as a gap to close.
+### Decisions the files cannot defend on their own
 
-**PIC18F25K80 availability is not a constraint on this design**, and nothing
-about the board's supply situation turns on that one part. Do not redesign
-around sourcing it.
+Each of these is invisible to ERC, DRC and both check scripts, so nothing but
+this list stands between them and a well-meaning edit.
 
-**The silkscreen was sized for no process at all until 2026-08-09.** All 25
-items were 0.80 mm high with a 0.12 mm stroke; the first fab house looked at,
-printed.cz, asks for 1.0 mm and 0.15 mm. They are all 1.0 / 0.15 now, which is
-what the project's own `silk_text_*` defaults had always said. `min_text_height`
-and `min_text_thickness` were 0.8 and 0.08 — looser than the process, so the
-board passed its own rules while failing the fab's — and are now 1.0 and 0.15.
+- **The escape header J4 is removed and must not come back.** See the dedicated
+  section below.
+- **Silkscreen is 1.0 mm high with a 0.15 mm stroke**, and `min_text_height`
+  and `min_text_thickness` are set to **error**, not warning. Do not lower them
+  back. `text_height` and `text_thickness` ship as *warnings*, and
+  `kicad-cli pcb drc --exit-code-violations` **exits 0 on warnings** — with
+  tightened limits and undersized text the report listed all 50 violations and
+  the command still succeeded. At `error` the same board exits 5.
+  `silk_overlap`, `silk_over_copper` and `silk_edge_clearance` are still
+  warnings and still toothless; the board is clean under them at `error`, so
+  promoting them is free whenever someone wants to.
+- **The `120R DNF` legend is a board-level `gr_text`, not a footprint field.**
+  R5 is the 120 Ω termination that must **not** be fitted, and the legend is
+  the only thing on the board that says so. It is board-level precisely so that
+  a future change to how footprint fields are placed cannot take it away, which
+  is how it went missing once before — and ERC, DRC and both scripts are all
+  indifferent to silkscreen. Do not delete it.
+- **The drilling ships as two files, `canfuel-PTH.drl` and `canfuel-NPTH.drl`.**
+  A merged `MixedPlating` Excellon tags every tool correctly and on paper loses
+  nothing. But J1/J2 are held by a split plastic peg in a 3.00 ±0.05 mm hole,
+  and a peg hole plated by mistake comes out at about 2.90 mm — under Molex's
+  minimum, and the housing cracks when it is forced. Two files whose names say
+  what they are cannot be misread. Plan §3.7 has the datasheet numbers.
+  **The order must also state that the diameters are finished sizes, not drill
+  sizes**; 1.02 mm is the one hole that cannot absorb the difference.
+- **R1's position is deliberate.** It sits where it does because its lead would
+  otherwise almost touch C8's, and those two pads are opposite ends of JP2 — a
+  solder bridge there would hold the jumper closed for good. The widened
+  `ALLOW` entry in `check-placement.py` records it, as does plan §5.2a.
+- **The 5 V feed is fused in the harness, not on the PCB.** SIBA 179120.0.2,
+  200 mA time-lag T, in inline holder K23411. There is no F1 on the schematic;
+  plan §9.2 has the measurement that decided the rating and `harness.md`
+  section B the wiring.
 
-**Tightening the numbers alone would have achieved nothing, and that was
-measured.** `text_height` and `text_thickness` ship as *warnings*, and
-`kicad-cli pcb drc --exit-code-violations` exits **0** on warnings: with the new
-limits and the old 0.80 mm text the report listed all 50 violations and the
-command still succeeded. Both are `error` now; the same board then exits 5. Do
-not lower them back to warning — that is the third time this repository has
-found a check that could not fail, after the globstar bug and the empty-file
-list. `silk_overlap`, `silk_over_copper` and `silk_edge_clearance` are still
-warnings and still toothless; the board is clean under them at `error`, so
-promoting them is free whenever someone wants to. Plan §6.1 has the whole
-comparison against printed.cz, including the one number with no margin: the via
-annular ring is 0.15 mm, exactly their published minimum.
+### Three results of reviewing the schematic against the datasheets
 
-**The `120R DNF` silkscreen legend was missing until 2026-08-09** and the plan
-§6 pre-order check is what found it. R5 is the 120 Ω termination that must
-**not** be fitted, and it has a footprint, pads and a value like any other part
-— the legend is the only thing on the board that says so. Moving value fields
-to F.Fab in the escape-header pass had quietly taken it away, and nothing else
-would have caught it: ERC, DRC, `check-netlist.py` and `check-placement.py` are
-all indifferent to silkscreen. It is now a board-level `gr_text` at
-(93.2, 91.5) rather than a footprint field, so a future change to how fields
-are placed cannot take it a second time. Do not delete it.
+Do not undo these without reading plan §3.6, §3.2 and §4.3a first:
 
-**The drilling ships as two files, `canfuel-PTH.drl` and `canfuel-NPTH.drl`,
-and that is deliberate.** A merged `MixedPlating` Excellon was produced first
-and tags every tool correctly, so on paper it loses nothing. But J1/J2 are held
-by a split plastic peg in a 3.00 ±0.05 mm hole, and a peg hole plated by
-mistake comes out at about 2.90 mm — under Molex's minimum, and the housing
-cracks when it is forced. Two files whose names say what they are cannot be
-misread. Plan §3.7 has the datasheet numbers and §6.1 the wording to send with
-the order. **The order must also say the diameters are finished sizes, not
-drill sizes** — Gatema assumes that by default, but 1.02 mm is the one hole
-that cannot absorb the error.
-
-**Regenerating `fab/` is cheap and it is the rule after any board change.** The
-silkscreen resize proved the point: only `canfuel-F_Silkscreen.gto` and
-`canfuel-B_Silkscreen.gbo` changed substantively, everything else differed by
-its timestamp line alone — so a stale `fab/` next to an edited board is never
-worth the risk of guessing which files matter.
-
-**R1 moved 1.20 mm on 2026-08-09**, after the paper mock-up showed its lead
-almost touching C8's. Those two pads are the opposite ends of JP2, so a bridge
-would have held the jumper closed for good. Do not move it back — the reasoning
-and the widened `ALLOW` entry are below and in plan §5.2a.
-
-**The 5 V feed is fused, in the harness.** SIBA 179120.0.2, 200 mA time-lag T,
-in inline holder K23411. It is not on the PCB and there is no F1 on the
-schematic; plan §9.2 has the measurement that decided it and `harness.md`
-section B has the wiring.
-
-CI is live and green: it finds both files and runs ERC and DRC on them for
-real, and since 2026-08-09 it also runs `check-netlist.py` and
-`check-placement.py`. From here on a red run means something.
-
-**The schematic was re-reviewed against the datasheets on 2026-08-08** and
-three things changed. Do not undo them without reading plan §3.6, §3.2 and
-§4.3a first:
-
-- **The LEDs moved from RA1/RA2 to RC0/RC1.** RA1 and RA2 are inside
-  PORTA<5:0>, whose absolute maximum is 2 mA sourced or sunk; 1 kΩ from a 5 V
-  rail is about 2.2 mA. RA1/RA2 took the escape-header slots RC0/RC1 vacated —
-  and when the header itself went, all fourteen of those pins became
-  no-connects.
-- **MCLR gained R6 470 Ω, C8 100 nF and jumper JP2** — the full Figure 2-2
-  network. The old note "no capacitor on this pin" was §2.5 (which is about
-  PGC and PGD) misapplied to MCLR.
+- **The LEDs are on RC0/RC1, not RA1/RA2.** RA1 and RA2 are inside PORTA<5:0>,
+  whose absolute maximum is 2 mA sourced or sunk; 1 kΩ from a 5 V rail is about
+  2.2 mA.
+- **MCLR carries R6 470 Ω, C8 100 nF and jumper JP2** — the full DS39977C
+  Figure 2-2 network. "No capacitor on this pin" is §2.5 misapplied: §2.5 is
+  about PGC and PGD.
 - **The crystal's load capacitance is 20 pF, not 32 pF.** The 33 pF capacitors
-  were right; the reason recorded for them was not, and 32 pF would have
-  called for 56 pF.
+  are right; 32 pF would have called for 56 pF.
 
-The MCP2562 had no datasheet in the repository at all until then. It does now.
+### Working with CI
 
-Note that this repository's CI had **never** actually passed before
-2026-08-08. The two check steps opened with `shopt -s globstar nullglob`, a
-bash builtin the container's shell does not have, so both failed on every run
-since they were written — including runs where the repo held no design files
-and the loops had nothing to do. A step that fails with zero input files is
-failing before it reads any; that is what gave it away. Both steps are plain
-POSIX shell now. Do not reintroduce bash-isms into them, and do not trust a
-description of CI that has not been checked against an actual run.
+**A check that cannot fail is worse than no check**, and this repository has
+found three of them. The two design-check steps once opened with
+`shopt -s globstar nullglob`, a bash builtin the container's shell does not
+have, so both failed on every run ever made — including runs where the repo held
+no design files at all. Repairing them introduced the same bug wearing the
+opposite mask: the steps printed "no schematic in the repo, skipping" and
+*passed* on an empty list, so green meant either "checked and clean" or "found
+nothing", with no way to tell them apart.
 
-**The fix left the same bug wearing the opposite mask, and that is fixed too
-(2026-08-09).** The repaired steps printed "no schematic in the repo, skipping"
-and *passed* on an empty list. Green would then have meant "checked and clean"
-or "found nothing at all", with no way to tell the two apart — which is exactly
-the failure the globstar bug taught. Finding zero files is now an error. This
-repository will never again be without design files, so a run that opens none
-of them is broken, not lucky.
+**Finding zero design files is now an error**, both steps are plain POSIX
+shell, and the DRC text rules are errors rather than warnings for the same
+reason. Do not reintroduce bash-isms, and **do not trust a description of CI
+that has not been checked against an actual run.**
 
-**Reading CI: `gh` is installed and on the PATH.** Use it:
+**Reading CI: `gh` is installed and on the PATH**, with a token in the OS
+keyring carrying `repo` scope, so full logs read fine:
 
 ```
 gh run list -R PoJD/kicad --limit 3
@@ -235,23 +186,17 @@ gh run view <id> -R PoJD/kicad --json jobs --jq '.jobs[] | .name, (.steps[] | " 
 gh run view <id> -R PoJD/kicad --log-failed
 ```
 
-**This paragraph used to say the opposite and it was wrong by 2026-08-12.** It
-claimed `gh` was not installed and that log *bodies* were a 403, and pointed at
-`curl` against the public REST API instead. Both halves were true when they
-were written on 2026-08-09 — that was the day `gh` was installed, mid-session,
-and the shell then running predated it — and neither has been true since. The
-token lives in the OS keyring with `repo` scope, so full logs read fine;
-verified on run 31618205896. `gh --version` settles it in a second, which is
-cheaper than trusting this file.
+`curl` is the fallback on a machine without `gh` and needs no token for run
+status: `curl -s https://api.github.com/repos/PoJD/kicad/actions/runs?per_page=3`
+gives `head_sha`, `status` and `conclusion`. Log *bodies* there are a 403
+without auth.
 
-The `curl` route still works and needs no token for run status, so it remains
-the fallback on a machine without `gh`:
-`curl -s https://api.github.com/repos/PoJD/kicad/actions/runs?per_page=3` gives
-`head_sha`, `status` and `conclusion`. Log bodies there really are a 403
-without auth — that part was never about `gh`.
+⚠ **Check whether a tool is present rather than believing this file about it.**
+`gh --version` settles it in a second.
 
-**ERC is not enough on its own, so there is a second check.** Run it after any
-edit to the schematic:
+### ERC and DRC are not enough, so there are two more checks
+
+Run after any edit to the schematic:
 
 ```
 python tools/check-netlist.py
@@ -260,64 +205,58 @@ python tools/check-netlist.py
 It exports the netlist and compares all 87 connections against the tables in
 `canfuel/docs/implementation-plan.md`, which are transcribed into the script.
 Not a formality: swapping the labels on U1 pins 23 and 24 — CANTX and CANRX
-crossed at the MCU, a board that would never transmit — passes ERC with
-**zero** violations, because both are bidirectional pins and nothing about the
-sheet is malformed. `check-netlist.py` catches it. That case was tried, not
-assumed.
+crossed at the MCU, a board that would never transmit — passes ERC with **zero**
+violations, because both are bidirectional pins and nothing about the sheet is
+malformed. `check-netlist.py` catches it. That case was tried, not assumed.
 
-It carries a second load too. This sheet connects everything by global label
-and has ERC's *Global label only appears once in the schematic* check switched
-off, so a mistyped label would quietly split a net in two without a violation.
-`check-netlist.py` is what would catch that.
+It carries a second load. This sheet connects everything by global label and has
+ERC's *Global label only appears once in the schematic* check switched off, so a
+mistyped label would quietly split a net in two without a violation.
 
-When the design changes on purpose, update `EXPECT` in the script in the same
-commit. That is what the file is for.
+**When the design changes on purpose, update `EXPECT` in the script in the same
+commit.** That is what the file is for.
 
-**The board has the same problem and the same answer.** Run after any edit to
-the placement:
+Run after any edit to the placement:
 
 ```
 python tools/check-placement.py
 ```
 
 DRC proves the board is manufacturable; it does not care where a decoupling
-capacitor sits. A part 40 mm from its pin is a legal board and a broken one.
+capacitor sits, and a part 40 mm from its pin is a legal board and a broken one.
 This measures the four DS39977C distance rules and the mounting-hole keepouts,
 and carries the tolerated §2.3 shortfalls with their reasons, so an intentional
 deviation and a regression never look the same.
 
-**`kicad-cli` cannot sync the board against the sheet** — `kicad-cli pcb`
-offers only drc, export, import, render and upgrade, and none of them is
-*Update PCB from Schematic*. `python tools/import-footprints.py` does it
-headlessly: loads footprints, links them to their symbols by KIID path, assigns
-every pad's net. It is safe to re-run — existing parts keep their position,
-orientation and side, so hand placement survives.
+### The tools themselves
 
-Both scripts need `pcbnew`, which the stock Windows Python cannot import; they
-re-run themselves under KiCad's bundled interpreter, so `python tools/...`
-works either way.
+**`kicad-cli` cannot sync the board against the sheet** — `kicad-cli pcb` offers
+only drc, export, import, render and upgrade, and none of them is *Update PCB
+from Schematic*. `python tools/import-footprints.py` does it headlessly: loads
+footprints, links them to their symbols by KIID path, assigns every pad's net.
+It is safe to re-run — existing parts keep their position, orientation and side,
+so hand placement survives.
 
-**KiCad 10.0.5 is installed** at `C:\Program Files\KiCad\10.0`, and
-`C:\Program Files\KiCad\10.0\bin\` is on the user PATH. A shell started before
-that PATH edit will not see `kicad-cli`; call it by full path rather than
-concluding it is missing.
+Both scripts need `pcbnew`, which a stock Windows Python cannot import; they
+re-run themselves under KiCad's bundled interpreter, so `python tools/...` works
+either way.
+
+**KiCad's `bin/` must be on `PATH`** for `kicad-cli`. A shell started before
+that PATH edit will not see it; call it by full path rather than concluding it
+is missing.
+
 
 ### There is no design work left in this repository
 
-**The design is finished, `fab/` is finished, the boards are ordered and the
-loom is built and in the car.** Net classes, placement, routing, pours,
-silkscreen and the fabrication outputs are all done and committed, every check
-is green, all parts are bought and there is not one open question left. Do not
-go looking for design work to do — there is none.
+**The design is finished and so is `fab/`.** Net classes, placement, routing,
+pours, silkscreen and the fabrication outputs are all done and committed, and
+every check is green. Do not go looking for design work to do — there is none.
 
-**The next action for the project as a whole is step 4 of
-`canfuel/docs/install.md`** — populate a board, programme it, loopback on the
-desk — and it is waiting on the boards, expected in the week of 2026-08-17.
-That document is the plan and it tracks its own progress; this file
-deliberately does not keep a second copy of it.
+**`canfuel/docs/install.md` is the procedure for the project as a whole**;
+this file deliberately does not keep a second copy of it.
 
-**Do not touch the design while the order is in flight** — what is being
-manufactured is `c06e710`, and changing the board now makes `fab/` describe
+**Do not edit the design while a fabrication order is outstanding** — `fab/`
+describes a specific commit, and changing the board makes it describe
 something that does not exist.
 
 If anything is regenerated anyway, re-run all four checks first and re-read
@@ -365,8 +304,9 @@ inside, all four hug the pin: nearest edges 1.66 mm (C8), 1.88 mm (JP2),
 2.46 mm (R6) and 2.89 mm (R1), worst far corner 8.91 mm. The arrangement was
 found by search, not by hand.
 
-**R1 was moved 1.20 mm further out on 2026-08-09, deliberately.** The search
-optimised for closeness to pin 1 and left R1's courtyard touching C8's, with
+**R1 sits 1.20 mm further out than the search wanted, deliberately.** The
+search optimised for closeness to pin 1 and left R1's courtyard touching C8's,
+with
 only 1.06 mm of bare board between R1 pad 2 and C8 pad 1 — and those two pads
 are `MCLR_RC` and `MCLR_C`, the two ends of JP2. A bridge there would hold the
 jumper closed for good, which is exactly what it exists to prevent. The gap is
@@ -387,11 +327,10 @@ placed*. Different measurements, and the difference is what decides this board.
 §2.6 also says "the **respective** oscillator pins", so C1 is measured against
 OSC1 and C2 against OSC2.
 
-**R1–R6 stand upright** (`P2.54mm_Vertical`), changed from horizontal
-P10.16 mm on 2026-08-09. That is how the maintainer fits axial resistors —
-body upright, leads bent to the narrowest spacing — and it is also the only
-reason R6 fits inside the 6 mm circle: 3.95 mm reach standing against 11.36 mm
-lying down. Do not quietly revert them to horizontal.
+**R1–R6 stand upright** (`P2.54mm_Vertical`) rather than lying down on a
+P10.16 mm footprint — body upright, leads bent to the narrowest spacing. It is
+the only reason R6 fits inside the 6 mm circle: 3.95 mm reach standing against
+11.36 mm lying down. Do not quietly revert them to horizontal.
 
 ### Working with the tools here
 
@@ -401,7 +340,7 @@ lying down. Do not quietly revert them to horizontal.
 shell commands, under both `Bash(...)` and `PowerShell(...)`. ERC, DRC,
 `check-netlist.py` and an SVG render are meant to be run freely and often —
 stopping to ask permission for a verification step is how verification stops
-happening. Verified working on 2026-08-09: all four checks run unprompted.
+happening.
 
 **`git commit`, `git push`, `gh pr create`, `git rebase` and `git reset --hard`
 still stop and ask**, by `ask` rules in the same file. Those are the ones that
@@ -475,7 +414,7 @@ enclosure, and C6 turned out to be a 105 °C part with life to spare (plan §7).
 
 **There is no revision B and nothing in that file is scheduled.** It exists so
 that an idea worth keeping does not have to become an edit to a frozen design.
-One entry so far, written 2026-08-12: a **hold-up supply and shutdown
+One entry so far: a **hold-up supply and shutdown
 detection**, which would let the firmware write its trip accumulators at the
 moment the ignition goes off instead of losing up to twenty seconds of them
 every time. Three parts — a Schottky in the 5 V feed, a bulk capacitor behind
@@ -491,7 +430,7 @@ together; `canfuel/src/persist.h` in the sibling repository has that argument.
 
 ### The escape header was removed — do not put it back
 
-It was fitted, and on 2026-08-09 routing showed what it actually cost. Same
+It was fitted, and routing showed what it actually cost. Same
 router, same placement, same order, with and against:
 
 | | with J4 | without J4 |
@@ -623,14 +562,14 @@ intentional, not an oversight.
   move them back.
 - **ICSP:** 5-pin 2.54 mm header for a PICkit.
 - **Escape hatch:** ~~bring the PIC's unused pins out to a 2.54 mm header~~
-  **Removed 2026-08-09.** The 2×8 header made both status LEDs and the whole
+  **Removed.** The 2×8 header made both status LEDs and the whole
   ICSP connector unroutable on a board this size; see "The escape header was
   removed" above. The PIC's fourteen unused pins carry no-connect flags, and a
   patch goes onto the PDIP socket pins from underneath instead.
 - **Dimensions:** 55 × 45 mm, **1.5 mm thick**, two layers, mostly through-hole.
-  It was 1.6 mm until 2026-08-09 and changed only because Gatema's POOL service
-  sells fixed stack-ups and every two-layer one is 1.5 mm. Nothing electrical
-  or mechanical depends on it — plan §6.1 has the check. The thickness lives in
+  1.5 mm rather than 1.6 mm because pooled two-layer services generally sell
+  that fixed stack-up. Nothing electrical or mechanical depends on it — plan
+  §6.1 has the check. The thickness lives in
   `(general (thickness))` at the top of `canfuel.kicad_pcb`, **not** in the
   stackup sum: editing the core alone leaves `GetBoardThickness()` unchanged
   and the `.gbrjob` still declaring the old number. Four M3 holes
@@ -699,19 +638,16 @@ brightness changes. Whatever gets fitted, put it in the symbol's Value field —
 the BOM is generated from the schematic, so a wrong colour there becomes a
 wrong colour in `fab/`.
 
-**Fitted here: D1 red, D2 yellow**, changed from green/yellow on 2026-08-13
-when the actual parts were tested. That is the rule above being used rather
-than bent: both were measured at **Vf ≈ 1.8 V** on a multimeter's diode range
-before fitting, the schematic Value field was edited, and
-`canfuel-bom.csv` was regenerated with the `kicad-cli` command in plan §7 —
-one line changed, no format drift. **The next person may pick different
-colours again; the same three steps apply.**
+**Fitted: D1 red, D2 yellow**, both measured at **Vf ≈ 1.8 V** on a
+multimeter's diode range before fitting. **To change a colour: edit the
+schematic's Value field, then regenerate `canfuel-bom.csv` with the
+`kicad-cli` command in plan §7.** Editing the CSV directly makes it disagree
+with the schematic it is generated from.
 
-**Audited against `fab/canfuel-bom.csv` on 2026-08-13.** The parts with no PDF
-of their own are C1–C5 and C8, R1–R6, D1/D2, J3, JP1/JP2 and C7. Every one is
-either exempt under the rule at the top of this file or covered by a datasheet
-already held — C7 by DS39977C Table 2-1, which names the exact Murata part.
-**No gap.**
+**The parts with no PDF of their own** are C1–C5 and C8, R1–R6, D1/D2, J3,
+JP1/JP2 and C7. Every one is either exempt under the rule at the top of this
+file or covered by a datasheet already held — C7 by DS39977C Table 2-1, which
+names the exact Murata part. **No gap.**
 
 Supporting documents in `canfuel/docs/`:
 
@@ -722,8 +658,7 @@ Supporting documents in `canfuel/docs/`:
   the converter plug's figure is generated from J1's pad nets so it cannot
   drift from the board.
 - `harness.md` — building the loom. The measuring and sniffing steps were
-  stripped out on 2026-08-09 once they had all been done; it is a build
-  document now, not a test plan.
+  it is a build document, not a test plan.
 - `revision-b.md` — ideas for a board that does not exist. Nothing in it is
   scheduled and nothing in it may become an edit to the frozen design; see the
   section above.
@@ -744,12 +679,11 @@ Supporting documents in `canfuel/docs/`:
   500 mV, 0.3 W, 0.7 A²s.
 - `fuse-holder-5x20-datasheet.pdf` — inline holder K23411, a dimensioned
   drawing with no text layer and no ratings on it
-- `pickit3-users-guide.pdf` — Microchip DS51795B, *PICkit™ 3
+- `pickit3-users-guide.pdf` — Microchip DS51795B, *PICkit 3
   Programmer/Debugger User's Guide*. **Figure 1-2 is the J3 pinout** and the
-  only source for it; added 2026-08-13, after manufacture, because plan §4.3
-  had stated the order for months with no citation behind it. `pdftotext
-  -layout` reads it fine. Note their connector is **six** pins and J3 is five —
-  pin 6 is `PGM (LVP)`, which this project does not use
+  only source for it. `pdftotext -layout` reads it fine. Note their connector
+  is **six** pins and J3 is five — pin 6 is `PGM (LVP)`, which this project
+  does not use
 - `bom-purchase.pdf` — supplied PDF
 
 ---
