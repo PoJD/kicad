@@ -533,8 +533,10 @@ behind the MFD15 display, powered by 5 V taken straight from the display.
 - Average draw is under 30 mA and the display's limit is 0.5 A — but the
   transceiver alone takes 45 mA typical and 70 mA maximum while it is driving
   a dominant bit (DS20005167C §2.2), so the worst-case instantaneous total is
-  about 77 mA. C6 and C7 carry those peaks, which is what lets a fuse with
-  2.5 Ω of hot element sit in the feed at all.
+  about 77 mA. **C6 carries those peaks** — with C3/C4/C5, not with C7, which
+  is behind the core regulator and cannot feed the rail — and that is what lets
+  a fuse with 2.5 Ω of hot element sit in the feed at all. `components.md` has
+  the arithmetic.
 - Decoupling: 100 nF at every supply pin, 10 µF at the input. **C6 is
   downstream of the harness fuse** and that is load-bearing, not incidental.
 
@@ -652,6 +654,10 @@ names the exact Murata part. **No gap.**
 Supporting documents in `canfuel/docs/`:
 
 - `implementation-plan.md` — the working document for the design
+- `components.md` — what each passive actually does and the physics that sizes
+  it. The plan records the choice and its citation; this carries the reasoning
+  underneath, including why the eight capacitors do six unrelated jobs and why
+  C6 is not a hold-up capacitor
 - `pinout.md` — the one-page connector reference: both MFD15 plugs and the
   converter's own, all drawn rear/cable side. Plugs B and C are transcribed
   from the MFD15 manual in the sibling `mfd15` repo, which stays the authority;

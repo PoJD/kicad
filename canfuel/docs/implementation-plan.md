@@ -1362,15 +1362,22 @@ melting integral of **0.7 A²s**. Both numbers decide something:
 - *The drop.* 500 mV at 200 mA is 2.5 Ω while the element is hot, and that is
   not negligible against the 0.51 V of headroom between the 5.01 V measured at
   C6/C12 and the 4.5 V minimum DS20005167C §2.2 puts on the MCP2562's VDD. It
-  is survivable because **C6 and C7 are downstream of the fuse**: the 45–70 mA
-  the transceiver draws during dominant bits comes out of 20 µF of local
-  capacitance, and the fuse only ever sees the average, which is under 30 mA.
+  is survivable because **C6 is downstream of the fuse**: the 45–70 mA the
+  transceiver draws during dominant bits comes out of the ~10.3 µF of C6 plus
+  C3/C4/C5, and the fuse only ever sees the average, which is under 30 mA.
   At 30 mA even the hot resistance gives 75 mV. Had the bulk capacitor been
   left on the display side of the fuse, this would not work.
-- *The melting integral.* Charging those same 20 µF from 5 V through a loom of
-  well under an ohm is an I²t of the order of 10⁻³ A²s, three orders below
-  0.7 A²s. Inrush cannot nuisance-blow it, which is what the time-lag
-  characteristic was chosen for in the first place.
+
+  **C7 is not part of that 10.3 µF**, though it sits downstream of the fuse
+  too. It is on VDDCORE, behind the on-chip regulator, and a series pass
+  regulator does not deliver charge backwards into its own input — so it holds
+  the core rail up and contributes nothing to the transceiver's dominant-bit
+  current. `components.md` §4 has the reasoning.
+- *The melting integral.* Charging C6, C3/C4/C5 and C7 — the last of them
+  through the regulator — is about 20 µF from 5 V through a loom of well under
+  an ohm, an I²t of the order of 10⁻³ A²s, three orders below 0.7 A²s. Inrush
+  cannot nuisance-blow it, which is what the time-lag characteristic was chosen
+  for in the first place.
 
 **Why it protects what it is meant to.** The display's limit is 0.5 A. The
 fusing-time limits in the same datasheet, for the 125 mA – 6.3 A group:
