@@ -92,7 +92,7 @@ ALLOW = {
     "2.3 JP2": (9.0, "in series with C8, nearest edge 1.88 mm"),
     "2.3 R1":  (9.0, "10 k pull-up to VDD: static bias, the least "
                      "distance-sensitive part of Figure 2-2. Moved 1.20 mm "
-                     "further out on 2026-08-09 to open the gap to C8 from "
+                     "further out to open the gap to C8 from "
                      "1.06 to 2.26 mm of bare board: those two pads are "
                      "MCLR_RC and MCLR_C, opposite ends of JP2, and a solder "
                      "bridge between them would defeat the jumper"),

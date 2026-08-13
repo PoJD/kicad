@@ -98,7 +98,7 @@ EXPECT.update({"R1.1": "+5V", "R1.2": "MCLR_RC",
 EXPECT.update({"J3.1": "~{MCLR}", "J3.2": "+5V", "J3.3": "SGND",
                "J3.4": "PGD", "J3.5": "PGC"})
 
-# 5.4 escape hatch: REMOVED on 2026-08-09, see plan 5.4. The fourteen ESC_*
+# 5.4 escape hatch: REMOVED, see plan 5.4. The fourteen ESC_*
 # labels above are now single-node nets and U1's unused pins carry no-connect
 # flags. They stay named because the name is what says which pin is which.
 #

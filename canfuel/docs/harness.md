@@ -14,7 +14,7 @@ the display's own plug C to the converter.
 > was then run on this loom with the CAN pair on DuPont jumpers in place of the
 > board, and it worked.
 >
-> **What is left in this car is the board**, not the loom. See
+> **What this document does not cover is the board**, only the loom. See
 > `canfuel/docs/install.md` step 4.
 >
 > The checkboxes below are deliberately left unticked: this is the procedure

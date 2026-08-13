@@ -7,7 +7,7 @@ turns them into reference designators, nets and pin numbers.
 Read the killer checks in section 3 before drawing anything.
 
 **This is a design reference, not a progress tracker.** What is left to do in
-the project as a whole, and where this car has got to, lives in one place:
+the project as a whole lives in one place:
 [`canfuel/docs/install.md`](https://github.com/PoJD/canfuel/blob/main/docs/install.md).
 
 > ⚠ **This document was written before the board was drawn, and the board is
@@ -1145,7 +1145,7 @@ as manufacturable, but there is no margin. Component pads are 0.24 mm and up,
 so it is the vias alone. If they push back, a 0.70 mm via pad gives 0.20 mm;
 ask before changing anything.
 
-**Drill diameters must be declared, and Gatema's default is the dangerous
+**Drill diameters must be declared, and the common default is the dangerous
 one.** The handbook says outright: *"Pokud nebude žádná poznámka, výrobce DPS
 předpokládá, že jde o průměry výsledné"* — with no note, the numbers are read
 as finished holes, and a plated hole loses about 0.1 mm to the plating. That
@@ -1159,7 +1159,8 @@ in the enquiry, because the one hole that cannot absorb the error is J1/J2 at
 > výsledný.
 
 **Their standard plated-hole tolerance is wider than Molex's, and it still
-passes.** Gatema quotes ±0.08 mm standard (±0.05 mm on request) against the
+passes.** A typical pooled service quotes ±0.08 mm standard (±0.05 mm on
+request) against the
 drawing's ±0.05 mm, so the worst case is a 0.94 mm hole where Molex allows
 0.97 mm. It does not matter: the pin is 0.64 mm square, diagonal 0.905 mm, so
 even 0.94 mm leaves 0.035 mm of clearance. **Do not pay for the tighter
@@ -1168,7 +1169,7 @@ band exactly, so a 3.00 mm nominal lands inside Molex's 2.95–3.05 at both
 extremes.
 
 **The board is 1.5 mm, not 1.6 mm, and it was changed to match the order.**
-Gatema's POOL service sells fixed stack-ups and the two-layer ones are all
+Pooled services sell fixed stack-ups and the two-layer ones are generally
 1.5 mm; the chosen preset is *2V Cu 35/35 µm, 1,5 mm, LF HAL, 2x zelená NM, 1x
 bílý potisk, Tg 135 °C*. Nothing on this board depends on the 0.1 mm: the via
 aspect ratio goes from 1:5.3 to 1:5.0 against a 1:10 limit, lead-free HAL wants

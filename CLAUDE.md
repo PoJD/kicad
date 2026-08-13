@@ -486,7 +486,7 @@ in place.
 
 ## Requirements for the canfuel board
 
-A fuel consumption converter for a VW New Beetle. It sits in the air vent
+A fuel consumption converter for a VW PQ34 car. It sits in the air vent
 behind the MFD15 display, powered by 5 V taken straight from the display.
 
 ### MCU
