@@ -534,6 +534,34 @@ the programmer.
 | 4      | PGD (RB7) |
 | 5      | PGC (RB6) |
 
+**Source: DS51795B Figure 1-2, *PICkit™ 3 Programmer Connector Pinout***, in
+`pickit3-users-guide.pdf`. It gives, verbatim: `1 = MCLR/VPP`, `2 = VDD Target`,
+`3 = VSS (ground)`, `4 = PGD (ICSPDAT)`, `5 = PGC (ICSPCLK)`, `6 = PGM (LVP)`.
+
+Two things that table does not say on its face:
+
+- **Their connector is six pins, ours is five.** §1.2.4 calls it *"a 6-pin
+  header (0.100" spacing)"*. Pin 6 is `PGM (LVP)`, low-voltage programming,
+  which this project does not use — `pic_config.h` in `canfuel` has no `LVP`
+  enabled and the PICkit drives VPP on pin 1. So J3 stops at five and pin 6
+  simply has nowhere to land. A 6-pin programmer plug on a 5-pin header
+  overhangs by one position, which is only safe **because the overhang is at
+  the far end from pin 1** — align on the marker, not on the end of the header.
+- **Pin 1 is found by the marker, not by counting.** §1.2.3: *"This marker
+  designates the location of pin 1 for proper connector alignment."* Which is
+  why pin 1 keeps a square pad and a silkscreen mark here.
+
+⚠ **This citation was added on 2026-08-13, after the board was already
+manufactured.** Until then the table above stood on the words "PICkit pin
+order" and nothing else — the neighbouring citation to DS39977C §2.5 covers the
+rules about pull-ups, series diodes and capacitors on PGC/PGD, which is a
+different question, and §2.5 gives no connector pinout at all. The order was
+independently confirmed by measurement on 2026-08-13 before this document was
+found (`canfuel/docs/install.md` step 4: pin 3 rings out at 0 Ω to the PICkit's
+USB shell, pin 2 carries 4.6 V under `-W`), and the datasheet then agreed with
+it. **It agreeing is luck, not process.** Three boards at 1,270 Kč were already
+made against an uncited table.
+
 J3 pin 1 lands on `~MCLR`, the U1 pin itself, not on the RC node behind R6 —
 the programmer drives the pin directly and R6 keeps C8 off its back. See 4.3a.
 
@@ -1016,6 +1044,12 @@ and hand-soldered, so no assembly house will use it.
 
 - R5 is absent from `canfuel-bom.csv` (23 rows against 24 parts) and from
   `canfuel-cpl.csv`. It carries `in_bom no` and `dnp yes` on the sheet.
+- The two **DIP sockets are absent from `canfuel-bom.csv` as well**, and cannot
+  be otherwise — they have no schematic symbol, so KiCad has nothing to emit.
+  They are in the parts table of §2 as rows with no reference. Anyone
+  populating from the CSV alone solders U1 and U2 straight into the board and
+  loses the escape hatch this design leans on;
+  `canfuel/docs/install.md` step 5 now says so out loud.
 - The silk layer **did not** carry the `120R DNF` legend of 3.3 until now. The
   board had no board-level text at all: value fields went to F.Fab in the 5.4
   pass and the R5 footprint only ever put its *reference* on F.SilkS, so the

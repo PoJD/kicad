@@ -48,9 +48,33 @@ In practice this means:
 - **Quote the source.** Every constraint written into the plan or the schematic
   notes names its document and section — `DS39977C §2.4`, `DS20005167C §1.7.9`.
   A number without a citation is a number nobody can re-check.
-- **Keep the datasheet in the repository.** `canfuel/docs/` holds a PDF for
-  every active part. If a part has no datasheet on disk, that is the first
-  thing to fix, not a detail to note.
+- **Keep the datasheet in the repository — for every part the design takes a
+  number from.** `canfuel/docs/` holds the PDF. That is every IC, every
+  connector, the crystal and the electrolytic; if such a part has no datasheet
+  on disk, that is the first thing to fix, not a detail to note.
+
+  **Commodity passives are exempt** — resistors, ceramic capacitors, generic
+  2.54 mm headers, indicator LEDs — on two conditions, both required: nothing
+  in this repository quotes a number from the part, **and** it sits far enough
+  inside every rating that no datasheet could change a decision, **with that
+  margin written down.** The LED paragraph further down is the model: it cites
+  no LED datasheet and instead shows that at 1 kΩ any colour draws 1.1–2.3 mA
+  against a 25 mA limit, so no LED datasheet could change the answer.
+
+  **Pin count is not the test**, however tempting it is. Y1 has two pins and is
+  electrically symmetric, and its 20 pF load capacitance is what sets C1/C2 to
+  33 pF — the most load-bearing number on the board comes off a two-pin part.
+  **Orientation is not the test either**: a polarised part fitted backwards is
+  caught by the silkscreen marking it (§6.1) and by the part itself — an LED's
+  long leg is its anode — not by a PDF on disk. Polarity is the clearest case
+  of something a datasheet is not needed for.
+
+  **A part can be covered by somebody else's datasheet.** C7 needs no Murata
+  PDF because DS39977C Table 2-1 names GRM32DR71C106KA01L outright. Being named
+  in a datasheet the repository already holds counts as held.
+
+  **When unsure: if you find yourself wanting to cite the part, it needs a
+  datasheet on disk.** Wanting to cite it is the trigger.
 - **A conclusion and its justification are checked separately.** A right value
   can rest on a wrong reason, and then it stops being right the moment anything
   around it changes. The 33 pF crystal capacitors were exactly this case: the
@@ -665,6 +689,12 @@ fine and only brightness changes. Whatever gets fitted, put it in the symbol's
 Value field — the BOM is generated from the schematic, so a wrong colour there
 becomes a wrong colour in `fab/`.
 
+**Audited against `fab/canfuel-bom.csv` on 2026-08-13.** The parts with no PDF
+of their own are C1–C5 and C8, R1–R6, D1/D2, J3, JP1/JP2 and C7. Every one is
+either exempt under the rule at the top of this file or covered by a datasheet
+already held — C7 by DS39977C Table 2-1, which names the exact Murata part.
+**No gap.**
+
 Supporting documents in `canfuel/docs/`:
 
 - `implementation-plan.md` — the working document for the design
@@ -696,6 +726,12 @@ Supporting documents in `canfuel/docs/`:
   500 mV, 0.3 W, 0.7 A²s.
 - `fuse-holder-5x20-datasheet.pdf` — inline holder K23411, a dimensioned
   drawing with no text layer and no ratings on it
+- `pickit3-users-guide.pdf` — Microchip DS51795B, *PICkit™ 3
+  Programmer/Debugger User's Guide*. **Figure 1-2 is the J3 pinout** and the
+  only source for it; added 2026-08-13, after manufacture, because plan §4.3
+  had stated the order for months with no citation behind it. `pdftotext
+  -layout` reads it fine. Note their connector is **six** pins and J3 is five —
+  pin 6 is `PGM (LVP)`, which this project does not use
 - `bom-purchase.pdf` — supplied PDF
 
 ---
