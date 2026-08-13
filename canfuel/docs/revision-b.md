@@ -20,9 +20,9 @@ distance, every single time.
 ### The problem, which is a firmware problem the board could solve
 
 The firmware keeps its trip accumulators in RAM and copies them to the PIC's
-EEPROM every `PERSIST_INTERVAL_MS` — 20 s since 2026-08-12, 60 s before that.
-When the ignition goes off the RAM goes with it, so everything since the last
-copy is gone: uniformly 0 to 20 s, ten on average, **every shutdown**. It is
+EEPROM every `PERSIST_INTERVAL_MS`. When the ignition goes off the RAM goes
+with it, so everything since the last copy is gone: uniformly 0 to that
+interval, half of it on average, **every shutdown**. It is
 not a fault, it is what a periodic write means, and `canfuel/src/persist.h` has
 the full account including why it is invisible on the display (FuelAvg is a
 ratio and both halves shrink together, so the error lands at about 0.17 %).

@@ -11,15 +11,15 @@ version, because KiCad refuses to open files written by a newer one.
 
 | Board | Status | Description |
 |---|---|---|
-| [`canfuel/`](canfuel/) | **ordered 2026-08-09**, three pieces from Gatema | fuel consumption converter for a VW New Beetle, powered from the MFD15 display |
+| [`canfuel/`](canfuel/) | design finished, `fab/` generated | fuel consumption converter for a VW PQ34 car, powered from the display it feeds |
 
 The `canfuel` board is finished: schematic and PCB complete, ERC and DRC clean
 with zero unconnected items, 24 parts on 55 × 45 mm and two layers, `fab/`
-generated and committed. **The boards being manufactured are commit
-`c06e710`**, so an edit to the board files now makes `fab/` stop describing
-them.
+generated and committed. ⚠ **While a fabrication order is outstanding, do not
+edit the board files** — `fab/` describes the commit that was sent, and an edit
+makes it stop describing what is being made.
 
-The harness is built, fitted in the car and measured —
+The harness is built, fitted and measured —
 [`canfuel/docs/harness.md`](canfuel/docs/harness.md) is the procedure. **The
 whole build path, across all three repositories, is
 [`canfuel/docs/install.md`](https://github.com/PoJD/canfuel/blob/main/docs/install.md);**
@@ -70,14 +70,15 @@ For the `canfuel` board specifically, `canfuel/docs/` holds:
 
 `*.kicad_prl` is local state and does not belong in the repo (it is gitignored).
 
-`fab/` is committed deliberately even though it is generated — for an ordered
-board it must be possible to find out exactly what was sent to the fab.
+`fab/` is committed deliberately even though it is generated: for any board
+that has been ordered it must be possible to find out exactly what was sent to
+the fab.
 
 ## CI
 
 `kicad-cli sch erc` and `kicad-cli pcb drc`. Both must pass before boards are
-ordered, and both do — the schematic and the board have been in the repository
-since the design landed, so the workflow does real work on every push.
+ordered. The workflow **fails if it finds no design files**, so a green run
+always means something was actually opened and checked.
 
 Two project-specific checks run alongside them: `check-netlist.py` and
 `check-placement.py`.
@@ -99,9 +100,9 @@ step 3 of seven.
 | [`mfd15`](https://github.com/PoJD/mfd15) | the display configuration | the TRI file the display runs and how to upload it |
 
 **The coupling to `canfuel` is the pin assignment**, and it is one-way: the
-firmware is written against the board, not the other way round. It is frozen —
-the boards being manufactured are commit `c06e710`, so an edit to the board
-files now makes both `fab/` and the firmware stop describing them.
+firmware is written against the board, not the other way round. Changing it
+means changing the firmware in the same breath, and invalidates any `fab/`
+already sent.
 
 ## Licence
 

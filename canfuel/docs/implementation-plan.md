@@ -17,9 +17,9 @@ the project as a whole, and where this car has got to, lives in one place:
 > rewritten, with the old text quoted and dated so a decision cannot be mistaken
 > for an oversight.
 >
-> **The big one is the escape header J4**, removed on 2026-08-09 because routing
-> put a number on what it cost: eight unroutable connections, five of them
-> nothing to do with the escape signals. Section 5.4 is the full account, and
+> **The big one is the escape header J4**, removed because routing put a number
+> on what it cost: eight unroutable connections, five of them nothing to do
+> with the escape signals. Section 5.4 is the full account, and
 > `canfuel/docs/refuted.md` entry D1 is the short one. Fourteen pins that this
 > document originally sent to J4 now go **nowhere**, and driving them low is a
 > firmware obligation — see 3.6.
@@ -120,11 +120,11 @@ schematic and a board that is an outline and nothing else. ✔
 | R3, R4    | 1 kΩ                        | 1/4 W THT                               | LED series resistors — see 3.6         |
 | R5        | 120 Ω                       | 1/4 W THT                               | **DO NOT FIT** — see 3.3               |
 | R6        | 470 Ω                       | 1/4 W THT                               | MCLR series — see 4.3a                 |
-| D1        | LED **red**                 | 3 mm THT                                | power / heartbeat. Was green until 2026-08-13; colour is free, see CLAUDE.md |
+| D1        | LED **red**                 | 3 mm THT                                | power / heartbeat. Colour is free — see CLAUDE.md |
 | D2        | LED yellow                  | 3 mm THT                                | CAN status                             |
 | J1, J2    | Molex Micro-Fit 3.0 43045-0400 | right-angle, board mount             | wired in parallel — see 3.4            |
 | J3        | 5-pin header 2.54 mm        | 1×5                                     | ICSP                                   |
-| ~~J4~~    | ~~2×8 header 2.54 mm~~      | —                                       | **removed 2026-08-09 — see 5.4**       |
+| ~~J4~~    | ~~2×8 header 2.54 mm~~      | —                                       | **removed — see 5.4**                  |
 | JP1       | 2-pin header + jumper       | 1×2                                     | debug enable on RA0                    |
 | JP2       | 2-pin header + jumper       | 1×2                                     | isolates C8 for programming — see 4.3a |
 | —         | DIP-28 socket, narrow       |                                         | not in `canfuel-bom.csv` — see 7       |
@@ -211,9 +211,8 @@ this crystal's drive level is 100 µW typical, 500 µW maximum. Whether it is
 actually needed cannot be decided from the datasheets — it takes a measurement
 on a built board. The same PIC-family part drives the same crystal without Rs
 in `can-pcb`, so none is fitted. If the oscillator misbehaves, a series
-resistor has to be tacked in at the socket pins — this used to say "RC0/RC1 and
-the rest of J4 are next to it", which stopped being true when J4 was removed
-(§5.4).
+resistor has to be tacked in at the socket pins, which are through-hole and
+reachable from underneath.
 
 Microchip's own tables are guidance only and do not cover this case directly:
 Table 3-3 (crystals, HS) lists 27 pF at 4 MHz, 22 pF at 8 MHz and 15 pF at
@@ -319,7 +318,7 @@ RA1 and RA2 are inside PORTA<5:0>. An LED at 1 kΩ off a 5 V rail draws about
 2.2 mA once VOH is taken as VDD − 0.7 (D090) and Vf as 2.1 V — over the limit,
 so **D1 and D2 are on RC0 (pin 11) and RC1 (pin 12)**, and RA1/RA2 were left
 unused. R3 and R4 stay at 1 kΩ. (They "went to the escape header instead" until
-J4 was removed on 2026-08-09, §5.4; on the manufactured board they go nowhere
+J4 was removed, §5.4; on the manufactured board they go nowhere
 and the firmware drives them low.)
 
 Two things make this worth writing down rather than just fixing:
@@ -430,7 +429,7 @@ default track width.
 | D1, D2  | `Device:LED`                          | `LED_THT:LED_D3.0mm`                                           |
 | J1, J2  | `Connector_Generic:Conn_02x02_Odd_Even` | `Connector_Molex:Molex_Micro-Fit_3.0_43045-0400_2x02_P3.00mm_Horizontal` |
 | J3      | `Connector_Generic:Conn_01x05`        | `Connector_PinHeader_2.54mm:PinHeader_1x05_P2.54mm_Vertical`   |
-| ~~J4~~  | ~~`Connector_Generic:Conn_02x08_Odd_Even`~~ | ~~`Connector_PinHeader_2.54mm:PinHeader_2x08_P2.54mm_Vertical`~~ — **removed 2026-08-09, see 5.4** |
+| ~~J4~~  | ~~`Connector_Generic:Conn_02x08_Odd_Even`~~ | ~~`Connector_PinHeader_2.54mm:PinHeader_2x08_P2.54mm_Vertical`~~ — **removed, see 5.4** |
 | JP1     | `Connector_Generic:Conn_01x02`        | `Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical`   |
 
 Two of those deserve a sentence, because both look wrong at a glance:
@@ -485,9 +484,8 @@ the functions that matter here.
 **The ECAN module can be remapped.** CANTX/CANRX are available on RB2/RB3
 *and* on RC6/RC7.
 
-⚠ **This used to say the alternates land on J4, so a remap would be two wire
-links on the escape header. J4 was removed on 2026-08-09 (§5.4), so it is not.**
-RC6 and RC7 go nowhere on the manufactured board, and moving the ECAN now means
+⚠ **A remap is not two wire links on a header.** J4 was removed (§5.4), so
+RC6 and RC7 go nowhere on the manufactured board, and moving the ECAN means
 soldering to the PDIP socket pins from underneath — they are through-hole and
 reachable, so the escape route survives, but it is a soldering iron and not a
 jumper. That is the single strongest reason to get `CANMX` right the first
@@ -513,11 +511,10 @@ option is the only one available, and the firmware in the `canfuel` repository
 has to drive all fourteen low at start-up: RA1, RA2, RA3, RA5, RC2–RC7, RB0,
 RB1, RB4, RB5.
 
-⚠ **This paragraph used to say the fourteen pins "sit at a header with nothing
-on the other end".** They did until 2026-08-09; J4 was removed (§5.4) and they
-now go nowhere at all. The firmware obligation is unchanged and is if anything
-more load-bearing, because software is now the only thing standing between
-those pins and floating inputs.
+⚠ **The fourteen pins go nowhere at all** — they do not sit at a header with
+nothing on the other end; J4 was removed (§5.4). That makes the firmware
+obligation more load-bearing, not less, because software is the only thing
+standing between those pins and floating inputs.
 
 ### 4.3 J3 — ICSP
 
@@ -551,16 +548,15 @@ Two things that table does not say on its face:
   designates the location of pin 1 for proper connector alignment."* Which is
   why pin 1 keeps a square pad and a silkscreen mark here.
 
-⚠ **This citation was added on 2026-08-13, after the board was already
-manufactured.** Until then the table above stood on the words "PICkit pin
-order" and nothing else — the neighbouring citation to DS39977C §2.5 covers the
-rules about pull-ups, series diodes and capacitors on PGC/PGD, which is a
-different question, and §2.5 gives no connector pinout at all. The order was
-independently confirmed by measurement on 2026-08-13 before this document was
-found (`canfuel/docs/install.md` step 4: pin 3 rings out at 0 Ω to the PICkit's
-USB shell, pin 2 carries 4.6 V under `-W`), and the datasheet then agreed with
-it. **It agreeing is luck, not process.** Three boards at 1,270 Kč were already
-made against an uncited table.
+⚠ **This citation arrived after the board was manufactured**, which is the
+wrong order and worth saying. Until it did, the table above stood on the words
+"PICkit pin order" and nothing else — the neighbouring citation to DS39977C
+§2.5 covers pull-ups, series diodes and capacitors on PGC/PGD, a different
+question, and §2.5 gives no connector pinout at all. The order was
+independently confirmed by measurement first
+(`canfuel/docs/install.md` step 4: pin 3 rings out at 0 Ω to the programmer's
+USB shell, pin 2 carries the supply under `-W`), and the datasheet agreed with
+it afterwards. **It agreeing is luck, not process.**
 
 J3 pin 1 lands on `~MCLR`, the U1 pin itself, not on the RC node behind R6 —
 the programmer drives the pin directly and R6 keeps C8 off its back. See 4.3a.
@@ -776,7 +772,7 @@ left** and pins 15–28 along the bottom. Everything else follows from that:
 
 J1/J2 sit on the bottom edge, cables leaving downwards. D1/D2 and their
 resistors run down the left edge where they can be seen. The right-hand column
-held J4 until 2026-08-09 and now holds most of the MCLR network instead.
+held J4 and now holds most of the MCLR network instead.
 
 Measured against the datasheet:
 
@@ -816,7 +812,7 @@ rotation:
 Every part is within 3 mm of the pin at its nearest edge, and the far corners
 are bodies extending outward, not connections — the pin sees the near end.
 
-**R1 was then moved 1.20 mm further out, on purpose (2026-08-09).** The search
+**R1 is then moved 1.20 mm further out, on purpose.** The search
 above optimised for distance to the pin and produced an arrangement where R1's
 courtyard and C8's touched — 0.03 mm — with R1 pad 2 and C8 pad 1 2.66 mm apart,
 1.06 mm of bare board between the copper. Those two pads are `MCLR_RC` and
@@ -833,7 +829,8 @@ nearest-edge rule, not by eye: 1.20 mm is what keeps R1 at 2.89 mm, inside the
 match, which is where JP2 already sits.
 
 The two tracks that reach R1 were re-laid for it. +5V arrives on B.Cu along
-y = 61.4 and used to step down into pad 1 right where pad 2 now sits, so the
+y = 61.4 and would otherwise step down into pad 1 right where pad 2 sits, so
+the
 step became a longer run west and one 45° diagonal; `MCLR_RC` gained a 45°
 diagonal from the new pad 2 up to the existing vertical at x = 92.8. DRC is
 clean and there are no unconnected items.
@@ -850,9 +847,8 @@ within 3 mm. That second check is the one carrying weight. Do not widen either
 to make a red run green.
 
 **Standing resistors.** R1–R6 are `R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical`
-and C8 is the 2.50 mm disc, changed from the 10.16 mm horizontal parts on
-2026-08-09. That is how the maintainer fits axial resistors anyway — body
-upright, leads bent to the narrowest spacing — and it is what got R6 inside the
+and C8 is the 2.50 mm disc, rather than the 10.16 mm horizontal parts — body
+upright, leads bent to the narrowest spacing. It is what gets R6 inside the
 circle at all: upright, a resistor reaches 3.95 mm from its first pad against
 11.36 mm lying down.
 
@@ -909,7 +905,7 @@ it taught, worth knowing if it is ever run again:
 
 J4 was a 2×8 header bringing out all 14 unused I/O pins plus power, so a design
 error could be patched with a wire rather than a new board. It was fitted, and
-on **2026-08-09 it was taken off again.** Do not put it back without reading
+it was then **taken off again.** Do not put it back without reading
 this.
 
 **What it cost, measured.** Routing the board with and without it, same router,
@@ -1066,27 +1062,28 @@ and hand-soldered, so no assembly house will use it.
   footprint, pads and a value — and it was the one legend nothing else would
   have caught.
 
-### 6.0 Ordered — Gatema PCB, 2026-08-09
+### 6.0 What to send a fab house
 
-Three pieces, POOL service, **900 CZK before VAT** (300 CZK each, 1089 CZK
-with VAT), five working days at no express surcharge. The stack-up ordered is
-their preset *2V Cu 35/35 µm, 1,5 mm, LF HAL, 2x zelená NM, 1x bílý potisk,
-Tg 135 °C*, single pieces milled out, min track/gap class ≥150 µm, no assembly
-stencil. What was manufactured is commit **`c06e710`**.
+A pooled two-layer service is enough for this board: **Cu 35/35 µm, 1.5 mm,
+HAL or ENIG, solder mask both sides, silkscreen one side, single pieces milled
+out, min track/gap class ≥150 µm**. No assembly stencil — C7 is the only SMD
+part and it is hand-soldered.
 
-Both `Gerbers.zip` and `Odb.zip` were uploaded — the same board from the same
-commit, so they cannot disagree, and ODB++ is the format their CAM department
-prefers. The gerber package carries a `README.txt` because the configurator has
-no comment field and their own handbook accepts a text file for exactly this:
-it states that the PTH diameters are finished sizes, that the NPTH ones are not
-plated, why the 3.00 mm peg holes in particular must not be plated (3.7), and
-that R5 is deliberately unpopulated so its `120R DNF` legend is not read as a
-data error.
+Upload both `Gerbers.zip` and `Odb.zip` if the house takes ODB++; they are
+generated from the same board, so they cannot disagree, and ODB++ is what most
+CAM departments prefer.
 
-Three pieces rather than two because the board is the long-lead item: every
-other part comes from GME in days. Only two can be populated — the GME invoice
-of 2026-08-03 covers four Molex 43045-0400 and each board takes two — so the
-third is a bare spare until two more are bought.
+⚠ **Send a `README.txt` with the package**, because configurators rarely have a
+comment field and it has to say four things:
+
+- the PTH diameters are **finished** sizes, not drill sizes;
+- the NPTH ones are **not plated**;
+- **why** the 3.00 mm peg holes in particular must not be plated (3.7);
+- that **R5 is deliberately unpopulated**, so its `120R DNF` legend is not read
+  as a data error.
+
+**Order one more board than you intend to populate.** The board is the long-lead
+item; every other part arrives in days.
 
 ### 6.1 printed.cz — capability check
 
@@ -1241,9 +1238,9 @@ later:
   oxide layer is a consumable and the argument immediately below is what makes
   this one comfortable. A part sold without those figures cannot be held to it.
 
-*(This section used to sort the parts by whether they came out of a drawer or
-were bought new. That said nothing a second builder could act on — what matters
-is what a part has to satisfy, not who owned it first.)*
+*(Sorting parts by whether they were already to hand or had to be bought says
+nothing a second builder can act on. What matters is what a part has to
+satisfy.)*
 
 **C6 is a 105 °C part and needs no second thought.** It is GME 127-040, a
 Hitano `EXR` 10 µF 16 V in 5 × 11 — `hitano-exr-datasheet.pdf`, which gives
@@ -1276,7 +1273,7 @@ not duplicated here.
 
 ## 9. Open questions
 
-**There are none left.** The table that used to be here held one row, the 4-pin
+**There are none left.** The one row this table held was the 4-pin
 connector for the car side of the harness, and that is settled: the connector
 exists and is fitted, so the loom is a re-crimp onto longer wires rather than a
 choice to make. C6's temperature class was the other and is settled in section
@@ -1302,7 +1299,7 @@ notches in the board, added an isolation and grounding decision that a plastic
 box does not, and required a slot filed through cast aluminium for the
 Micro-Fit connectors.
 
-Dropping it inverts the risk that section 9 used to carry. The M3 holes no
+Dropping it inverts the risk section 9 would otherwise carry. The M3 holes no
 longer have to hit anything, so they stopped being the thing that could force a
 respin and became cheap insurance instead: any later mounting scheme is
 designed around them.
@@ -1321,7 +1318,7 @@ it provides guards against metal that is not there.
 
 Resolved earlier: the core supply (3.5 — no ENVREG, 10 µF on pin 6), the LED
 pin assignment (RC0/RC1, see 3.6) and the escape header — which at the time
-resolved as "2×8, it goes on", and was then removed on 2026-08-09 once routing
+resolved as "2×8, it goes on", and was then removed once routing
 put a number on what it cost (5.4).
 
 ### 9.2 The 5 V feed is fused — in the harness, not on the board
@@ -1403,7 +1400,7 @@ fuse the right choice.
 
 The sourcing rule in `CLAUDE.md` is only worth anything if it is possible to
 tell which numbers were checked and which were inherited. This is the checked
-list, as of the re-review on 2026-08-08.
+list, as of the datasheet re-review.
 
 **DS39977C — PIC18F25K80**
 

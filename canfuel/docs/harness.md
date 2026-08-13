@@ -4,11 +4,11 @@ The loom that connects the MFD15 to the car and to the converter board. It
 carries two things: the CAN pair from the cluster to the air vent, and 5 V from
 the display's own plug C to the converter.
 
-> **Status of the one in this car: built, fitted and measured, 2026-08-10/11.**
-> The dashboard came apart, the old loom came out, and a complete new one went
-> in — longer 12 V and ground into the MFD15's plug B, the CAN pair and the
-> 5 V/SGND run terminating in the Micro-Fit that the converter board will plug
-> into. **5.01 V measured at the 4-pin itself**, which is the number that
+> **Built, fitted and measured on a reference vehicle.** The dashboard came
+> apart, the old loom came out, and a complete new one went in — longer 12 V
+> and ground into the display's plug B, the CAN pair and the 5 V/SGND run
+> terminating in the Micro-Fit that the converter board plugs into.
+> **5.01 V measured at the 4-pin itself**, which is the number that
 > matters: it is the supply the board will see, through the fuse and both
 > splices, not a reading taken at plug C before the loom existed. The display
 > was then run on this loom with the CAN pair on DuPont jumpers in place of the
@@ -53,9 +53,8 @@ cable ties, fabric loom tape.
 - [ ] **A4. Crimp the ends.** ACI pins on the car side, Micro-Fit 43030 sockets
   on the housing side. Tug every one by hand.
 - [ ] **A4a. Fit the sockets into the 4-pin Micro-Fit housing (43025-0400) in
-  the right cavities.** This was missing here until 2026-08-10 and had to be
-  worked out mid-build; the order itself is fixed by plan 3.4 and matches the
-  pads of J1/J2 on the board.
+  the right cavities.** The order is fixed by plan 3.4 and matches the pads of
+  J1/J2 on the board. **Work it out before crimping, not mid-build.**
 
   | Micro-Fit circuit | Net  | Wire   | Plug C |
   | ----------------- | ---- | ------ | ------ |
