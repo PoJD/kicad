@@ -120,7 +120,7 @@ schematic and a board that is an outline and nothing else. ✔
 | R3, R4    | 1 kΩ                        | 1/4 W THT                               | LED series resistors — see 3.6         |
 | R5        | 120 Ω                       | 1/4 W THT                               | **DO NOT FIT** — see 3.3               |
 | R6        | 470 Ω                       | 1/4 W THT                               | MCLR series — see 4.3a                 |
-| D1        | LED green                   | 3 mm THT                                | power / heartbeat                      |
+| D1        | LED **red**                 | 3 mm THT                                | power / heartbeat. Was green until 2026-08-13; colour is free, see CLAUDE.md |
 | D2        | LED yellow                  | 3 mm THT                                | CAN status                             |
 | J1, J2    | Molex Micro-Fit 3.0 43045-0400 | right-angle, board mount             | wired in parallel — see 3.4            |
 | J3        | 5-pin header 2.54 mm        | 1×5                                     | ICSP                                   |

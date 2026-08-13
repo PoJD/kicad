@@ -683,11 +683,20 @@ after the design**, not before. Buying twice is worse than buying later.
   because its datasheet specifies no high-frequency ESR (plan §3.5).
 
 **LED colour is free, within reason.** D1/D2 run off port C through 1 kΩ, so
-at Vf ≈ 2 V they draw about 2.3 mA and at Vf ≈ 3.2 V (blue, white, true green)
-about 1.1 mA. Both sit far under the 25 mA limit, so any colour is electrically
-fine and only brightness changes. Whatever gets fitted, put it in the symbol's
-Value field — the BOM is generated from the schematic, so a wrong colour there
-becomes a wrong colour in `fab/`.
+the whole span of colours lands between about **3.2 mA** at Vf ≈ 1.8 V (red,
+yellow) and **1.1 mA** at Vf ≈ 3.2 V (blue, white, true green). All of it sits
+far under the 25 mA limit, so any colour is electrically fine and only the
+brightness changes. Whatever gets fitted, put it in the symbol's Value field —
+the BOM is generated from the schematic, so a wrong colour there becomes a
+wrong colour in `fab/`.
+
+**Fitted here: D1 red, D2 yellow**, changed from green/yellow on 2026-08-13
+when the actual parts were tested. That is the rule above being used rather
+than bent: both were measured at **Vf ≈ 1.8 V** on a multimeter's diode range
+before fitting, the schematic Value field was edited, and
+`canfuel-bom.csv` was regenerated with the `kicad-cli` command in plan §7 —
+one line changed, no format drift. **The next person may pick different
+colours again; the same three steps apply.**
 
 **Audited against `fab/canfuel-bom.csv` on 2026-08-13.** The parts with no PDF
 of their own are C1–C5 and C8, R1–R6, D1/D2, J3, JP1/JP2 and C7. Every one is

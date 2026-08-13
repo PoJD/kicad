@@ -8306,7 +8306,7 @@
 		)
 		(property
 			"Value"
-			"green"
+			"red"
 			(at 261.62 233.68 0)
 			(show_name no)
 			(do_not_autoplace no)
