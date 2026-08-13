@@ -95,7 +95,7 @@ directly above 1 and 4 diagonally from it**.
 **One useful cross-check fell out of the manual.** The display's own plug A is
 a Molex **43025-0400** — the same housing as the converter plug — and Figure 1
 draws it, cable side, as `A4 A3` over `A2 A1`. Circuit 1 bottom right is
-exactly how the housings in the drawer are moulded, so the cavity layout is now
+exactly how the physical housings are moulded, so the cavity layout is now
 corroborated by a document rather than resting on convention alone.
 
 What that still does not prove is that circuit *n* of the receptacle mates with

@@ -105,14 +105,14 @@ schematic and a board that is an outline and nothing else. ✔
 
 | Ref       | Part                        | Package / footprint                     | Note                                   |
 | --------- | --------------------------- | --------------------------------------- | -------------------------------------- |
-| U1        | PIC18F25K80                 | PDIP-28, **narrow 7.62 mm** socket      | from the drawer                        |
-| U2        | MCP2562-E/P                 | DIP-8 socket                            | new purchase                           |
-| Y1        | 16 MHz crystal, CL = 20 pF  | HC-49/S                                 | new; see 3.2                           |
+| U1        | PIC18F25K80                 | PDIP-28, **narrow 7.62 mm** socket      | in a socket, never soldered direct     |
+| U2        | MCP2562-E/P                 | DIP-8 socket                            | in a socket. `-E/P` is the DIP part    |
+| Y1        | 16 MHz crystal, CL = 20 pF  | HC-49/S                                 | **CL must be specified** — see 3.2     |
 | C1, C2    | 33 pF C0G                   | 2.54 mm THT                             | **33 pF, not 22 pF** — see 3.2         |
 | C3        | 100 nF X7R                  | 2.54 mm THT                             | U1 VDD (pin 20)                        |
 | C4        | 100 nF X7R                  | 2.54 mm THT                             | U2 VDD (pin 3)                         |
 | C5        | 100 nF X7R                  | 2.54 mm THT                             | U2 VIO (pin 5)                         |
-| C6        | 10 µF electrolytic, 16 V    | 5 mm THT radial                         | supply input; new part, they age       |
+| C6        | 10 µF electrolytic, 16 V    | 5 mm THT radial                         | supply input; **105 °C part** — see 7  |
 | C7        | 10 µF X7R, 16 V, **Murata GRM32DR71C106KA01L** | 1210 SMD                 | **mandatory** — U1 VDDCORE/VCAP, see 3.5 |
 | C8        | 100 nF X7R                  | 2.54 mm THT                             | MCLR reset hold, behind JP2 — see 4.3a |
 | R1        | 10 kΩ                       | 1/4 W THT                               | MCLR pull-up                           |
@@ -127,8 +127,8 @@ schematic and a board that is an outline and nothing else. ✔
 | ~~J4~~    | ~~2×8 header 2.54 mm~~      | —                                       | **removed 2026-08-09 — see 5.4**       |
 | JP1       | 2-pin header + jumper       | 1×2                                     | debug enable on RA0                    |
 | JP2       | 2-pin header + jumper       | 1×2                                     | isolates C8 for programming — see 4.3a |
-| —         | DIP-28 socket, narrow       |                                         | new                                    |
-| —         | DIP-8 socket                |                                         | new                                    |
+| —         | DIP-28 socket, narrow       |                                         | not in `canfuel-bom.csv` — see 7       |
+| —         | DIP-8 socket                |                                         | not in `canfuel-bom.csv` — see 7       |
 
 ---
 
@@ -1219,18 +1219,31 @@ it, so it is worth offering.
 Only now, and derived from `fab/canfuel-bom.csv` — not typed out by hand.
 Cross-check against `bom-purchase.pdf`.
 
-- **From the drawer:** U1 (PIC18F25K80).
-- **Buy new:** MCP2562-E/P, Y1, every capacitor, every resistor, both sockets,
-  J1/J2 and their crimp housings, headers, LEDs.
-- **For the harness, not the board:** SIBA 179120.0.2 fuse (200 mA, time-lag T,
-  5 × 20) and inline holder K23411. These are not in `fab/canfuel-bom.csv` and
-  never will be — the BOM comes from the schematic and the fuse is not on it.
-  Buy a spare fuse; a blown one behind the dash is worth having a second of.
-  See 9.2.
+- **On the board:** everything in `fab/canfuel-bom.csv`, **plus two DIP
+  sockets** — narrow 7.62 mm DIP-28 for U1 and DIP-8 for U2. The sockets have
+  no schematic symbol, so no generated BOM can ever list them; miss them and U1
+  and U2 get soldered straight into the board.
+- **Not on the board, but needed:** SIBA 179120.0.2 fuse (200 mA, time-lag T,
+  5 × 20) and inline holder K23411, for the harness. These are not in
+  `fab/canfuel-bom.csv` and never will be — the BOM comes from the schematic
+  and the fuse is not on it. Buy a spare fuse; a blown one behind the dash is
+  worth having a second of. See 9.2.
 
-Electrolytics age unpowered and an unmarked crystal has an unknown load
-capacitance — both are cheap enough that reusing them is a false economy.
-Resistors and LEDs are not in that category and come from the drawer.
+**Two of those parts are specified rather than merely valued**, and a
+substitution that ignores this is the kind that works on the bench and fails
+later:
+
+- **Y1's load capacitance must be stated by whoever sells it.** This one is
+  20 pF, and that number is what sets C1/C2 to 33 pF in 3.2. A crystal with an
+  unknown CL cannot be checked against that and so cannot be used, whatever it
+  costs.
+- **C6 must carry a temperature and load-life rating**, because an electrolytic's
+  oxide layer is a consumable and the argument immediately below is what makes
+  this one comfortable. A part sold without those figures cannot be held to it.
+
+*(This section used to sort the parts by whether they came out of a drawer or
+were bought new. That said nothing a second builder could act on — what matters
+is what a part has to satisfy, not who owned it first.)*
 
 **C6 is a 105 °C part and needs no second thought.** It is GME 127-040, a
 Hitano `EXR` 10 µF 16 V in 5 × 11 — `hitano-exr-datasheet.pdf`, which gives

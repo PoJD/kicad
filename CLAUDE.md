@@ -127,10 +127,9 @@ maintainer is **not ordering them yet**, on purpose: the third board is a spare
 and there is no point buying its connectors before the first two are built and
 working. Do not treat this as a gap to close.
 
-**PIC18F25K80 is not a constraint: there are about twenty in the drawer.** They
-were bought in PDIP for an earlier project that ended up using the SMD part, so
-they have never been fitted to anything. Nothing about this board's supply
-depends on that one part any more.
+**PIC18F25K80 availability is not a constraint on this design**, and nothing
+about the board's supply situation turns on that one part. Do not redesign
+around sourcing it.
 
 **The silkscreen was sized for no process at all until 2026-08-09.** All 25
 items were 0.80 mm high with a 0.12 mm stroke; the first fab house looked at,
@@ -665,22 +664,32 @@ socketed and the firmware core is tested on the host against real logs (repo
 The complete BOM only falls out of the schematic, so **put the list together
 after the design**, not before. Buying twice is worse than buying later.
 
-- **From the drawer:** PIC18F25K80, the resistors and the LEDs. None of the
-  three degrades in dry storage. Meter the resistors before fitting and the
-  question is closed — R1 and R6 are current-limiting, not precision, so a few
-  percent of drift would not matter even if it existed.
-- **New:** crystal, all capacitors, connectors, sockets. The electrolytic ages
-  unpowered because its oxide layer does; the crystal because an unmarked part
-  has an unknown load capacitance, and that value sets C1/C2 (§3.2 of the plan).
-  Those two reasons do not generalise to passives that have neither an
-  electrolyte nor a hidden parameter.
-- **New purchase:** MCP2562-E/P, and **C7 = Murata GRM32DR71C106KA01L**,
-  10 µF X7R 16 V in 1210. That is one of the four parts Microchip lists in
+**Three parts are specified exactly and the rest are ordinary stock items of
+the value in the BOM.** What matters is the specification, not where a part
+came from or how long it has been sitting somewhere — that was how this section
+used to be organised and it said nothing a second builder could use.
+
+- **Y1 must be a crystal whose load capacitance is stated**, and this one's is
+  20 pF. That value is what sets C1/C2 to 33 pF (§3.2 of the plan), so a
+  crystal sold without a specified CL cannot be used here at any price. This is
+  the one requirement that is invisible on the part itself.
+- **C6 must be a specified 105 °C electrolytic** — an oxide layer is a
+  consumable and the load-life arithmetic that makes this one comfortable is in
+  plan §7. A part with no temperature or load-life figure cannot be checked
+  against that argument.
+- **C7 = Murata GRM32DR71C106KA01L**, 10 µF X7R 16 V in 1210. That is one of
+  the four parts Microchip lists in
   DS39977C Table 2-1, so nothing about it needs arguing. It is the only SMD
   component on the board and goes on the bottom layer under pin 6. The
-  aluminium electrolytic bought for C6 is **not** a substitute — §2.4 allows
+  aluminium electrolytic at C6 is **not** a substitute — §2.4 allows
   ceramic or tantalum and nothing else — and a dipped tantalum was rejected
   because its datasheet specifies no high-frequency ESR (plan §3.5).
+
+**Resistor tolerance is not a constraint anywhere on this board.** R1 and R6
+are current-limiting and R3/R4 set an LED brightness; none of the five is a
+precision part and a few percent either way changes nothing. Meter them before
+fitting — `canfuel/docs/install.md` step 5 asks for that anyway, for every part
+with a measurable value — and the question is closed.
 
 **LED colour is free, within reason.** D1/D2 run off port C through 1 kΩ, so
 the whole span of colours lands between about **3.2 mA** at Vf ≈ 1.8 V (red,
