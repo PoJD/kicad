@@ -29,6 +29,9 @@ is how to make the loom.
 
 **The car-side 4-pin connector is settled too.** It exists and is already
 fitted; this is a re-crimp onto longer wires, not a new connector choice.
+`car-wiring.md` records what each of its wires is and where it is tapped in the
+car — its circuit order is **not** the converter plug's, so read it before
+assuming.
 
 **What you need:** crimping pliers, pin extractors, multimeter, spare ACI pins,
 spare Micro-Fit 43030 sockets, butt splices with adhesive-lined heat shrink,

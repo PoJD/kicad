@@ -663,6 +663,9 @@ Supporting documents in `canfuel/docs/`:
   from the MFD15 manual in the sibling `mfd15` repo, which stays the authority;
   the converter plug's figure is generated from J1's pad nets so it cannot
   drift from the board.
+- `car-wiring.md` — what each wire of the car-side 12 V 4-pin is and where it is
+  tapped in the car, recorded on the vehicle. Reference only; nothing on the
+  board depends on it, and its circuit order is not the converter plug's
 - `harness.md` — building the loom. The measuring and sniffing steps were
   it is a build document, not a test plan.
 - `revision-b.md` — ideas for a board that does not exist. Nothing in it is

@@ -108,6 +108,8 @@ CAN H and CAN L only stops the bus working; a CAN wire in circuit 1 or 2 meets
 ## See also
 
 - `harness.md` — building the loom, step A4a for fitting these crimps
+- `car-wiring.md` — the fourth connector, the 12 V 4-pin between the car and the
+  display's harness, and which colour is tapped where in the car
 - `harness-connector.svg` — the plug and the board pads side by side
 - `harness-nets-on-pcb.svg` — the same four nets on the real copper
 - `implementation-plan.md` 3.4 — why the pin order is what it is
