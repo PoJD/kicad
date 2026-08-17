@@ -65,6 +65,7 @@ For the `canfuel` board specifically, `canfuel/docs/` holds:
 | `harness.md` | **making the loom and wiring it into the car** — a checklist, with the crimping, the connector cavities and the fuse |
 | `pinout.md` | one-page reference for all three connectors |
 | `harness-*.svg` | the connector and the four nets drawn from the real pad coordinates in `canfuel.kicad_pcb`, so they cannot disagree with the board |
+| `assembly-orientation.svg` | **the figure to have open while soldering** — both sides of the board, and which way round each of the five parts that can go in backwards goes |
 | `implementation-plan.md` | how the board was designed, every number cited to a datasheet |
 | `*.pdf` | the manufacturers' datasheets, listed in `NOTICE` as theirs |
 
