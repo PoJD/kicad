@@ -66,6 +66,7 @@ For the `canfuel` board specifically, `canfuel/docs/` holds:
 | `pinout.md` | one-page reference for all three connectors |
 | `harness-*.svg` | the connector and the four nets drawn from the real pad coordinates in `canfuel.kicad_pcb`, so they cannot disagree with the board |
 | `assembly-orientation.svg` | **the figure to have open while soldering** — both sides of the board, and which way round each of the five parts that can go in backwards goes |
+| `solder-check.md` | **after each joint** — for every pad on the board, where the meter must read zero and what it must stay open to, with the gap in millimetres |
 | `implementation-plan.md` | how the board was designed, every number cited to a datasheet |
 | `*.pdf` | the manufacturers' datasheets, listed in `NOTICE` as theirs |
 
