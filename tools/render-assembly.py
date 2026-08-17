@@ -422,16 +422,27 @@ text(MARGIN + PAD_L + top.w() / 2, TOP_Y - 10,
 #
 # Which pad is which comes from the nets, not from a table here.
 
+def other_part_on_net(net, exclude):
+    """The one other part sharing `net`. Used to name the LED's resistor."""
+    hits = {fp.GetReference() for fp in board.GetFootprints()
+            for p in fp.Pads()
+            if p.GetNetname() == net and fp.GetReference() != exclude}
+    if len(hits) != 1:
+        sys.exit(f"{net}: {sorted(hits)} besides {exclude}, expected one part")
+    return hits.pop()
+
+
 led_marks = []
 for ref in ("D1", "D2"):
     cath_n, cath = pad_on_net(ref, "SGND")
-    _, anode = other_pad(ref, cath_n)
-    led_marks.append((ref, cath, anode))
+    anode_n, anode = other_pad(ref, cath_n)
+    anode_net = FPS[ref].FindPadByNumber(anode_n).GetNetname()
+    led_marks.append((ref, cath, anode, other_part_on_net(anode_net, ref)))
 
 c6_plus_n, c6_plus = pad_on_net("C6", "+5V")
 _, c6_minus = other_pad("C6", c6_plus_n)
 
-for ref, cath, anode in led_marks:
+for ref, cath, anode, _ in led_marks:
     badge(top, cath, "\u2212", MINUS)
     badge(top, anode, "+", PLUS)
 badge(top, c6_plus, "+", PLUS, 9)          # C6's two leads are only 2 mm apart
@@ -460,17 +471,21 @@ LW = PAD_L - 46
 y = TOP_Y + 22
 for ref, kind in (("D1", "led"), ("D2", "led"), ("C6", "cap")):
     if kind == "led":
-        cath = [m for m in led_marks if m[0] == ref][0][1]
-        anchor = cath
+        mark = [m for m in led_marks if m[0] == ref][0]
+        anchor = mark[1]
         colour = MINUS
-        title = "LED — red" if ref == "D1" else "LED — yellow"
+        # The colour is the Value field the BOM is generated from, never
+        # a colour typed in here; the resistor is whatever else sits on
+        # the anode net. Both were hard-coded once, and what found it was
+        # the board and the schematic disagreeing about D1.
+        title = "LED — " + FPS[ref].GetValue()
         lines = ["*Short leg (\u2212, cathode) outwards,",
                  "*towards the board edge.",
                  "The flat on the plastic rim is on",
                  "the same side, and the silk outline",
                  "carries the same flat. The long leg",
                  "(+) goes to the inner pad, the one",
-                 "wired to %s." % ("R3" if ref == "D1" else "R4")]
+                 "wired to %s." % mark[3]]
     else:
         anchor = c6_plus
         colour = PLUS

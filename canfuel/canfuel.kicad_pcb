@@ -6435,7 +6435,7 @@
 				)
 			)
 		)
-		(property "Value" "green"
+		(property "Value" "red"
 			(at 1.27 2.96 0)
 			(layer "F.Fab")
 			(hide yes)

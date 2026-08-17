@@ -106,7 +106,7 @@ Find the part you have just soldered. Every one of its pads gets a row.
 | 1 | MCLR_C | JP2 pin 2 | **SGND** 0.30 mm (any ground — J3 pin 3); **+5V** 0.40 mm (any +5 V pin — J3 pin 2); **MCLR_RC** 0.58 mm (JP2 pin 1, R1 pad 2, R6 pad 1) |
 | 2 | SGND | any ground — J3 pin 3 | **MCLR_RC** 0.38 mm (JP2 pin 1, R1 pad 2, R6 pad 1); **MCLR_C** 0.90 mm (JP2 pin 2, C8 pad 1) |
 
-## D1 — green
+## D1 — red
 
 | Pad | Net | Must read **zero** to | Must stay **open** to |
 |---|---|---|---|

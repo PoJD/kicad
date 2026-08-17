@@ -641,10 +641,29 @@ the BOM is generated from the schematic, so a wrong colour there becomes a
 wrong colour in `fab/`.
 
 **Fitted: D1 red, D2 yellow**, both measured at **Vf ≈ 1.8 V** on a
-multimeter's diode range before fitting. **To change a colour: edit the
-schematic's Value field, then regenerate `canfuel-bom.csv` with the
-`kicad-cli` command in plan §7.** Editing the CSV directly makes it disagree
-with the schematic it is generated from.
+multimeter's diode range before fitting. **To change a colour: edit the Value
+field in the schematic *and* in the board, then regenerate `canfuel-bom.csv`
+with the `kicad-cli` command in plan §7.** Editing the CSV directly makes it
+disagree with the schematic it is generated from.
+
+⚠ **Both files, not one.** The schematic and the board each carry their own
+Value field, and `kicad-cli` takes the BOM from one and the CPL from the other.
+D1 was once changed to red in the schematic alone, so `fab/canfuel-bom.csv`
+said `red` while `fab/canfuel-cpl.csv` said `green`, and nothing complained.
+Neither ERC, DRC, `check-netlist.py` nor `check-placement.py` reads Value —
+only `import-footprints.py` writes it, when the board is synced from the sheet,
+which is the step that was skipped. What found it was
+`tools/render-solder-check.py` printing the board's copy at the head of D1's
+table. **Value is the one field a re-sync fixes and no check guards**; the
+board now agrees with the schematic.
+
+**`fab/` is deliberately left carrying the old value.** It is the record of
+what was sent to the manufacturer, and the boards on the bench were made from
+exactly those files. Regenerating it to tidy up a colour would throw that away
+to fix something no fab process reads — the CPL's Val column is for a pick and
+place, and this board is assembled by hand. Anything generated from the board
+*now* — the two figures in `canfuel/docs/` — says red, because it is generated
+now.
 
 **The parts with no PDF of their own** are C1–C5 and C8, R1–R6, D1/D2, J3,
 JP1/JP2 and C7. Every one is either exempt under the rule at the top of this
