@@ -22,7 +22,7 @@ makes it stop describing what is being made.
 The harness is built, fitted and measured —
 [`canfuel/docs/harness.md`](canfuel/docs/harness.md) is the procedure. **The
 whole build path, across all three repositories, is
-[`canfuel/docs/install.md`](https://github.com/PoJD/canfuel/blob/main/docs/install.md);**
+[`canfuel/docs/firmware/install.md`](https://github.com/PoJD/canfuel/blob/main/docs/firmware/install.md);**
 the steps this repository owns are the board and the loom.
 
 ## Prerequisites
@@ -90,7 +90,7 @@ Two project-specific checks run alongside them: `check-netlist.py` and
 The `canfuel` board is one third of a project that needs all three
 repositories. Clone them side by side.
 
-**Building one?** [`canfuel/docs/install.md`](https://github.com/PoJD/canfuel/blob/main/docs/install.md)
+**Building one?** [`canfuel/docs/firmware/install.md`](https://github.com/PoJD/canfuel/blob/main/docs/firmware/install.md)
 is the whole path from three clones to a working device, in the order it has to
 happen. Making up the harness — the part that lives in this repository — is
 step 3 of seven.

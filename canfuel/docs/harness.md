@@ -15,7 +15,7 @@ the display's own plug C to the converter.
 > board, and it worked.
 >
 > **What this document does not cover is the board**, only the loom. See
-> `canfuel/docs/install.md` step 4.
+> `canfuel/docs/firmware/install.md` step 4.
 >
 > The checkboxes below are deliberately left unticked: this is the procedure
 > for building one, and everything learnt while building ours has been folded

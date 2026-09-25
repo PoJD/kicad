@@ -8,7 +8,7 @@ Read the killer checks in section 3 before drawing anything.
 
 **This is a design reference, not a progress tracker.** What is left to do in
 the project as a whole lives in one place:
-[`canfuel/docs/install.md`](https://github.com/PoJD/canfuel/blob/main/docs/install.md).
+[`canfuel/docs/firmware/install.md`](https://github.com/PoJD/canfuel/blob/main/docs/firmware/install.md).
 
 > ⚠ **This document was written before the board was drawn, and the board is
 > now made.** Most of it is still the reference — the pin table in 4.2, the
@@ -20,11 +20,11 @@ the project as a whole lives in one place:
 > **The big one is the escape header J4**, removed because routing put a number
 > on what it cost: eight unroutable connections, five of them nothing to do
 > with the escape signals. Section 5.4 is the full account, and
-> `canfuel/docs/refuted.md` entry D1 is the short one. Fourteen pins that this
+> `canfuel/docs/firmware/refuted.md` entry D1 is the short one. Fourteen pins that this
 > document originally sent to J4 now go **nowhere**, and driving them low is a
 > firmware obligation — see 3.6.
 >
-> `canfuel/docs/refuted.md` collects every idea in this project that was
+> `canfuel/docs/firmware/refuted.md` collects every idea in this project that was
 > believed and turned out wrong, across all three repositories.
 
 **Every electrical number below is cited to a manufacturer datasheet**, per the
@@ -554,7 +554,7 @@ wrong order and worth saying. Until it did, the table above stood on the words
 §2.5 covers pull-ups, series diodes and capacitors on PGC/PGD, a different
 question, and §2.5 gives no connector pinout at all. The order was
 independently confirmed by measurement first
-(`canfuel/docs/install.md` step 4: pin 3 rings out at 0 Ω to the programmer's
+(`canfuel/docs/firmware/install.md` step 4: pin 3 rings out at 0 Ω to the programmer's
 USB shell, pin 2 carries the supply under `-W`), and the datasheet agreed with
 it afterwards. **It agreeing is luck, not process.**
 
@@ -1045,7 +1045,7 @@ and hand-soldered, so no assembly house will use it.
   They are in the parts table of §2 as rows with no reference. Anyone
   populating from the CSV alone solders U1 and U2 straight into the board and
   loses the escape hatch this design leans on;
-  `canfuel/docs/install.md` step 5 now says so out loud.
+  `canfuel/docs/firmware/install.md` step 5 now says so out loud.
 - The silk layer **did not** carry the `120R DNF` legend of 3.3 until now. The
   board had no board-level text at all: value fields went to F.Fab in the 5.4
   pass and the R5 footprint only ever put its *reference* on F.SilkS, so the

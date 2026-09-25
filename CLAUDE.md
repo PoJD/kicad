@@ -252,7 +252,7 @@ is missing.
 pours, silkscreen and the fabrication outputs are all done and committed, and
 every check is green. Do not go looking for design work to do — there is none.
 
-**`canfuel/docs/install.md` is the procedure for the project as a whole**;
+**`canfuel/docs/firmware/install.md` is the procedure for the project as a whole**;
 this file deliberately does not keep a second copy of it.
 
 **Do not edit the design while a fabrication order is outstanding** — `fab/`
@@ -629,7 +629,7 @@ used to be organised and it said nothing a second builder could use.
 **Resistor tolerance is not a constraint anywhere on this board.** R1 and R6
 are current-limiting and R3/R4 set an LED brightness; none of the five is a
 precision part and a few percent either way changes nothing. Meter them before
-fitting — `canfuel/docs/install.md` step 5 asks for that anyway, for every part
+fitting — `canfuel/docs/firmware/install.md` step 5 asks for that anyway, for every part
 with a measurable value — and the question is closed.
 
 **LED colour is free, within reason.** D1/D2 run off port C through 1 kΩ, so
@@ -690,7 +690,7 @@ Supporting documents in `canfuel/docs/`:
   C6's positive end is whichever pad is on +5V — so turning a part round in the
   layout turns it round in the drawing. What is *not* generated is the part
   side of each pairing (long leg, stripe, notch), which is convention and is
-  written out in `canfuel/docs/install.md` step 5
+  written out in `canfuel/docs/firmware/install.md` step 5
 - `solder-check.md` — the other half of the same job, after the iron rather
   than before it. Every pad on the board, with where the meter must read zero
   (the joint exists) and what it must stay open to (nothing else got caught),
@@ -753,7 +753,7 @@ so always run git inside one of the three.
 Neither of them constrains this board's design. The coupling in this project is
 between `canfuel` and `mfd15` (the layout of CAN frames 0x600–0x602), not here.
 
-**`canfuel/docs/refuted.md` collects the refuted hypotheses of all three
+**`canfuel/docs/firmware/refuted.md` collects the refuted hypotheses of all three
 repositories**, this one included — the escape header and the enclosure are
 entries D1 and D2 there, alongside the fuller accounts kept here. It is one
 file rather than three because a good idea that was tried and failed is worth

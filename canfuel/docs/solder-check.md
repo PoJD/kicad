@@ -2,7 +2,7 @@
 
 # After each joint: what must read zero, and what must not
 
-`canfuel/docs/install.md` step 5 has you measure every part **before** it
+`canfuel/docs/firmware/install.md` step 5 has you measure every part **before** it
 goes in, which catches a misread colour code and nothing else. This is the
 other half, and it is per **joint** rather than per part.
 
