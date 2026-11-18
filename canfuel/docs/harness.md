@@ -153,31 +153,36 @@ straight run of loom that length and somewhere it can be unscrewed.
 - [ ] **D1. Tape up the looms and tidy the routing.** Use **fabric loom tape,
   not PVC insulating tape** — at dashboard temperatures PVC adhesive creeps,
   which is the same reason the board is not taped down either.
-- [ ] **D2. ~~Wrap up to the fuse holder and start again after it.~~
-  Overridden on the build: the holder is wrapped over as well.** The intent
-  was that the fuse could be changed without unwrapping anything. On the
-  actual holder one end leaves **bare 5 V exposed**, and bare metal loose
-  behind a dashboard was judged the worse of the two risks, so it is taped
-  over along with the rest of the loom.
+- [ ] **D2. Wrap up to the fuse holder and start again after it** — the
+  holder body stays outside the tape. *This said "overridden on the build:
+  the holder is wrapped over as well" until 18/11/2026.*
 
-  **What that costs:** changing a fuse now means peeling the tape back and
-  re-wrapping it. So **the spare fuse in the car is not enough on its own —
-  a roll of the fabric tape has to travel with it**, or the roadside repair
-  cannot be finished.
+  **Why the override was undone (18/11/2026, in the car).** The converter
+  dropped out now and then — the CAN link alone, or a restart, or not
+  running at all — and pressing on the MFD15's body, which is pressing on
+  the holder behind it, always brought it back. The holder had been taped
+  over on a section of loom bent hard, and the tape pulling on the
+  holder's cap can slacken the spring that makes the contact. Across the
+  4-pin, 5 V read 2.7 Ω through the old fuse and holder against
+  1.9–2.0 Ω for two spare fuses (measured, the owner). A new fuse went in
+  and the holder was left untaped. The record of the drop-outs and what
+  they mean for the firmware is canfuel's `docs/firmware/open.md`,
+  question 12.
 
-  The alternative, if this is ever rebuilt: sleeve only the exposed end and
-  leave the holder body outside the tape, which gets both. Not worth
-  dismantling a finished loom for.
+  **The bare 5 V end still needs covering** — the reason the holder was
+  taped in the first place: **sleeve only the exposed end** (heat shrink),
+  never the holder body or its cap. Whether it is sleeved on the car now
+  is not recorded.
 - [ ] **D3. Reassemble the dashboard.**
 
 ---
 
 ## If the fuse blows
 
-The fault is on the converter board, not in the display. Fit one new fuse — and
-carry a spare **and a roll of the fabric tape**, because the holder is wrapped
-over (see D2) and a blown fuse behind the dash with nothing to hand is a wasted
-trip. If the second one goes as well, stop replacing fuses and find
+The fault is on the converter board, not in the display. Fit one new fuse, and
+carry a spare: a blown fuse behind the dash with nothing to hand is a wasted
+trip. The holder is no longer taped over (D2), so no tape is needed to
+change it. If the second one goes as well, stop replacing fuses and find
 the short. That is what the fuse is telling you.
 
 **What the fuse does not protect:** the run from plug C to the fuse itself.
