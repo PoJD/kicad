@@ -171,8 +171,10 @@ straight run of loom that length and somewhere it can be unscrewed.
 
   **The bare 5 V end still needs covering** — the reason the holder was
   taped in the first place: **sleeve only the exposed end** (heat shrink),
-  never the holder body or its cap. Whether it is sleeved on the car now
-  is not recorded.
+  never the holder body or its cap. On the car (18/11/2026) the end is
+  not sleeved but lies inside the loom's fabric tape all round, so it
+  touches nothing (the owner); a sleeve is still the better finish when the
+  loom is next out.
 - [ ] **D3. Reassemble the dashboard.**
 
 ---
