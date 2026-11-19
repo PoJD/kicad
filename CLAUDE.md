@@ -407,8 +407,8 @@ was verified with a multimeter, and the CAN pinout (C7/C8) is confirmed.
 **Nothing.** The last one was the 4-pin connector for the car side of the
 harness, and it is settled: the connector exists and is already fitted, so the
 loom is a re-crimp onto longer wires, not a new choice. Everything else was
-closed before that: **the escape header came off again** (measured, see below), there is no
-enclosure, and C6 turned out to be a 105 °C part with life to spare (plan §7).
+closed before that: **the escape header came off again** (measured, see below), the
+enclosure was dropped (a printed one proposed 19/11, below), and C6 turned out to be a 105 °C part with life to spare (plan §7).
 
 ### Ideas for a board that does not exist — `canfuel/docs/revision-b.md`
 
@@ -452,7 +452,16 @@ The freed column was inside the 6 mm circle of DS39977C §2.3, so the MCLR
 cluster was re-placed into it — worst far corner 10.68 mm → 8.67 mm. Plan §5.4
 has the full account.
 
-### The enclosure was dropped — do not reopen it
+### The enclosure was dropped — and reopened by the owner, 19/11/2026
+
+**A printed two-part box is now proposed**, `canfuel/enclosure/` (its
+`README.md` has the design and why): the converter's drop-outs in the car
+(`canfuel/docs/firmware/open.md` 12 in the sibling repo) made the loom's
+pull on J1/J2 and knocks to the board matter, which a box with a cable-tie
+ledge takes off them. The reasons below still hold and are kept as they
+were; the box is printed, so none of the off-the-shelf objections apply.
+`enclosure.scad` is the source; its STLs are output, regenerated with it.
+
 
 Everything around the board in the vent is plastic, so there is nothing to
 short against. The vent is closed off by a flap, so no airflow, no meaningful

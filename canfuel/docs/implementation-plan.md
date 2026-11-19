@@ -1286,6 +1286,12 @@ layout once, and there is no longer going to be one.
 
 ### 9.1 The enclosure was dropped, and why
 
+**Reopened by the owner, 19/11/2026**: a printed two-part box is proposed
+in `canfuel/enclosure/` (its `README.md`), for the loom's pull and the
+board's joints after the drop-outs in the car. What follows is kept as it
+was written; it still holds for an off-the-shelf box and for everything
+but retention.
+
 It bought nothing here. Everything around the board in the vent is plastic, so
 there is no metal to short against; the vent is closed off by a flap, so no
 air, no dust worth the name and no water; and the board is invisible either
