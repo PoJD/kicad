@@ -37,26 +37,31 @@ Reopened by the owner, 19/11/2026.
 | board | 55 × 45 × 1.5, holes 4 mm in on 47 × 37 | `canfuel.kicad_pcb` |
 | inside, over the board | 17 | the owner: about 15 measured, 2 to spare |
 | inside, under the board | 5 | the owner: leads at most 3 |
-| board edge to wall | 0.5 each side | decision, below |
-| wall / floor / roof | 2.4 / 2.0 / 2.0 | decision, below |
-| **outside** | **60.8 × 50.8 × 27.5**, plus the screw heads (about 2–3) | derived |
-| ledge in front of the connectors | 24 long, 7 tall | decision, below |
+| board edge to wall | 0.3 each side | decision, below |
+| wall / floor / roof | 1.6 / 2.0 / 2.0 | decision, below |
+| **outside** | **58.8 × 48.8 × 27.5**, plus the screw heads (about 2–3) | derived |
+| ledge in front of the connectors | 12 long, 7 tall | decision, below |
+
+**Made as narrow as it goes, 19/11** (*owner*: the width across J1/J2's
+edge, 50 mm in the first version, is what the vent limits; length and
+height are fine; the wiring around it is factory loom). The board's 45 mm
+plus 0.3 mm each side and a 1.6 mm wall; the tongue at the seam went to
+make the wall thinner, and the ledge was halved. `wall = 1.2` (three
+perimeters) takes 0.8 mm more if needed, at some stiffness. The owner may
+fit it on a slant, the connector end low in front of the MFD and the far
+end up behind; nothing in the box minds which way up it sits.
 
 ⚠ **The space in the vent was never measured** — the MFD15 is in the
 way (§9.1); the estimate was about 65 × 55 mm, and the Hammond box that
-was 60 × 55 × 30.1 came out at it on two axes. **Check the space before
-printing**: a cardboard box of 61 × 51 × 30 mm is enough, or print the
-bottom alone first (about an hour) and try it in the vent. If it is too
-big, `wall = 2.0` and `gap = 0.3` take 1.2 mm off each side; `above` can
-come down to 15 + something if the tallest part allows.
+was 60 × 55 × 30.1 came out at it on two axes. The owner prints it and tries it in place
+(19/11); the bottom alone (about an hour) is the quick test.
 
 ## How it holds — the parts of the design
 
 ![a section through the two front holes](section.png)
 
 *A section through H1 and H2, seen from the connector side: the screw
-through the lid's post and the board into the bottom's post; the tongue
-of the bottom inside the lid's lower edge, left and right.*
+through the lid's post and the board into the bottom's post.*
 
 - **The board is clamped between two posts at each hole**: the bottom's
   post (⌀ 8) under it, the lid's post (⌀ 6) over it, and one **M3 × 25**
@@ -70,41 +75,47 @@ of the bottom inside the lid's lower edge, left and right.*
 - **The posts have room around them**: over the board the nearest parts
   are R6's courtyard 3.84 mm from H2's centre and J1's 3.82 mm from H3's,
   so the lid's posts are ⌀ 6 (radius 3); under the board there is
-  nothing but leads, so ⌀ 8 for the insert.
-- **The bottom has a tongue that goes 2 mm up inside the lid's lower
-  edge** (1.0 mm thick, 0.2 mm clearance each side). It lines the lid up
-  and closes the seam.
+  nothing but leads, so ⌀ 7, which leaves 0.8 mm to the wall.
+- **The seam is a plain butt joint**: the four screws line the lid up.
+  `tongue = true` puts back a 2 mm tongue of the bottom inside the lid's
+  lower edge (1.0 mm thick, 0.2 mm clearance each side) — it needs
+  `wall = 2.4`, 1.6 mm more width.
 - **One slot for both connectors**, in the lid, **open at its lower
   edge**: the lid goes on over plugs already in place. 1 mm wider than the
   two headers each side and 12 mm tall over the board. The Molex
   43025-0400 receptacle's drawing is not in the repository, so the slot
   is the header (SD-43045-001: 9.65 wide, 7.37 tall) with room for the
   receptacle's latch above it — a decision, not a measurement.
-- **The ledge**: under the plugs, its top 1.5 mm under the board's top
-  surface, with a tunnel across it 17 mm out from the wall for a cable
-  tie up to 3.6 mm wide. The tie goes round the loom just behind the
-  plugs, so a pull on the loom reaches the box. `strain = false` leaves it
-  off.
+- **The ledge**: under the plugs, 12 mm out from the wall, its top
+  1.5 mm under the board's top surface, with a tunnel across it 7 mm out
+  for a cable tie up to 3.6 mm wide. The receptacle's length is not on
+  disk, so the tie goes round the plugs' bodies or just behind them —
+  either way a pull on the loom reaches the box, not J1/J2's joints. As
+  short as a tie allows (*the owner*, 19/11); `strain = false` leaves it
+  off, and it can be sawn off a printed box.
 - **Six ventilation slots** in the roof (1.8 mm). **Not needed for heat**:
   the board draws about 30 mA at 5 V (§9.2), about 0.15 W, which warms a
   box this size by well under a kelvin (*reasoned*). They let the box
   breathe, and dust behind the vent's flap is not a concern (§9.1).
   `vents = false` closes them.
-- **The LEDs are covered**, as the owner asked: for debugging the board
-  comes out. `leds = true` puts a ⌀ 3.2 hole over D1 and D2.
+- **A ⌀ 3.5 hole over each LED**, D1 and D2 (*the owner*, 19/11), so
+  JP1's debug state shows without opening the box. `leds = false` closes
+  them.
 
-## Fixing: heat-set inserts, or the screw straight into plastic
+## Fixing: the screw cuts its own thread
 
-**Default, `fixing = "insert"`: M3 brass heat-set inserts** (M3 × 5.7,
-OD 4.6, for a 4.0 mm hole — e.g. Ruthex RX-M3x5.7 or CNC Kitchen's M3
-standard; check the insert's own sheet for its hole size and change
-`insert_d` if it differs). Pressed into the bottom's posts with a
-soldering iron at about the filament's printing temperature, straight
-down, until flush. A screw can then go in and out as often as needed —
-the board will come out for debugging.
+**`fixing = "tap"`, the owner's choice (19/11)**: a 2.5 mm hole in each
+bottom post, blind, 1 mm of floor left under it, and the screw cuts its
+own thread in the plastic — an M3 × 25 machine screw or a 3.0 × 25 screw
+for plastics. The thread holds about 4 mm. Good for a few dozen
+openings; drive it in gently the first time, and if it is too stiff
+open the hole with a 2.6 mm drill. 2.5 mm is a decision, between the
+two kinds of screw, not a figure from a sheet.
 
-**`fixing = "tap"`**: a 2.6 mm hole and the M3 screw cuts its own thread.
-No inserts, no iron; good for a few dozen openings before it loosens.
+**`fixing = "insert"`** is kept for later: an M3 × 5.7 brass heat-set
+insert (OD 4.6, a 4.0 mm hole — check the insert's own sheet) pressed in
+with the soldering iron, and an M3 screw in and out as often as needed;
+`post_bot_d = 8` with it.
 
 ## Material and printing
 
@@ -126,8 +137,7 @@ No inserts, no iron; good for a few dozen openings before it loosens.
 
 | | qty |
 | --- | --- |
-| M3 × 25 screw, socket head (ISO 4762) or pan head (ISO 7380 / DIN 7985), steel or A2 | 4 |
-| M3 heat-set insert, M3 × 5.7, OD 4.6 (only with `fixing = "insert"`) | 4 |
+| M3 × 25 screw, socket head (ISO 4762) or pan head (ISO 7380 / DIN 7985), or a 3.0 × 25 screw for plastics; steel or A2 | 4 |
 | cable tie, up to 3.6 mm wide | 1 |
 | 3M VHB or equal automotive double-sided tape, for the box's floor | a strip |
 
@@ -137,13 +147,12 @@ floor and the ledge's underside.
 
 ## Assembly
 
-1. Inserts into the bottom's four posts (with the iron), flush; let cool.
-2. Board into the bottom, components up, connectors to the slot side.
-3. Lid on; the slot comes down over J1/J2.
-4. Four M3 × 25 screws, snug — the board is clamped, do not crush it.
-5. Plug in, a tie through the ledge's tunnel round the loom behind the
+1. Board into the bottom, components up, connectors to the slot side.
+2. Lid on; the slot comes down over J1/J2.
+3. Four screws, snug — the board is clamped, do not crush it.
+4. Plug in, a tie through the ledge's tunnel round the loom behind the
    plug, tight.
-6. VHB on the floor and the ledge, into the vent.
+5. VHB on the floor and the ledge, into the vent.
 
 ## Changing it
 
@@ -166,5 +175,5 @@ closed solid.
 - **Whether it fits the vent** (above).
 - **The receptacle's outline** in the slot: the slot is generous; if the
   latch fouls, `slot_h` up.
-- **The fit of tongue and lid** on this printer: 0.2 mm per side is the
-  usual starting point for a Prusa; tight → `fit = 0.3`, loose → 0.15.
+- **Whether the ledge is in the way** in the vent; `strain = false` or a
+  saw.

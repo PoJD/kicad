@@ -37,11 +37,14 @@ above = 17;                   // board top to the inside of the roof
 below = 5;                    // board bottom to the top of the floor
 
 // ---- printing and fit (decisions, docs/enclosure.md) ----------------------
-wall    = 2.4;                // 6 perimeters of a 0.4 mm nozzle
+wall    = 1.6;                // 4 perimeters of a 0.4 mm nozzle; the width
+                              // across J1/J2's edge is what the vent limits
 floor_t = 2.0;
 roof_t  = 2.0;
-gap     = 0.5;                // board edge to the inside of the wall
+gap     = 0.3;                // board edge to the inside of the wall
 box_r   = 3;                  // outside corner radius
+tongue   = false;             // a tongue at the seam wants wall >= 2.4; off
+                              // for width, the four screws line the lid up
 tongue_t = 1.0;               // the bottom's tongue, inner part of the wall
 tongue_h = 2.0;               // how far it rises into the lid
 fit      = 0.2;               // clearance between tongue and lid, per side
@@ -50,14 +53,15 @@ clamp    = 0.2;               // lid posts proud of the seam, so they clamp
 // Fixing: a lid post presses the board onto a bottom post at each hole; one
 // M3 x 25 screw goes down through the lid, the lid post, the board hole and
 // into the bottom post.
-fixing   = "insert";          // "insert": M3 heat-set insert, 4.0 mm hole
+fixing   = "tap";             // "insert": M3 heat-set insert, 4.0 mm hole
                               // "tap":    screw cut straight into the plastic
 insert_d = 4.0;               // hole for an M3 x 5.7 insert (OD 4.6)
 insert_l = 5.7;
-tap_d    = 2.6;
+tap_d    = 2.5;               // M3 machine screw or a 3.0 plastic screw cuts its thread
 screw_d  = 3.4;               // clearance through the lid
 head_d   = 6.0;               // M3 socket or pan head, for the spot face
-post_bot_d = 8.0;             // under the board: nothing there but leads
+post_bot_d = 7.0;             // under the board: nothing there but leads;
+                              // 7 leaves 0.8 to the wall at gap 0.3
 post_top_d = 6.0;             // over the board: R6 and J1 come within 3.8
 
 // The connector slot: one opening for both plugs, open at the lid's lower
@@ -72,9 +76,10 @@ slot_h  = 12;
 // Strain relief: a ledge under the plugs with a tunnel for a cable tie, so a
 // pull on the loom ends at the box, not at J1/J2's solder joints.
 strain    = true;
-ledge_len = 24;               // out from the outside of the front wall
+ledge_len = 12;               // out from the outside of the front wall
 ledge_top = 7.0;              // a little under the plugs (board top 8.5)
-tie_y     = 17;               // tunnel centre, from the outside of the wall
+tie_y     = 7;                // tunnel centre, from the outside of the wall:
+                              // round the plugs' bodies or just behind them
 tie_w     = 4.5;              // for ties up to 3.6 mm wide
 tie_h     = 2.0;
 
@@ -82,7 +87,7 @@ tie_h     = 2.0;
 vents     = true;
 vent_w    = 1.8;
 vent_n    = 6;
-leds      = false;
+leds      = true; 
 led_pos   = [[1.7, 30.5], [1.7, 20.5]];   // D1, D2
 
 // ---- derived --------------------------------------------------------------
@@ -116,7 +121,7 @@ module bottom() {
                     rrect(in_x0, in_y0, in_x1, in_y1, 0.5, z_seam);
             }
             // tongue
-            translate([0, 0, z_seam]) difference() {
+            if (tongue) translate([0, 0, z_seam]) difference() {
                 rrect(in_x0 - tongue_t, in_y0 - tongue_t,
                       in_x1 + tongue_t, in_y1 + tongue_t, 1, tongue_h);
                 translate([0, 0, -1])
@@ -164,7 +169,7 @@ module lid() {
                 translate([0, 0, z_seam - 1])
                     rrect(in_x0, in_y0, in_x1, in_y1, 0.5, above + 1);
                 // the rabbet the tongue goes into
-                translate([0, 0, z_seam - 1])
+                if (tongue) translate([0, 0, z_seam - 1])
                     rrect(in_x0 - tongue_t - fit, in_y0 - tongue_t - fit,
                           in_x1 + tongue_t + fit, in_y1 + tongue_t + fit,
                           1, tongue_h + fit + 1);
@@ -183,7 +188,7 @@ module lid() {
             cube([slot_x1 - slot_x0, wall + 2, slot_h + clamp + 1]);
         if (vents) vent_slots();
         if (leds) for (l = led_pos)
-            translate([l[0], l[1], z_roof_in - 1]) cylinder(d = 3.2, h = roof_t + 2);
+            translate([l[0], l[1], z_roof_in - 1]) cylinder(d = 3.5, h = roof_t + 2);
     }
 }
 
