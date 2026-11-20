@@ -1,7 +1,8 @@
 # A 3D-printed enclosure for the canfuel board
 
-**A proposal, 19/11/2026, at the owner's request** — not yet printed or
-fitted. Two parts, a bottom and a lid, held together by four M3 screws
+**Designed 19/11/2026 at the owner's request; printed 20/11, both parts
+right and the box fitting the vent** (*the owner*; photos in his album).
+The board goes into it on the evening of 20/11. Two parts, a bottom and a lid, held together by four M3 screws
 through the board's own mounting holes. Printed on a Prusa at the owner's
 work. Everything is generated from `enclosure.scad`; the STL files here are
 its output and are what goes into PrusaSlicer.
@@ -51,10 +52,9 @@ perimeters) takes 0.8 mm more if needed, at some stiffness. The owner may
 fit it on a slant, the connector end low in front of the MFD and the far
 end up behind; nothing in the box minds which way up it sits.
 
-⚠ **The space in the vent was never measured** — the MFD15 is in the
-way (§9.1); the estimate was about 65 × 55 mm, and the Hammond box that
-was 60 × 55 × 30.1 came out at it on two axes. The owner prints it and tries it in place
-(19/11); the bottom alone (about an hour) is the quick test.
+**It fits the vent** (*the owner*, 20/11, the printed box tried in
+place). The space was never measured — the MFD15 is in the way (§9.1);
+the estimate was about 65 × 55 mm — so the box itself was the test.
 
 ## How it holds — the parts of the design
 
@@ -228,10 +228,13 @@ openscad -D 'part="section"'  --imgsize=1400,700 --camera=27.5,4,14,90,0,0,95 --
 The STLs here were made by OpenSCAD 2021.01 and both report a single
 closed solid.
 
-## Not known until it is printed
+## What the print showed (20/11/2026)
 
-- **Whether it fits the vent** (above).
-- **The receptacle's outline** in the slot: the slot is generous; if the
-  latch fouls, `slot_h` up.
-- **Whether the ledge is in the way** in the vent; `strain = false` or a
-  saw.
+- **The first print's lid was mirrored** (*What was printed*); the model
+  was corrected and the lid reprinted, right.
+- **Both parts as designed and the box fitting the vent, ledge
+  included** — "all looks OK" (*the owner*; photos in his album).
+- **Still to see, with the board in it** (the evening of 20/11): the
+  screws cutting their thread in the posts, the plugs in the slot, the
+  tie on the ledge. A fault there is changed here: `slot_h`, `tap_d`,
+  `strain`.

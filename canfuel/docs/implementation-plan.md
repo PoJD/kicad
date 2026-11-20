@@ -683,9 +683,10 @@ CI green. ✔
 - **Four M3 holes, ⌀3.2 mm non-plated, 4 mm in from each edge** — H1 (54, 54),
   H2 (101, 54), H3 (54, 91), H4 (101, 91), a 47 × 37 mm pattern. Keep copper
   and parts clear of a 7 mm circle around each.
-- **There is no enclosure** (section 9), so those positions answer to nothing
-  but themselves and are not a respin risk. Whatever the board is eventually
-  mounted on adapts to them.
+- **There was no enclosure when the board was laid out** (section 9), so
+  those positions answer to nothing but themselves and are not a respin
+  risk. Whatever the board is mounted on adapts to them — the printed box
+  of 20/11/2026 (`canfuel/enclosure/`) does, at all four.
 - **The holes live in the PCB only** — there are no `H1`…`H4` symbols on the
   schematic, because a mounting hole carries no net. If you ever run *Update
   PCB from Schematic* in the GUI, leave **Delete footprints with no symbols**
@@ -1286,8 +1287,8 @@ layout once, and there is no longer going to be one.
 
 ### 9.1 The enclosure was dropped, and why
 
-**Reopened by the owner, 19/11/2026**: a printed two-part box is proposed
-in `canfuel/enclosure/` (its `README.md`), for the loom's pull and the
+**Reopened by the owner, 19/11/2026**: a printed two-part box, printed
+20/11 and fitting the vent, in `canfuel/enclosure/` (its `README.md`), for the loom's pull and the
 board's joints after the drop-outs in the car. What follows is kept as it
 was written; it still holds for an off-the-shelf box and for everything
 but retention.

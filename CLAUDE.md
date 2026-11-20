@@ -408,7 +408,7 @@ was verified with a multimeter, and the CAN pinout (C7/C8) is confirmed.
 harness, and it is settled: the connector exists and is already fitted, so the
 loom is a re-crimp onto longer wires, not a new choice. Everything else was
 closed before that: **the escape header came off again** (measured, see below), the
-enclosure was dropped (a printed one proposed 19/11, below), and C6 turned out to be a 105 °C part with life to spare (plan §7).
+enclosure was dropped (a printed one made 19–20/11, below), and C6 turned out to be a 105 °C part with life to spare (plan §7).
 
 ### Ideas for a board that does not exist — `canfuel/docs/revision-b.md`
 
@@ -454,7 +454,7 @@ has the full account.
 
 ### The enclosure was dropped — and reopened by the owner, 19/11/2026
 
-**A printed two-part box is now proposed**, `canfuel/enclosure/` (its
+**A printed two-part box, printed 20/11 and fitting the vent**, `canfuel/enclosure/` (its
 `README.md` has the design and why): the converter's drop-outs in the car
 (`canfuel/docs/firmware/open.md` 12 in the sibling repo) made the loom's
 pull on J1/J2 and knocks to the board matter, which a box with a cable-tie
@@ -588,7 +588,8 @@ intentional, not an oversight.
   and the `.gbrjob` still declaring the old number. Four M3 holes
   4 mm in from the edges, on a 47 × 37 mm pattern. Space available in the vent
   is roughly 6.5 × 5.5 cm; the depth was never measurable because the MFD15 is
-  in the way, which is part of why there is no enclosure.
+  in the way, which is part of why there was no enclosure until the printed one
+(`canfuel/enclosure/`, 20/11/2026), which fits.
 
 ---
 
