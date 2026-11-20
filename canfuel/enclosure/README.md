@@ -187,6 +187,21 @@ regenerated and checked by turning it back over. The bottom was never
 transformed and is right. The `.bgcode` stays as the record of the first
 print; it is not to be printed again.
 
+**`prusa_canfuel_lid_0.4n_0.2mm_PETG_MK4S_53m.bgcode` is the lid alone,
+corrected** (20/11), for reprinting it: about 15 g and 53 min. Sliced
+from a session's container with PrusaSlicer **2.7.2** (the newest it
+could install; 2.9 is on GitHub, out of reach there) and the owner's own
+settings, `prusaslicer-mk4s-hf04-petg.ini` — the configuration block
+taken out of his 2.9.7 `.bgcode`: Original Prusa MK4S HF0.4, 0.20 mm
+STRUCTURAL, Prusament PETG. 2.7.2 cannot parse two variables of 2.9's
+start G-code, `filament_abrasive[0]` and `nozzle_high_flow[0]`; they
+were replaced by their values in that configuration, `false` and
+`true`, and the expanded start reads `M862.1 P0.4 A0 F1` (nozzle 0.4,
+not abrasive, high flow) and `M862.3 P "MK4S"`, the checks the
+printer makes before it starts. **An older slicer's toolpaths**: look at
+it in PrusaSlicer's G-code viewer before printing; slicing `lid.stl`
+in 2.9 with the same settings is the equal alternative.
+
 ## Changing it
 
 `enclosure.scad` is parametric — every number above is a named variable at
