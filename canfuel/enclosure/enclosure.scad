@@ -84,7 +84,7 @@ tie_w     = 4.5;              // for ties up to 3.6 mm wide
 tie_h     = 2.0;
 
 // Ventilation slots in the roof, and optional windows over the LEDs.
-vents     = true;
+vents     = false;            // off at the owner's word, 20/11: dust, and no heat to move
 vent_w    = 1.8;
 vent_n    = 6;
 vent_y0   = 6;                // first and last slot centre: the slots keep
@@ -95,8 +95,8 @@ vent_y1   = 31;               // to the connector half, the name gets the rest
 label       = "canfuel";
 label_font  = "Liberation Sans:style=Bold";
 label_depth = 0.6;            // three 0.2 mm layers
-label_size  = 7;              // the roof's; under 5 a first layer closes it
-label_y     = 39;             // centre, between H3 and H4's spot faces
+label_size  = vents ? 7 : 9;  // the roof's; under 5 a first layer closes it
+label_y     = vents ? 39 : pcb_y / 2;   // over the slots, or the roof's middle
 ledge_label_size = 4.5;
 leds      = true; 
 led_pos   = [[1.7, 30.5], [1.7, 20.5]];   // D1, D2

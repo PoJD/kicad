@@ -93,7 +93,8 @@ through the lid's post and the board into the bottom's post.*
   either way a pull on the loom reaches the box, not J1/J2's joints. As
   short as a tie allows (*the owner*, 19/11); `strain = false` leaves it
   off, and it can be sawn off a printed box.
-- **Six ventilation slots** in the roof (1.8 mm). **Not needed for heat**:
+- **No ventilation slots** (*the owner*, 20/11: dust gets in, and there is
+  no heat to move). `vents = true` puts back six 1.8 mm slots in the roof. **Not needed for heat**:
   the board draws about 30 mA at 5 V (§9.2), about 0.15 W. Through the
   closed box's outside, about 0.012 m², at the 5–10 W/m²K of still air
   (*general*), that is 1.5–2.5 K above the air around it (*reasoned*;
@@ -103,11 +104,11 @@ through the lid's post and the board into the bottom's post.*
   breathe, and dust behind the vent's flap is not a concern (§9.1).
   `vents = false` closes them.
 - **The name, `canfuel`, engraved 0.6 mm** (three layers) on the roof
-  behind the slots, 7 mm tall, and 4.5 mm tall on the ledge's front face
+  9 mm tall, and 4.5 mm tall on the ledge's front face
   (*the owner*, 19/11). One colour: it shows by its shadow. The roof's
   is printed in the lid's first layers, on the sheet, where a letter
-  under about 5 mm would close up — hence 7. The slots moved towards
-  the connector edge to make room. `label = ""` leaves both off.
+  under about 5 mm would close up. 9 mm in the middle of the roof; with
+  the slots on, 7 mm behind them. `label = ""` leaves both off.
 - **A ⌀ 3.5 hole over each LED**, D1 and D2 (*the owner*, 19/11), so
   JP1's debug state shows without opening the box. `leds = false` closes
   them.
