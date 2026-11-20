@@ -205,11 +205,12 @@ sliced by the owner in PrusaSlicer 2.9.7 by hand (20/11) and printed. It
 replaced a file a session had sliced in its container with PrusaSlicer
 2.7.2 (the newest it could install) and the configuration taken out of
 the first `.bgcode`, two 2.9 start-G-code variables replaced by their
-values: **the printer stopped at its calibration on that file** — the
-cause not known, the file not kept (`git show a029693` has it). **A
-session does not slice for this printer again** (*the owner*, 20/11):
-the owner slices by hand, and a session's part ends at `bottom.stl` and
-`lid.stl`.
+values. The printer stopped at its calibration on that file, and the
+owner re-sliced by hand to be safe; **the file was not the cause** — the
+printer also stuck on a calibration started from its own menu, and ran
+again once cleaned (*the owner*, 20/11). The file is not kept (`git show
+a029693` has it). **Slicing stays the owner's, by hand, his choice**
+(20/11): a session's part ends at `bottom.stl` and `lid.stl`.
 
 ## Changing it
 

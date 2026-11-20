@@ -461,9 +461,8 @@ pull on J1/J2 and knocks to the board matter, which a box with a cable-tie
 ledge takes off them. The reasons below still hold and are kept as they
 were; the box is printed, so none of the off-the-shelf objections apply.
 `enclosure.scad` is the source; its STLs are output, regenerated with it.
-**A session never slices for the printer** (*the owner*, 20/11/2026: the
-printer stopped at calibration on a file sliced here with an older
-PrusaSlicer); its part ends at the STLs, and the owner slices by hand.
+**A session never slices for the printer** (*the owner's choice*,
+20/11/2026); its part ends at the STLs, and the owner slices by hand.
 
 
 Everything around the board in the vent is plastic, so there is nothing to
