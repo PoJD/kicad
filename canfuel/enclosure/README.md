@@ -2,7 +2,8 @@
 
 **Designed 19/11/2026 at the owner's request; printed 20/11, both parts
 right and the box fitting the vent** (*the owner*; photos in his album).
-The board goes into it on the evening of 20/11. Two parts, a bottom and a lid, held together by four M3 screws
+**In the car since the evening of 20/11**, with the second board in it,
+the plugs held by the tie. Two parts, a bottom and a lid, held together by four M3 screws
 through the board's own mounting holes. Printed on a Prusa at the owner's
 work. Everything is generated from `enclosure.scad`; the STL files here are
 its output and are what goes into PrusaSlicer.
@@ -234,7 +235,6 @@ closed solid.
   was corrected and the lid reprinted, right.
 - **Both parts as designed and the box fitting the vent, ledge
   included** — "all looks OK" (*the owner*; photos in his album).
-- **Still to see, with the board in it** (the evening of 20/11): the
-  screws cutting their thread in the posts, the plugs in the slot, the
-  tie on the ledge. A fault there is changed here: `slot_h`, `tap_d`,
-  `strain`.
+- **With the board in it, the evening of 20/11**: assembled, closed and
+  fitted in the vent; **the plugs hold well on the tie** (*the owner*;
+  photos in his album). Nothing in the model changed for it.
