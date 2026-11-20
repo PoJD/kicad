@@ -98,6 +98,12 @@ through the lid's post and the board into the bottom's post.*
   box this size by well under a kelvin (*reasoned*). They let the box
   breathe, and dust behind the vent's flap is not a concern (§9.1).
   `vents = false` closes them.
+- **The name, `canfuel`, engraved 0.6 mm** (three layers) on the roof
+  behind the slots, 7 mm tall, and 4.5 mm tall on the ledge's front face
+  (*the owner*, 19/11). One colour: it shows by its shadow. The roof's
+  is printed in the lid's first layers, on the sheet, where a letter
+  under about 5 mm would close up — hence 7. The slots moved towards
+  the connector edge to make room. `label = ""` leaves both off.
 - **A ⌀ 3.5 hole over each LED**, D1 and D2 (*the owner*, 19/11), so
   JP1's debug state shows without opening the box. `leds = false` closes
   them.

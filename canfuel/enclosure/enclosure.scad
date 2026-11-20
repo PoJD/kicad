@@ -87,6 +87,17 @@ tie_h     = 2.0;
 vents     = true;
 vent_w    = 1.8;
 vent_n    = 6;
+vent_y0   = 6;                // first and last slot centre: the slots keep
+vent_y1   = 31;               // to the connector half, the name gets the rest
+
+// The name, engraved: on the roof over the slots, and on the ledge's front
+// face. One colour; it shows by its shadow (the owner, 19/11/2026).
+label       = "canfuel";
+label_font  = "Liberation Sans:style=Bold";
+label_depth = 0.6;            // three 0.2 mm layers
+label_size  = 7;              // the roof's; under 5 a first layer closes it
+label_y     = 39;             // centre, between H3 and H4's spot faces
+ledge_label_size = 4.5;
 leds      = true; 
 led_pos   = [[1.7, 30.5], [1.7, 20.5]];   // D1, D2
 
@@ -152,6 +163,13 @@ module ledge() {
     difference() {
         translate([lx0, out_y0 - ledge_len, 0])
             cube([lx1 - lx0, ledge_len + wall / 2, ledge_top]);
+        // the name on the front face, read from in front
+        if (label != "")
+            translate([(lx0 + lx1) / 2, out_y0 - ledge_len - 1, ledge_top / 2])
+                rotate([90, 0, 0]) mirror([0, 0, 1])
+                    linear_extrude(label_depth + 1)
+                        text(label, size = ledge_label_size, font = label_font,
+                             halign = "center", valign = "center");
         // tunnel for the tie, along x
         translate([lx0 - 1, out_y0 - tie_y - tie_w/2, ledge_top - 1.2 - tie_h])
             cube([lx1 - lx0 + 2, tie_w, tie_h]);
@@ -187,6 +205,11 @@ module lid() {
         translate([slot_x0, out_y0 - 1, z_seam - clamp - 1])
             cube([slot_x1 - slot_x0, wall + 2, slot_h + clamp + 1]);
         if (vents) vent_slots();
+        if (label != "")
+            translate([pcb_x / 2, label_y, z_top - label_depth])
+                linear_extrude(label_depth + 1)
+                    text(label, size = label_size, font = label_font,
+                         halign = "center", valign = "center");
         if (leds) for (l = led_pos)
             translate([l[0], l[1], z_roof_in - 1]) cylinder(d = 3.5, h = roof_t + 2);
     }
@@ -195,9 +218,9 @@ module lid() {
 module vent_slots() {
     // across the middle of the roof, clear of the four posts
     x0 = 10;  x1 = pcb_x - 10;
-    pitch = (pcb_y - 14) / (vent_n - 1);
+    pitch = (vent_y1 - vent_y0) / (vent_n - 1);
     for (i = [0 : vent_n - 1])
-        translate([x0, 7 + i * pitch - vent_w / 2, z_roof_in - 1])
+        translate([x0, vent_y0 + i * pitch - vent_w / 2, z_roof_in - 1])
             hull() {
                 translate([vent_w/2, vent_w/2, 0]) cylinder(d = vent_w, h = roof_t + 2);
                 translate([x1 - x0 - vent_w/2, vent_w/2, 0]) cylinder(d = vent_w, h = roof_t + 2);
