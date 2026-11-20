@@ -170,6 +170,15 @@ floor and the ledge's underside.
    plug, tight.
 5. VHB on the floor and the ledge, into the vent.
 
+## What was printed
+
+`prusa_canfuel_0.4n_0.2mm_PETG_MK4S_1h25m.bgcode` is the file the owner
+sliced and printed on 20/11/2026, both parts on one sheet: by its own
+header an MK4S with the 0.4 high-flow nozzle, PETG, 0.2 mm layers, 20 %
+infill, 25.6 g and 1 h 25 min. Kept, as `fab/` is, so what was printed
+can be found again; it is output, sliced from the STLs here, and is
+re-sliced whenever they change.
+
 ## Changing it
 
 `enclosure.scad` is parametric — every number above is a named variable at
