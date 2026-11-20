@@ -94,8 +94,12 @@ through the lid's post and the board into the bottom's post.*
   short as a tie allows (*the owner*, 19/11); `strain = false` leaves it
   off, and it can be sawn off a printed box.
 - **Six ventilation slots** in the roof (1.8 mm). **Not needed for heat**:
-  the board draws about 30 mA at 5 V (§9.2), about 0.15 W, which warms a
-  box this size by well under a kelvin (*reasoned*). They let the box
+  the board draws about 30 mA at 5 V (§9.2), about 0.15 W. Through the
+  closed box's outside, about 0.012 m², at the 5–10 W/m²K of still air
+  (*general*), that is 1.5–2.5 K above the air around it (*reasoned*;
+  "well under a kelvin" until 20/11, a figure never worked out) — small
+  against a 50–60 °C dashboard, and slots in still air behind a closed
+  flap move little of it. They let the box
   breathe, and dust behind the vent's flap is not a concern (§9.1).
   `vents = false` closes them.
 - **The name, `canfuel`, engraved 0.6 mm** (three layers) on the roof
