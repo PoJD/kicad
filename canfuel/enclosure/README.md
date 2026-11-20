@@ -179,6 +179,14 @@ infill, 25.6 g and 1 h 25 min. Kept, as `fab/` is, so what was printed
 can be found again; it is output, sliced from the STLs here, and is
 re-sliced whenever they change.
 
+⚠ **Its lid is mirrored** (*the owner*, 20/11: the name reads backwards
+and the connector slot is at the wrong end). `enclosure.scad` turned the
+lid roof-down with `mirror([0, 0, 1])`, which turns it inside out as well
+as over; it now does it with `rotate([180, 0, 0])`, and `lid.stl` was
+regenerated and checked by turning it back over. The bottom was never
+transformed and is right. The `.bgcode` stays as the record of the first
+print; it is not to be printed again.
+
 ## Changing it
 
 `enclosure.scad` is parametric — every number above is a named variable at

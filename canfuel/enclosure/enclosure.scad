@@ -245,7 +245,7 @@ module plugs() {
 }
 
 if (part == "bottom") bottom();
-else if (part == "lid") translate([0, 0, z_top]) mirror([0, 0, 1]) lid();   // print roof down
+else if (part == "lid") translate([0, pcb_y, z_top]) rotate([180, 0, 0]) lid();   // print roof down: turned over, never mirrored
 else if (part == "section") difference() {
     union() { color("orange") bottom(); color("skyblue") lid(); board(); }
     translate([-50, -100 + holes[0][1], -1]) cube([200, 100, 100]);
