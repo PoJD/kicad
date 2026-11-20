@@ -122,8 +122,13 @@ with the soldering iron, and an M3 screw in and out as often as needed;
 - **PETG, not PLA.** A dashboard reaches 50–60 °C in summer (§9.1), and PLA
   softens around there; PETG holds well above it. ASA holds higher still
   but wants a printer with an enclosure (the Core One, not an open MK4).
-  The heat-deflection figures were not checked against Prusament's own
-  sheets — read them if it matters.
+  **Prusament PETG: HDT 68 °C** at 0.45 and at 1.80 MPa, ISO 75
+  (Prusament PETG technical data sheet v1.1, 2/2022, read from a
+  reseller's copy; no glass transition given). That is above the
+  dashboard's 50–60 °C but not by much in a car parked in the sun, and a
+  printed part under a screw's clamp creeps first: **watch the first
+  summer**, and if the box or its posts sag, reprint in ASA. A "Generic
+  PETG" spool has no sheet here; its figure is not known.
 - **Orientation**: the bottom on its floor; the lid **roof down** (the
   `lid.stl` is already turned that way). **No supports** either way: the
   slot is open at the top as printed, and the tie tunnel is a 4.5 mm
