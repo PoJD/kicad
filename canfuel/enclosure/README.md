@@ -144,10 +144,23 @@ with the soldering iron, and an M3 screw in and out as often as needed;
   `lid.stl` is already turned that way). **No supports** either way: the
   slot is open at the top as printed, and the tie tunnel is a 4.5 mm
   bridge.
-- PrusaSlicer: the printer's own *0.20 mm QUALITY* profile and the
-  filament's own profile; **4 perimeters**, 20–25 % infill. Nothing else
-  changed.
-- Time: roughly 1 h the bottom, 1½ h the lid (PrusaSlicer says exactly).
+- **Slicing is the owner's, by hand, in PrusaSlicer** (20/11/2026): a
+  session does not slice (*What was printed*, below). As printed:
+  1. PrusaSlicer, with the printer added once through *Configuration →
+     Configuration Wizard* (an unconfigured PrusaSlicer shows only
+     *- default -* and *- default FFF -*, which are not for a Prusa).
+  2. Printer **Original Prusa MK4S HF0.4 nozzle** — the printer at the
+     owner's work has the high-flow 0.4; a plain 0.4 takes the profile
+     without HF. Print settings **0.20mm STRUCTURAL**. Filament
+     **Prusament PETG** (whatever the printer has loaded must match).
+     Supports **None**, infill **20 %**.
+  3. `bottom.stl` and/or `lid.stl` dragged in as they are (both already
+     the right way up), *A* to arrange, *Slice*, *Export G-code* to a USB
+     stick, print from the printer's menu. Look at the first layer.
+  4. PETG on a smooth sheet sticks hard: the sheet the printer's own
+     guide gives for PETG.
+- Time and material: both parts about 1 h 25 min and 26 g, the lid alone
+  about 53 min (PrusaSlicer 2.9.7's estimates, 20/11).
 
 ## Parts
 
@@ -187,20 +200,16 @@ regenerated and checked by turning it back over. The bottom was never
 transformed and is right. The `.bgcode` stays as the record of the first
 print; it is not to be printed again.
 
-**`prusa_canfuel_lid_0.4n_0.2mm_PETG_MK4S_53m.bgcode` is the lid alone,
-corrected** (20/11), for reprinting it: about 15 g and 53 min. Sliced
-from a session's container with PrusaSlicer **2.7.2** (the newest it
-could install; 2.9 is on GitHub, out of reach there) and the owner's own
-settings, `prusaslicer-mk4s-hf04-petg.ini` — the configuration block
-taken out of his 2.9.7 `.bgcode`: Original Prusa MK4S HF0.4, 0.20 mm
-STRUCTURAL, Prusament PETG. 2.7.2 cannot parse two variables of 2.9's
-start G-code, `filament_abrasive[0]` and `nozzle_high_flow[0]`; they
-were replaced by their values in that configuration, `false` and
-`true`, and the expanded start reads `M862.1 P0.4 A0 F1` (nozzle 0.4,
-not abrasive, high flow) and `M862.3 P "MK4S"`, the checks the
-printer makes before it starts. **An older slicer's toolpaths**: look at
-it in PrusaSlicer's G-code viewer before printing; slicing `lid.stl`
-in 2.9 with the same settings is the equal alternative.
+**`lid_0.4n_0.2mm_PETG_MK4S_53m.bgcode` is the corrected lid alone**,
+sliced by the owner in PrusaSlicer 2.9.7 by hand (20/11) and printed. It
+replaced a file a session had sliced in its container with PrusaSlicer
+2.7.2 (the newest it could install) and the configuration taken out of
+the first `.bgcode`, two 2.9 start-G-code variables replaced by their
+values: **the printer stopped at its calibration on that file** — the
+cause not known, the file not kept (`git show a029693` has it). **A
+session does not slice for this printer again** (*the owner*, 20/11):
+the owner slices by hand, and a session's part ends at `bottom.stl` and
+`lid.stl`.
 
 ## Changing it
 

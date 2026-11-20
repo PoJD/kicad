@@ -23,7 +23,8 @@ The harness is built, fitted and measured —
 [`canfuel/docs/harness.md`](canfuel/docs/harness.md) is the procedure. **The
 whole build path, across all three repositories, is
 [`canfuel/docs/firmware/install.md`](https://github.com/PoJD/canfuel/blob/main/docs/firmware/install.md);**
-the steps this repository owns are the board and the loom.
+the steps this repository owns are the board, the loom and, optionally,
+the printed enclosure ([`canfuel/enclosure/`](canfuel/enclosure/)).
 
 ## Prerequisites
 
@@ -55,6 +56,7 @@ lib/                symbols and footprints shared across projects
   *.kicad_sch       schematic
   *.kicad_pcb       board
   fab/              gerbers, BOM, CPL — committed
+  enclosure/        optional 3D-printed box: OpenSCAD source, STLs, how to print
   docs/             design documents, datasheets, and how to build the harness
 ```
 
