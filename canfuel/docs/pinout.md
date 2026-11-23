@@ -108,8 +108,8 @@ closes it; `harness.md` A4a has the check and why it matters.
 
 - `harness.md` — building the loom: `harness-cables.svg` for the two cables,
   step A4a for fitting these crimps
-- `car-wiring.md` — the car's 12 V 4-pin at the top of cable 1, and which
-  colour is tapped where in the car
+- `harness.md`, *The car's 4-pin* — the 12 V 4-pin at the top of cable 1, and
+  which colour is tapped where in the car
 - `harness-connector.svg` — the plug and the board pads side by side
 - `harness-nets-on-pcb.svg` — the same four nets on the real copper
 - `implementation-plan.md` 3.4 — why the pin order is what it is

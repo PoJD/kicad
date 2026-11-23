@@ -41,10 +41,30 @@ described and then confirmed by the owner against the built loom
 > for building one, and everything learnt while building ours has been folded
 > back into the steps rather than recorded as ticks.
 
-**The car-side 4-pin is not a new choice.** It exists and is already fitted;
-cable 1 is a re-crimp onto longer wires. `car-wiring.md` records what each of
-its wires is and where it is tapped in the car — its circuit order is **not**
-the converter plug's, so read it before assuming.
+## The car's 4-pin — the top of cable 1
+
+**Not a new choice.** It exists and is already fitted; cable 1 is a re-crimp
+onto longer wires. The loom half of it is the lead supplied with the display —
+the CANchecked cable (<https://www.canchecked.de/mfd15-gen2-52mm-can-bus-anzeige/>).
+
+| Circuit | Signal       | Car-side wire | Tapped onto, in the car | Cable 1 wire | Goes to |
+| ------- | ------------ | ------------- | ----------------------- | ------------ | ------- |
+| 1       | ground       | brown         | —                       | black        | plug B6 |
+| 2       | power (12 V) | black         | black/violet wire, pin 1 of the cluster's **blue** connector | red | plug B5 |
+| 3       | CAN H        | grey          | orange/black wire, pin 19 of the cluster's **green** connector | white | converter plug 3 |
+| 4       | CAN L        | yellow/green  | orange wire, pin 20 of the cluster's **green** connector | yellow | converter plug 4 |
+
+**A record of the car, not of a part** — written down on the vehicle while the
+wires were in hand, which is how the sourcing rule in the top-level `CLAUDE.md`
+settles facts about the car. Nothing in the board design depends on it. It is
+kept because none of it is legible from the wire once the dashboard is back
+together. The cavity layout of the 4-pin was never recorded, so nothing here
+or in `harness-cables.svg` draws one.
+
+⚠ **Two things about this connector mislead.** Its circuit order is **not**
+the converter plug's — here 1 is ground and 2 is power, on the converter plug
+1 is +5V and 2 is SGND; do not carry one layout over to the other. And **black
+is +12 V on the car side and ground on the loom side.**
 
 **What you need:** crimping pliers, pin extractors, multimeter, spare ACI pins,
 spare Micro-Fit 43030 sockets, butt splices with adhesive-lined heat shrink,
