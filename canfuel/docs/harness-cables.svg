@@ -1,0 +1,250 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1240" height="1310" viewBox="0 0 1240 1310" font-family="DejaVu Sans, Segoe UI, Arial, sans-serif">
+<rect x="0" y="0" width="1240" height="1310" rx="0" fill="#ffffff" stroke="none" stroke-width="0"/>
+<text x="40" y="46" fill="#15181d" font-size="21" font-weight="700">canfuel harness — two cables, five connectors</text>
+<text x="40" y="70" fill="#7b8794" font-size="12.5">Cable 1 splits the car's 4-pin between the display and the converter; cable 2 joins the display's plug C to the converter. The board's J1 and J2 join the two.</text>
+<text x="40" y="88" fill="#7b8794" font-size="12.5">Every connector is drawn from the rear / cable side, as in pinout.md — pin the wires exactly as drawn, do not mirror or rotate. Wires are drawn schematically, not to length.</text>
+<line x1="40" y1="102" x2="1200" y2="102" stroke="#c7ced6"/>
+<text x="660" y="128" fill="#15181d" font-size="15" font-weight="700" text-anchor="middle">Car 4-pin (12 V) — already fitted</text>
+<text x="660" y="145" fill="#7b8794" font-size="11.5" text-anchor="middle">car-wiring.md. Circuit numbers only — its cavity layout was never recorded.</text>
+<path d="M517.5 164 L517.5 190" fill="none" stroke="#8b5a2b" stroke-width="5" stroke-linejoin="round"/>
+<text x="523.5" y="176" fill="#7b8794" font-size="10.5">brown</text>
+<rect x="474" y="190" width="87" height="54" rx="6" fill="#f2f4f7" stroke="#c7ced6" stroke-width="1"/>
+<text x="482" y="210" fill="#15181d" font-size="13" font-weight="700">1</text>
+<text x="553" y="210" fill="#15181d" font-size="11.5" font-weight="700" text-anchor="end">GND</text>
+<path d="M612.5 164 L612.5 190" fill="none" stroke="#22262c" stroke-width="5" stroke-linejoin="round"/>
+<text x="618.5" y="176" fill="#7b8794" font-size="10.5">black</text>
+<rect x="569" y="190" width="87" height="54" rx="6" fill="#f2f4f7" stroke="#c7ced6" stroke-width="1"/>
+<text x="577" y="210" fill="#15181d" font-size="13" font-weight="700">2</text>
+<text x="648" y="210" fill="#15181d" font-size="11.5" font-weight="700" text-anchor="end">+12 V</text>
+<path d="M707.5 164 L707.5 190" fill="none" stroke="#9aa0a6" stroke-width="5" stroke-linejoin="round"/>
+<text x="713.5" y="176" fill="#7b8794" font-size="10.5">grey</text>
+<rect x="664" y="190" width="87" height="54" rx="6" fill="#f2f4f7" stroke="#c7ced6" stroke-width="1"/>
+<text x="672" y="210" fill="#15181d" font-size="13" font-weight="700">3</text>
+<text x="743" y="210" fill="#15181d" font-size="11.5" font-weight="700" text-anchor="end">CAN H</text>
+<path d="M802.5 164 L802.5 190" fill="none" stroke="#e3bd1f" stroke-width="5" stroke-linejoin="round"/>
+<path d="M802.5 164 L802.5 190" fill="none" stroke="#3c9a4a" stroke-width="5" stroke-dasharray="6 6"/>
+<text x="808.5" y="176" fill="#7b8794" font-size="10.5">yellow/green</text>
+<rect x="759" y="190" width="87" height="54" rx="6" fill="#f2f4f7" stroke="#c7ced6" stroke-width="1"/>
+<text x="767" y="210" fill="#15181d" font-size="13" font-weight="700">4</text>
+<text x="838" y="210" fill="#15181d" font-size="11.5" font-weight="700" text-anchor="end">CAN L</text>
+<rect x="464" y="184" width="392" height="66" rx="9" fill="none" stroke="#7b8794" stroke-width="1.6"/>
+<text x="452" y="176" fill="#7b8794" font-size="11" text-anchor="end">car side ↑</text>
+<text x="452" y="192" fill="#7b8794" font-size="10.5" text-anchor="end">(not part of the loom)</text>
+<text x="452" y="246" fill="#7b8794" font-size="11" text-anchor="end">loom side ↓</text>
+<text x="868" y="214" fill="#b3261e" font-size="11" font-weight="700">⚠ black is +12 V on the car side</text>
+<text x="868" y="230" fill="#b3261e" font-size="11">and ground on the loom side.</text>
+<rect x="40" y="330" width="598" height="430" rx="12" fill="none" stroke="#c7ced6" stroke-width="1.4" stroke-dasharray="7 5"/>
+<text x="624" y="352" fill="#7b8794" font-size="13" font-weight="700" text-anchor="end">MFD15 — rear of the display</text>
+<rect x="71" y="401" width="348" height="122" rx="9" fill="none" stroke="#7b8794" stroke-width="1.6"/>
+<rect x="216" y="388" width="58" height="13" rx="3" fill="#e9edf1" stroke="#7b8794" stroke-width="1.4"/>
+<text x="245" y="384" fill="#7b8794" font-size="10.5" text-anchor="middle">latch</text>
+<text x="436" y="428" fill="#15181d" font-size="15" font-weight="700">Plug B</text>
+<text x="436" y="446" fill="#7b8794" font-size="11.5">Molex 43025-0600</text>
+<text x="436" y="462" fill="#7b8794" font-size="11.5">the display's own 12 V.</text>
+<text x="436" y="478" fill="#7b8794" font-size="11.5">Nothing here feeds</text>
+<text x="436" y="494" fill="#7b8794" font-size="11.5">the converter.</text>
+<rect x="83" y="413" width="104" height="46" rx="6" fill="#22262c" stroke="#22262c" stroke-width="1.4"/>
+<text x="91" y="432" fill="#ffffff" font-size="13" font-weight="700">B6</text>
+<text x="179" y="432" fill="#ffffff" font-size="11.5" font-weight="700" text-anchor="end">GND</text>
+<text x="91" y="450" fill="#ffffff" font-size="10.5">black wire</text>
+<rect x="193" y="413" width="104" height="46" rx="6" fill="#d43a3a" stroke="#d43a3a" stroke-width="1.4"/>
+<text x="201" y="432" fill="#ffffff" font-size="13" font-weight="700">B5</text>
+<text x="289" y="432" fill="#ffffff" font-size="11.5" font-weight="700" text-anchor="end">12 V</text>
+<text x="201" y="450" fill="#ffffff" font-size="10.5">red wire</text>
+<rect x="303" y="413" width="104" height="46" rx="6" fill="#f2f4f7" stroke="#c7ced6" stroke-width="1"/>
+<text x="311" y="432" fill="#7b8794" font-size="13" font-weight="700">B4</text>
+<text x="399" y="432" fill="#7b8794" font-size="11.5" font-weight="700" text-anchor="end">USB GND</text>
+<rect x="83" y="465" width="104" height="46" rx="6" fill="#f2f4f7" stroke="#c7ced6" stroke-width="1"/>
+<text x="91" y="484" fill="#7b8794" font-size="13" font-weight="700">B3</text>
+<text x="179" y="484" fill="#7b8794" font-size="11.5" font-weight="700" text-anchor="end">USB 5V</text>
+<rect x="193" y="465" width="104" height="46" rx="6" fill="#f2f4f7" stroke="#c7ced6" stroke-width="1"/>
+<text x="201" y="484" fill="#7b8794" font-size="13" font-weight="700">B2</text>
+<text x="289" y="484" fill="#7b8794" font-size="11.5" font-weight="700" text-anchor="end">USB D_P</text>
+<rect x="303" y="465" width="104" height="46" rx="6" fill="#f2f4f7" stroke="#c7ced6" stroke-width="1"/>
+<text x="311" y="484" fill="#7b8794" font-size="13" font-weight="700">B1</text>
+<text x="399" y="484" fill="#7b8794" font-size="11.5" font-weight="700" text-anchor="end">USB D_N</text>
+<rect x="63" y="591" width="546" height="122" rx="9" fill="none" stroke="#7b8794" stroke-width="1.6"/>
+<rect x="307" y="713" width="58" height="13" rx="3" fill="#e9edf1" stroke="#7b8794" stroke-width="1.4"/>
+<text x="336" y="738" fill="#7b8794" font-size="10.5" text-anchor="middle">latch</text>
+<text x="72" y="554" fill="#15181d" font-size="15" font-weight="700">Plug C</text>
+<text x="134" y="554" fill="#7b8794" font-size="11.5">Molex 43025-1200 — upside down on the display, so pin 1 top left</text>
+<rect x="75" y="603" width="82" height="46" rx="6" fill="#f2f4f7" stroke="#c7ced6" stroke-width="1"/>
+<text x="83" y="622" fill="#7b8794" font-size="13" font-weight="700">C1</text>
+<text x="149" y="622" fill="#7b8794" font-size="11.5" font-weight="700" text-anchor="end">MPP 1</text>
+<rect x="163" y="603" width="82" height="46" rx="6" fill="#f2f4f7" stroke="#c7ced6" stroke-width="1"/>
+<text x="171" y="622" fill="#7b8794" font-size="13" font-weight="700">C2</text>
+<text x="237" y="622" fill="#7b8794" font-size="11.5" font-weight="700" text-anchor="end">AIN1</text>
+<rect x="251" y="603" width="82" height="46" rx="6" fill="#f2f4f7" stroke="#c7ced6" stroke-width="1"/>
+<text x="259" y="622" fill="#7b8794" font-size="13" font-weight="700">C3</text>
+<text x="325" y="622" fill="#7b8794" font-size="11.5" font-weight="700" text-anchor="end">AIN2</text>
+<rect x="339" y="603" width="82" height="46" rx="6" fill="#f2f4f7" stroke="#c7ced6" stroke-width="1"/>
+<text x="347" y="622" fill="#7b8794" font-size="13" font-weight="700">C4</text>
+<text x="413" y="622" fill="#7b8794" font-size="11.5" font-weight="700" text-anchor="end">AIN3</text>
+<rect x="427" y="603" width="82" height="46" rx="6" fill="#f2f4f7" stroke="#c7ced6" stroke-width="1"/>
+<text x="435" y="622" fill="#7b8794" font-size="13" font-weight="700">C5</text>
+<text x="501" y="622" fill="#7b8794" font-size="11.5" font-weight="700" text-anchor="end">AIN4</text>
+<rect x="515" y="603" width="82" height="46" rx="6" fill="#d43a3a" stroke="#d43a3a" stroke-width="1.4"/>
+<text x="523" y="622" fill="#ffffff" font-size="13" font-weight="700">C6</text>
+<text x="589" y="622" fill="#ffffff" font-size="11.5" font-weight="700" text-anchor="end">5 V</text>
+<text x="523" y="640" fill="#ffffff" font-size="10.5">red wire</text>
+<rect x="75" y="655" width="82" height="46" rx="6" fill="#ffffff" stroke="#22262c" stroke-width="1.4"/>
+<text x="83" y="674" fill="#15181d" font-size="13" font-weight="700">C7</text>
+<text x="149" y="674" fill="#15181d" font-size="11.5" font-weight="700" text-anchor="end">CAN H</text>
+<text x="83" y="692" fill="#15181d" font-size="10.5">white wire</text>
+<rect x="163" y="655" width="82" height="46" rx="6" fill="#e3bd1f" stroke="#e3bd1f" stroke-width="1.4"/>
+<text x="171" y="674" fill="#15181d" font-size="13" font-weight="700">C8</text>
+<text x="237" y="674" fill="#15181d" font-size="11.5" font-weight="700" text-anchor="end">CAN L</text>
+<text x="171" y="692" fill="#15181d" font-size="10.5">yellow wire</text>
+<rect x="251" y="655" width="82" height="46" rx="6" fill="#f2f4f7" stroke="#c7ced6" stroke-width="1"/>
+<text x="259" y="674" fill="#7b8794" font-size="13" font-weight="700">C9</text>
+<text x="325" y="674" fill="#7b8794" font-size="11.5" font-weight="700" text-anchor="end">AIN5</text>
+<rect x="339" y="655" width="82" height="46" rx="6" fill="#f2f4f7" stroke="#c7ced6" stroke-width="1"/>
+<text x="347" y="674" fill="#7b8794" font-size="13" font-weight="700">C10</text>
+<text x="413" y="674" fill="#7b8794" font-size="11.5" font-weight="700" text-anchor="end">AIN6</text>
+<rect x="427" y="655" width="82" height="46" rx="6" fill="#f2f4f7" stroke="#c7ced6" stroke-width="1"/>
+<text x="435" y="674" fill="#7b8794" font-size="13" font-weight="700">C11</text>
+<text x="501" y="674" fill="#7b8794" font-size="11.5" font-weight="700" text-anchor="end">MPP 2</text>
+<rect x="515" y="655" width="82" height="46" rx="6" fill="#22262c" stroke="#22262c" stroke-width="1.4"/>
+<text x="523" y="674" fill="#ffffff" font-size="13" font-weight="700">C12</text>
+<text x="589" y="674" fill="#ffffff" font-size="11.5" font-weight="700" text-anchor="end">SGND</text>
+<text x="523" y="692" fill="#ffffff" font-size="10.5">black wire</text>
+<rect x="691" y="631" width="202" height="126" rx="9" fill="none" stroke="#7b8794" stroke-width="1.6"/>
+<rect x="763" y="618" width="58" height="13" rx="3" fill="#e9edf1" stroke="#7b8794" stroke-width="1.4"/>
+<text x="792" y="614" fill="#7b8794" font-size="10.5" text-anchor="middle">latch</text>
+<rect x="703" y="643" width="86" height="48" rx="6" fill="#e3bd1f" stroke="#e3bd1f" stroke-width="1.4"/>
+<text x="711" y="662" fill="#15181d" font-size="13" font-weight="700">4</text>
+<text x="781" y="662" fill="#15181d" font-size="11.5" font-weight="700" text-anchor="end">CAN L</text>
+<text x="711" y="682" fill="#15181d" font-size="10.5">yellow wire</text>
+<rect x="795" y="643" width="86" height="48" rx="6" fill="#ffffff" stroke="#22262c" stroke-width="1.4"/>
+<text x="803" y="662" fill="#15181d" font-size="13" font-weight="700">3</text>
+<text x="873" y="662" fill="#15181d" font-size="11.5" font-weight="700" text-anchor="end">CAN H</text>
+<text x="803" y="682" fill="#15181d" font-size="10.5">white wire</text>
+<rect x="703" y="697" width="86" height="48" rx="6" fill="#f2f4f7" stroke="#c7ced6" stroke-width="1"/>
+<text x="711" y="716" fill="#7b8794" font-size="13" font-weight="700">2</text>
+<text x="781" y="716" fill="#7b8794" font-size="11.5" font-weight="700" text-anchor="end">empty</text>
+<rect x="795" y="697" width="86" height="48" rx="6" fill="#f2f4f7" stroke="#c7ced6" stroke-width="1"/>
+<text x="803" y="716" fill="#7b8794" font-size="13" font-weight="700">1</text>
+<text x="873" y="716" fill="#7b8794" font-size="11.5" font-weight="700" text-anchor="end">empty</text>
+<rect x="966" y="631" width="202" height="126" rx="9" fill="none" stroke="#7b8794" stroke-width="1.6"/>
+<rect x="1038" y="618" width="58" height="13" rx="3" fill="#e9edf1" stroke="#7b8794" stroke-width="1.4"/>
+<text x="1067" y="614" fill="#7b8794" font-size="10.5" text-anchor="middle">latch</text>
+<rect x="978" y="643" width="86" height="48" rx="6" fill="#e3bd1f" stroke="#e3bd1f" stroke-width="1.4"/>
+<text x="986" y="662" fill="#15181d" font-size="13" font-weight="700">4</text>
+<text x="1056" y="662" fill="#15181d" font-size="11.5" font-weight="700" text-anchor="end">CAN L</text>
+<text x="986" y="682" fill="#15181d" font-size="10.5">yellow wire</text>
+<rect x="1070" y="643" width="86" height="48" rx="6" fill="#ffffff" stroke="#22262c" stroke-width="1.4"/>
+<text x="1078" y="662" fill="#15181d" font-size="13" font-weight="700">3</text>
+<text x="1148" y="662" fill="#15181d" font-size="11.5" font-weight="700" text-anchor="end">CAN H</text>
+<text x="1078" y="682" fill="#15181d" font-size="10.5">white wire</text>
+<rect x="978" y="697" width="86" height="48" rx="6" fill="#22262c" stroke="#22262c" stroke-width="1.4"/>
+<text x="986" y="716" fill="#ffffff" font-size="13" font-weight="700">2</text>
+<text x="1056" y="716" fill="#ffffff" font-size="11.5" font-weight="700" text-anchor="end">SGND</text>
+<text x="986" y="736" fill="#ffffff" font-size="10.5">black wire</text>
+<rect x="1070" y="697" width="86" height="48" rx="6" fill="#d43a3a" stroke="#d43a3a" stroke-width="1.4"/>
+<text x="1078" y="716" fill="#ffffff" font-size="13" font-weight="700">1</text>
+<text x="1148" y="716" fill="#ffffff" font-size="11.5" font-weight="700" text-anchor="end">+5V</text>
+<text x="1078" y="736" fill="#ffffff" font-size="10.5">red wire</text>
+<text x="694" y="905" fill="#15181d" font-size="14" font-weight="700">Converter plug, cable 1</text>
+<text x="694" y="922" fill="#7b8794" font-size="11.5">Molex 43025-0400 — 1 and 2 empty</text>
+<text x="969" y="905" fill="#15181d" font-size="14" font-weight="700">Converter plug, cable 2</text>
+<text x="969" y="922" fill="#7b8794" font-size="11.5">Molex 43025-0400 — all four circuits</text>
+<path d="M517.5 244 L517.5 290 L135 290 L135 413" fill="none" stroke="#4f8fe0" stroke-width="15" stroke-opacity="0.22" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M517.5 244 L517.5 290 L135 290 L135 413" fill="none" stroke="#22262c" stroke-width="5" stroke-linejoin="round"/>
+<path d="M612.5 244 L612.5 306 L245 306 L245 413" fill="none" stroke="#4f8fe0" stroke-width="15" stroke-opacity="0.22" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M612.5 244 L612.5 306 L245 306 L245 413" fill="none" stroke="#d43a3a" stroke-width="5" stroke-linejoin="round"/>
+<path d="M707.5 244 L707.5 520 L838 520 L838 643" fill="none" stroke="#4f8fe0" stroke-width="15" stroke-opacity="0.22" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M707.5 244 L707.5 520 L838 520 L838 643" fill="none" stroke="#22262c" stroke-width="6.5" stroke-linejoin="round"/>
+<path d="M707.5 244 L707.5 520 L838 520 L838 643" fill="none" stroke="#ffffff" stroke-width="4" stroke-linejoin="round"/>
+<path d="M802.5 244 L802.5 540 L746 540 L746 643" fill="none" stroke="#4f8fe0" stroke-width="15" stroke-opacity="0.22" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M802.5 244 L802.5 540 L746 540 L746 643" fill="none" stroke="#e3bd1f" stroke-width="5" stroke-linejoin="round"/>
+<rect x="250" y="252" width="73.1" height="24" rx="12" fill="#4f8fe0" stroke="#4f8fe0" stroke-width="1.4"/>
+<text x="261" y="268.5" fill="#ffffff" font-size="12" font-weight="700">CABLE 1</text>
+<text x="342" y="264" fill="#7b8794" font-size="11">12 V + ground to the display</text>
+<text x="816.5" y="420" fill="#7b8794" font-size="11">CAN pair, twisted,</text>
+<text x="816.5" y="434" fill="#7b8794" font-size="11">on to the converter</text>
+<path d="M116 701 L116 775 L919.5 775 L919.5 565 L1113 565 L1113 643" fill="none" stroke="#ef8a2f" stroke-width="15" stroke-opacity="0.22" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M116 701 L116 775 L919.5 775 L919.5 565 L1113 565 L1113 643" fill="none" stroke="#22262c" stroke-width="6.5" stroke-linejoin="round"/>
+<path d="M116 701 L116 775 L919.5 775 L919.5 565 L1113 565 L1113 643" fill="none" stroke="#ffffff" stroke-width="4" stroke-linejoin="round"/>
+<path d="M204 701 L204 790 L937.5 790 L937.5 585 L1021 585 L1021 643" fill="none" stroke="#ef8a2f" stroke-width="15" stroke-opacity="0.22" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M204 701 L204 790 L937.5 790 L937.5 585 L1021 585 L1021 643" fill="none" stroke="#e3bd1f" stroke-width="5" stroke-linejoin="round"/>
+<path d="M556 701 L556 805 L1021 805 L1021 745" fill="none" stroke="#ef8a2f" stroke-width="15" stroke-opacity="0.22" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M556 701 L556 805 L1021 805 L1021 745" fill="none" stroke="#22262c" stroke-width="5" stroke-linejoin="round"/>
+<path d="M556 603 L556 582 L624 582 L624 825 L1113 825 L1113 745" fill="none" stroke="#ef8a2f" stroke-width="15" stroke-opacity="0.22" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M556 603 L556 582 L624 582 L624 825 L1113 825 L1113 745" fill="none" stroke="#d43a3a" stroke-width="5" stroke-linejoin="round"/>
+<rect x="973" y="814" width="64" height="22" rx="5" fill="#ffffff" stroke="#15181d" stroke-width="1.6"/>
+<line x1="979" y1="825" x2="1031" y2="825" stroke="#15181d" stroke-width="1.6"/>
+<text x="1005" y="855" fill="#15181d" font-size="11" font-weight="700" text-anchor="middle">fuse 200 mA T</text>
+<text x="1005" y="869" fill="#7b8794" font-size="10.5" text-anchor="middle">SIBA 179120.0.2</text>
+<text x="1005" y="882" fill="#7b8794" font-size="10.5" text-anchor="middle">in K23411 — harness.md B</text>
+<rect x="72" y="845" width="73.1" height="24" rx="12" fill="#ef8a2f" stroke="#ef8a2f" stroke-width="1.4"/>
+<text x="83" y="861.5" fill="#ffffff" font-size="12" font-weight="700">CABLE 2</text>
+<text x="164" y="861" fill="#7b8794" font-size="11">5 V and SGND for the converter, and the display's CAN pair — C7/C8 untouched</text>
+<rect x="670" y="965" width="519" height="116" rx="8" fill="#eaf5ee" stroke="#2c6b4c" stroke-width="1.5"/>
+<text x="682" y="987" fill="#2c6b4c" font-size="13" font-weight="700">canfuel board</text>
+<rect x="730" y="1013" width="124" height="36" rx="4" fill="#ffffff" stroke="#2c6b4c" stroke-width="1.5"/>
+<text x="792" y="1036" fill="#2c6b4c" font-size="14" font-weight="700" text-anchor="middle">J1</text>
+<line x1="792" y1="933" x2="792" y2="1011" stroke="#7b8794" stroke-width="1.4" stroke-dasharray="4 4"/>
+<rect x="1005" y="1013" width="124" height="36" rx="4" fill="#ffffff" stroke="#2c6b4c" stroke-width="1.5"/>
+<text x="1067" y="1036" fill="#2c6b4c" font-size="14" font-weight="700" text-anchor="middle">J2</text>
+<line x1="1067" y1="933" x2="1067" y2="1011" stroke="#7b8794" stroke-width="1.4" stroke-dasharray="4 4"/>
+<line x1="854" y1="1031" x2="1005" y2="1031" stroke="#2c6b4c" stroke-width="2.5"/>
+<text x="929.5" y="1025" fill="#2c6b4c" font-size="11" font-weight="700" text-anchor="middle">same 4 nets</text>
+<text x="929.5" y="1069" fill="#2c6b4c" font-size="11" text-anchor="middle">either plug fits either header — CAN passes through even with U1 pulled</text>
+<line x1="40" y1="1093" x2="1200" y2="1093" stroke="#c7ced6"/>
+<rect x="40" y="1097" width="73.1" height="24" rx="12" fill="#4f8fe0" stroke="#4f8fe0" stroke-width="1.4"/>
+<text x="51" y="1113.5" fill="#ffffff" font-size="12" font-weight="700">CABLE 1</text>
+<text x="136" y="1115" fill="#15181d" font-size="14" font-weight="700">car 4-pin → plug B + converter</text>
+<text x="40" y="1141" fill="#7b8794" font-size="10.5" font-weight="700" letter-spacing="0.6">WIRE</text>
+<text x="132" y="1141" fill="#7b8794" font-size="10.5" font-weight="700" letter-spacing="0.6">FROM</text>
+<text x="250" y="1141" fill="#7b8794" font-size="10.5" font-weight="700" letter-spacing="0.6">THROUGH</text>
+<text x="380" y="1141" fill="#7b8794" font-size="10.5" font-weight="700" letter-spacing="0.6">TO</text>
+<rect x="40" y="1153" width="14" height="10" rx="2" fill="#22262c" stroke="#22262c" stroke-width="1"/>
+<text x="60" y="1163" fill="#15181d" font-size="12">black</text>
+<text x="132" y="1163" fill="#15181d" font-size="12">4-pin circ. 1</text>
+<text x="250" y="1163" fill="#15181d" font-size="12">—</text>
+<text x="380" y="1163" fill="#15181d" font-size="12">plug B6  GND</text>
+<rect x="40" y="1174" width="14" height="10" rx="2" fill="#d43a3a" stroke="#d43a3a" stroke-width="1"/>
+<text x="60" y="1184" fill="#15181d" font-size="12">red</text>
+<text x="132" y="1184" fill="#15181d" font-size="12">4-pin circ. 2</text>
+<text x="250" y="1184" fill="#15181d" font-size="12">—</text>
+<text x="380" y="1184" fill="#15181d" font-size="12">plug B5  12 V</text>
+<rect x="40" y="1195" width="14" height="10" rx="2" fill="#ffffff" stroke="#22262c" stroke-width="1"/>
+<text x="60" y="1205" fill="#15181d" font-size="12">white</text>
+<text x="132" y="1205" fill="#15181d" font-size="12">4-pin circ. 3</text>
+<text x="250" y="1205" fill="#15181d" font-size="12">twisted</text>
+<text x="380" y="1205" fill="#15181d" font-size="12">circuit 3  CANH</text>
+<rect x="40" y="1216" width="14" height="10" rx="2" fill="#e3bd1f" stroke="#e3bd1f" stroke-width="1"/>
+<text x="60" y="1226" fill="#15181d" font-size="12">yellow</text>
+<text x="132" y="1226" fill="#15181d" font-size="12">4-pin circ. 4</text>
+<text x="250" y="1226" fill="#15181d" font-size="12">twisted</text>
+<text x="380" y="1226" fill="#15181d" font-size="12">circuit 4  CANL</text>
+<rect x="650" y="1097" width="73.1" height="24" rx="12" fill="#ef8a2f" stroke="#ef8a2f" stroke-width="1.4"/>
+<text x="661" y="1113.5" fill="#ffffff" font-size="12" font-weight="700">CABLE 2</text>
+<text x="746" y="1115" fill="#15181d" font-size="14" font-weight="700">plug C → converter</text>
+<text x="650" y="1141" fill="#7b8794" font-size="10.5" font-weight="700" letter-spacing="0.6">WIRE</text>
+<text x="742" y="1141" fill="#7b8794" font-size="10.5" font-weight="700" letter-spacing="0.6">FROM</text>
+<text x="860" y="1141" fill="#7b8794" font-size="10.5" font-weight="700" letter-spacing="0.6">THROUGH</text>
+<text x="990" y="1141" fill="#7b8794" font-size="10.5" font-weight="700" letter-spacing="0.6">TO</text>
+<rect x="650" y="1153" width="14" height="10" rx="2" fill="#d43a3a" stroke="#d43a3a" stroke-width="1"/>
+<text x="670" y="1163" fill="#15181d" font-size="12">red</text>
+<text x="742" y="1163" fill="#15181d" font-size="12">plug C6</text>
+<text x="860" y="1163" fill="#15181d" font-size="12">200 mA T fuse</text>
+<text x="990" y="1163" fill="#15181d" font-size="12">circuit 1  +5V</text>
+<rect x="650" y="1174" width="14" height="10" rx="2" fill="#22262c" stroke="#22262c" stroke-width="1"/>
+<text x="670" y="1184" fill="#15181d" font-size="12">black</text>
+<text x="742" y="1184" fill="#15181d" font-size="12">plug C12</text>
+<text x="860" y="1184" fill="#15181d" font-size="12">—</text>
+<text x="990" y="1184" fill="#15181d" font-size="12">circuit 2  SGND</text>
+<rect x="650" y="1195" width="14" height="10" rx="2" fill="#ffffff" stroke="#22262c" stroke-width="1"/>
+<text x="670" y="1205" fill="#15181d" font-size="12">white</text>
+<text x="742" y="1205" fill="#15181d" font-size="12">plug C7</text>
+<text x="860" y="1205" fill="#15181d" font-size="12">twisted</text>
+<text x="990" y="1205" fill="#15181d" font-size="12">circuit 3  CANH</text>
+<rect x="650" y="1216" width="14" height="10" rx="2" fill="#e3bd1f" stroke="#e3bd1f" stroke-width="1"/>
+<text x="670" y="1226" fill="#15181d" font-size="12">yellow</text>
+<text x="742" y="1226" fill="#15181d" font-size="12">plug C8</text>
+<text x="860" y="1226" fill="#15181d" font-size="12">twisted</text>
+<text x="990" y="1226" fill="#15181d" font-size="12">circuit 4  CANL</text>
+<text x="40" y="1268" fill="#7b8794" font-size="10.5">Micro-Fit nets read from J1/J2 in canfuel.kicad_pcb (they must match; the script refuses otherwise). Plugs B and C: MFD15 Gen2 manual Rev 1.0, via pinout.md. 4-pin: car-wiring.md.</text>
+<text x="40" y="1284" fill="#7b8794" font-size="10.5">Generated by tools/render-harness.py — edit the script, not this file.</text>
+</svg>

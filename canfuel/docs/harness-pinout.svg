@@ -71,8 +71,8 @@
 <rect x="336" y="499" width="132" height="62" rx="6" fill="#f2f4f7" stroke="#c7ced6" stroke-width="1"/>
 <text x="345" y="519" font-size="13" font-weight="700" fill="#7b8794">B1</text>
 <text x="459" y="519" text-anchor="end" font-size="13" font-weight="700" fill="#7b8794">USB D_N</text>
-<text x="60" y="603" fill="#15181d" font-size="15" font-weight="700">Converter plug — Molex 43025-0400</text>
-<text x="60" y="620" fill="#7b8794" font-size="11.5">mates with J1 or J2. Signal names read from canfuel.kicad_pcb.</text>
+<text x="60" y="603" fill="#15181d" font-size="15" font-weight="700">Converter plug, cable 2 — Molex 43025-0400</text>
+<text x="60" y="620" fill="#7b8794" font-size="11.5">mates with J1 or J2. Cable 1’s plug uses only 3 and 4 — harness-cables.svg.</text>
 <rect x="51" y="652" width="364" height="160" rx="9" fill="none" stroke="#7b8794" stroke-width="1.6"/>
 <rect x="204" y="639" width="58" height="13" rx="3" fill="#e9edf1" stroke="#7b8794" stroke-width="1.4"/>
 <text x="233" y="633" text-anchor="middle" fill="#7b8794" font-size="10.5">latch</text>
@@ -92,7 +92,7 @@
 <text x="245" y="755" font-size="13" font-weight="700" fill="#ffffff">1</text>
 <text x="397" y="755" text-anchor="end" font-size="13" font-weight="700" fill="#ffffff">5 V</text>
 <text x="245" y="790" font-size="11" fill="#ffffff" opacity="0.85">red wire</text>
-<text x="560" y="373" fill="#15181d" font-size="15" font-weight="700">What each wire does end to end</text>
+<text x="560" y="373" fill="#15181d" font-size="15" font-weight="700">Cable 2 — plug C to the converter, wire by wire</text>
 <text x="560" y="397" fill="#7b8794" font-size="11" font-weight="700" letter-spacing="0.6">WIRE</text>
 <text x="646" y="397" fill="#7b8794" font-size="11" font-weight="700" letter-spacing="0.6">FROM</text>
 <text x="750" y="397" fill="#7b8794" font-size="11" font-weight="700" letter-spacing="0.6">THROUGH</text>
@@ -121,8 +121,8 @@
 <text x="560" y="569" fill="#7b8794" font-size="11.5">The 5 V feed is fused in the loom, not on the board — SIBA 179120.0.2,</text>
 <text x="560" y="585" fill="#7b8794" font-size="11.5">200 mA time-lag T, in inline holder K23411. See harness.md section B.</text>
 <text x="560" y="601" fill="#7b8794" font-size="11.5"></text>
-<text x="560" y="617" fill="#7b8794" font-size="11.5">J1 and J2 on the board sit on the same four nets, so either one takes</text>
-<text x="560" y="633" fill="#7b8794" font-size="11.5">this plug and the board passes CAN through even with the PIC removed.</text>
+<text x="560" y="617" fill="#7b8794" font-size="11.5">J1 and J2 on the board sit on the same four nets, so either cable takes</text>
+<text x="560" y="633" fill="#7b8794" font-size="11.5">either header and the board passes CAN from cable 1 to cable 2.</text>
 <line x1="40" y1="884" x2="1040" y2="884" stroke="#c7ced6" stroke-width="1"/>
 <text x="40" y="906" fill="#7b8794" font-size="11">Plugs B and C are transcribed from the MFD15 Gen2 manual Rev 1.0, section 2 and Figure 1 (mfd15/docs/manual-mfd15-gen2.pdf). The converter plug follows plan 3.4.</text>
 <text x="40" y="922" fill="#7b8794" font-size="11">C6 = 5 V and C12 = SGND were confirmed with a multimeter (5.01 V); C7/C8 are the display’s CAN pins and were left untouched.</text>

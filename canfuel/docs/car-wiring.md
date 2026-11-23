@@ -51,12 +51,13 @@ both columns are worth having written down.
   converter's 5 V comes off plug C at C6/C12 and never touches this connector —
   see `harness.md` C3 and `pinout.md`.
 - **The CAN pair here is the same pair the converter listens to**, carried on
-  to the air vent as the white/yellow run in `harness.md` A2.
+  to the air vent as cable 1's white/yellow run (`harness.md`,
+  `harness-cables.svg`); the board passes it on to the display over cable 2.
 - **The circuit order is not the converter plug's order.** Here circuit 1 is
   ground and 2 is power; on the converter plug circuit 1 is +5V and 2 is SGND.
   Do not carry one layout over to the other.
 
 ## See also
 
-- `pinout.md` — the three connectors this project's own loom touches
+- `pinout.md` — the MFD15's plugs B and C and the converter plug
 - `harness.md` — building the loom
