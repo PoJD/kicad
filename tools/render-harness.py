@@ -31,7 +31,7 @@ What is typed in, and where it comes from:
                                 cavity geometry was never recorded, so it is
                                 drawn as circuit numbers in a row, nothing more
     wire colours              - harness.md, pinout.md, car-wiring.md
-    which wire is on which cable - the owner, 23/11/2026
+    which wire is on which cable - the owner, confirmed 23/11/2026
 
 Plain Python; no pcbnew needed, the pads are read from the board's text.
 """

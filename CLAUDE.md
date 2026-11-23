@@ -346,6 +346,13 @@ happening.
 still stop and ask**, by `ask` rules in the same file. Those are the ones that
 leave the machine or throw work away. Everything else does not.
 
+**Work goes straight onto `main`** (*the owner's choice*, 23/11/2026). Commit
+on `main` and push to `origin main` — no feature branches, no pull requests.
+A cloud session starts on a branch of its own (`claude/...`); that does not
+change this: move the work onto `main` (fast-forward, or cherry-pick if `main`
+has moved) and push it there. The session's own branch may be pushed too, but
+`main` is where the work has to end up.
+
 **`defaultMode: "dontAsk"` was tried and is worse than it looks — do not put it
 back.** It does not widen the `allow` list, and with a list this narrow the
 result was that unmatched commands were silently rejected instead of prompting.
